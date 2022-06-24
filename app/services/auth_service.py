@@ -1,9 +1,12 @@
+from os import environ
+from dotenv import load_dotenv
 from fastapi import HTTPException, status
 from fastapi.encoders import jsonable_encoder
 from requests import get, post
 from schemas.auth_schemas import UserLogin
 
-BASE_URL = r'http://192.168.123.221:9030'
+load_dotenv()
+ENDPOINT = environ['SP_END_POINT']
 
 class AuthService:
     def __init__(self):
@@ -11,7 +14,7 @@ class AuthService:
 
     @staticmethod
     def user_login(request: UserLogin):
-        myUrl = BASE_URL + r'/apiCustomer/accessRight/userLogin'
+        myUrl = ENDPOINT + r'/apiCustomer/accessRight/userLogin'
         requestDict = jsonable_encoder(request)
         res = post(url=myUrl, json=requestDict)
         if res.ok:

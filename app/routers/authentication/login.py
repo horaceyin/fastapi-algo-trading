@@ -7,7 +7,7 @@ def print_msg():
     print("Calling at login router.")
 
 loginRouter = APIRouter(
-    tags=['authentication'],
+    tags=['Authentication'],
     prefix='/login',
     dependencies=[Depends(print_msg)]
 )

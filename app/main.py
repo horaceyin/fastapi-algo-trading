@@ -1,20 +1,23 @@
+from os import environ
 from fastapi import FastAPI
-from dotenv import dotenv_values
+from dotenv import load_dotenv
 from pydantic import BaseModel, BaseSettings
 import uvicorn
 from core import config
 from routers.authentication.login import loginRouter
 from routers.dashboard.backtesting import backtestingRouter
+from routers.dashboard.technical_analysis import taRouter
 
-DOTENV = '.env'
+load_dotenv()
+
 ROUTERSLIST = [
     loginRouter,
-    backtestingRouter
+    backtestingRouter,
+    taRouter
 ]
 
 def get_config():
-    env = dotenv_values(DOTENV)
-    if env['ENV_STATE'] == 'dev':
+    if environ['ENV_STATE'] == 'dev':
         return config.DevConfig()
     return config.ProdConfig()
 
