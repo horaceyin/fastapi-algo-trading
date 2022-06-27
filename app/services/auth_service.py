@@ -14,9 +14,12 @@ class AuthService:
 
     @staticmethod
     def user_login(request: UserLogin):
-        myUrl = ENDPOINT + r'/apiCustomer/accessRight/userLogin'
+        myUrl = ENDPOINT + r'/apiCustomer/accessRight/userLogin' 
         requestDict = jsonable_encoder(request)
+        accUrl = ENDPOINT + r'/apiCustomer/account/accountSummary' 
         res = post(url=myUrl, json=requestDict)
+        accres = post(url=accUrl, json=requestDict)
         if res.ok:
+            
             return res.json()
         raise HTTPException(status_code=status.HTTP_408_REQUEST_TIMEOUT, detail="Request Timeout with SP Server.")
