@@ -26,5 +26,5 @@ async def user_login(request: UserLogin):
         'targetAccNo': targetacc
     }
     # info = await AuthService.acc_login(request= json.dumps(secReq)) # Turn secReq into json object, then pass as request
-    info = "Hello" # Testing code
+    info = "Hello" # Testing code # Currently: Code 200, "string"
     return info
