@@ -19,8 +19,8 @@ class BacktestingService:
         # return json.dumps({'msg': 'from backtesting.'}) # Result given
         # write backtesting code here
         
-        
-        return start_backtesting(prodCode, 4, 120, 80, True, portfolioValue) # Find way to transfer 
+        # ModuleNotFoundError: No module named 'sma_simple_strat'
+        return start_backtesting(BacktestingModel.prodCode, 4, 120, 80, True, BacktestingModel.portfolioValue)
 
         #if exception rasied,
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=errMsg)
