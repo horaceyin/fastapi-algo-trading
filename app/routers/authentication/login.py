@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, status
 from services.auth_service import AuthService
-from schemas.auth_schemas import UserLogin
+from schemas.auth_schemas import UserLogin, UserInfo
 
 @staticmethod
 def print_msg():
@@ -15,3 +15,7 @@ loginRouter = APIRouter(
 @loginRouter.post('/', status_code=status.HTTP_200_OK)
 async def user_login(request: UserLogin):
     return AuthService.user_login(request)
+
+@loginRouter.post('/info', status_code=status.HTTP_200_OK)
+async def infomation(requset: UserInfo):
+    return AuthService.user_info(requset)
