@@ -16,7 +16,7 @@ loginRouter = APIRouter(
 @loginRouter.post('/', status_code=status.HTTP_200_OK)
 async def user_login(request: UserLogin):
     
-    client = await AuthService.user_login(request) # Output of userLogin # Will hold until data is retrived
+    client = AuthService.user_login(request) # Output of userLogin # Will hold until data is retrived # Need await to do rest of code
     print(client)
     token = client['data']['sessionToken'] # Session token
     targetacc = client['data']['userId']
