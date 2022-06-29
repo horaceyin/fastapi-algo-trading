@@ -1,11 +1,5 @@
-import json
-from os import environ
-from dotenv import load_dotenv
-from fastapi import HTTPException, status
+from common.common_helper import CommonHelper
 from schemas.technical_analysis_schemas import GetDoneTradeModel
-
-load_dotenv()
-ENDPOINT = environ['SP_END_POINT']
 
 class TaService:
     def __init__(self):
@@ -13,10 +7,11 @@ class TaService:
 
     @staticmethod
     def run_done_trade_analysis(request: GetDoneTradeModel):
-        myUrl = ENDPOINT + r'/apiCustomer/reporting/doneTrade'
-        print(request)
-        errMsg = ''
-        return json.dumps({'msg': 'from done trade analysis.'})
+        myUrl = "/apiCustomer/reporting/doneTrade"
+        return CommonHelper.postUrl(requestUrl=myUrl, params=request)
+        # print(request)
+        # errMsg = ''
+        # return json.dumps({'msg': 'from done trade analysis.'})
         # write performance analysis code here
         
         # if exception rasied,

@@ -1,11 +1,12 @@
+from dotenv import load_dotenv
+from os import environ
 from pydantic import BaseSettings
 from typing import Optional
-from dotenv import dotenv_values
 
 DOTENV = '.env'
-
+load_dotenv()
 class GlobalConfig(BaseSettings):
-    ENV_STATE: Optional[str] = dotenv_values(DOTENV)['ENV_STATE']
+    ENV_STATE: Optional[str] = environ['ENV_STATE']
     HOST: Optional[str] = None
     PORT: Optional[int] = None
     TESTTING: bool = True
