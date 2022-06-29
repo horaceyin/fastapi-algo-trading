@@ -13,7 +13,7 @@ class TaService:
 
     @staticmethod
     def run_done_trade_analysis(request: GetDoneTradeModel):
-        myUrl = ENDPOINT + r'/apiCustomer/reporting/doneTrade'
+        myUrl = ENDPOINT + "/apiCustomer/reporting/doneTrade"
         print(request)
         errMsg = ''
         return json.dumps({'msg': 'from done trade analysis.'})
