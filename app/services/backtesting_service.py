@@ -3,7 +3,7 @@ import json
 from dotenv import load_dotenv
 from fastapi import HTTPException, status
 from schemas.backtesting_schemas import BacktestingModel
-from sma_simple_strat import start_backtesting
+from services.sma_simple_strat import sma_backtest
 
 load_dotenv()
 ENDPOINT = environ['SP_END_POINT']
@@ -20,7 +20,9 @@ class BacktestingService:
         # write backtesting code here
         
         # ModuleNotFoundError: No module named 'sma_simple_strat'
-        return start_backtesting(BacktestingModel.prodCode, 4, 120, 80, True, BacktestingModel.portfolioValue) # May need to add timeframe and method for data collection
+        return sma_backtest(BacktestingModel.prodCode, 2, 120, 80, True, BacktestingModel.portfolioValue).start_backtesting(BacktestingModel.prodCode, 2, 120, 80, True, BacktestingModel.portfolioValue) 
+        # May need to add timeframe and method for data collection
+        # AttributeError: type object 'BacktestingModel' has no attribute 'prodCode'
 
         #if exception rasied,
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=errMsg)
