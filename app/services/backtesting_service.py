@@ -20,7 +20,7 @@ class BacktestingService:
         # write backtesting code here
         
         # ModuleNotFoundError: No module named 'sma_simple_strat'
-        return sma_backtest(BacktestingModel.prodCode, 2, 120, 80, True, BacktestingModel.portfolioValue).start_backtesting(BacktestingModel.prodCode, 2, 120, 80, True, BacktestingModel.portfolioValue) 
+        return sma_backtest(BacktestingModel.prodCode, 2, 120, 80, True, BacktestingModel.portfolioValue).start_backtesting() 
         # May need to add timeframe and method for data collection
         # AttributeError: type object 'BacktestingModel' has no attribute 'prodCode'
 

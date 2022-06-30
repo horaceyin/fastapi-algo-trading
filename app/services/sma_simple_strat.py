@@ -17,12 +17,12 @@ import json
 
 class sma_backtest:
     def __init__(self, instrument, day, second, smaPeriod, plot, startcash):
-        self.instrument = instrument
-        self.day = day
-        self.second = second
-        self.smaPeriod = smaPeriod
-        self.plot = plot
-        self.startcash = startcash
+        self.__instrument = instrument
+        self.__day = day
+        self.__second = second
+        self.__smaPeriod = smaPeriod
+        self.__plot = plot
+        self.__startcash = startcash
 
     # Formats text data for each trade
     def formattingData(status_code, text):
@@ -111,12 +111,12 @@ class sma_backtest:
             print("Min. return: %2.3f %%" % (returns.min() * 100))
 
 
-    def start_backtesting(instrument, day, second, smaPeriod, plot, startcash):
+    def start_backtesting(self):
         date_time = datetime.fromtimestamp(int(time.time()))
         todayStrDate = date_time.strftime('%Y%m%d')
-        csvName = f'{instrument}-{todayStrDate}-sp.csv'
+        csvName = f'{self.__instrument}-{todayStrDate}-sp.csv'
 
-        URL = f'https://chart3.spsystem.info/pserver/chartdata_query.php?days={day}&second={second}&prod_code={instrument}'
+        URL = f'https://chart3.spsystem.info/pserver/chartdata_query.php?days={self.__day}&second={self.__second}&prod_code={self.__instrument}'
 
         # Frequency.TRADE: The bar represents a single trade.
         # Frequency.SECOND: The bar summarizes the trading activity during 1 second.
@@ -148,10 +148,10 @@ class sma_backtest:
         df.to_csv(csvName)
         print(len(dateCol))
 
-        myFeed.addBarsFromCSV(instrument, csvName)
-        strat = SMACrossOver(myFeed, instrument, smaPeriod)
+        myFeed.addBarsFromCSV(self.__instrument, csvName)
+        strat = SMACrossOver(myFeed, self.__instrument, self.__smaPeriod)
 
-        strat.getBroker().setCash(startcash) # Set new value of portfolio
+        strat.getBroker().setCash(self.__startcash) # Set new value of portfolio
 
         retAnalyzer = returns.Returns()
         strat.attachAnalyzer(retAnalyzer)
@@ -165,12 +165,12 @@ class sma_backtest:
         tradesAnalyzer = trades.Trades()
         strat.attachAnalyzer(tradesAnalyzer)
 
-        if plot:
+        if self.__plot:
             plt = plotter.StrategyPlotter(strat, True, False, True)
-            plt.getInstrumentSubplot(instrument).addDataSeries("SMA", strat.getSMA())
+            plt.getInstrumentSubplot(self.__instrument).addDataSeries("SMA", strat.getSMA())
 
         strat.run()
         sma_backtest.print_result(strat, retAnalyzer, sharpeRatioAnalyzer, drawDownAnalyzer, tradesAnalyzer)
 
-        if plot:
+        if self.__plot:
             plt.plot()
