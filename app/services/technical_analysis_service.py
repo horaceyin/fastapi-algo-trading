@@ -1,7 +1,6 @@
 import json
 from os import environ
 from dotenv import load_dotenv
-from fastapi import HTTPException, status
 from schemas.technical_analysis_schemas import GetDoneTradeModel
 
 load_dotenv()

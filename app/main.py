@@ -1,7 +1,6 @@
 from os import environ
 from fastapi import FastAPI
 from dotenv import load_dotenv
-from pydantic import BaseModel, BaseSettings
 import uvicorn
 from core import config
 from routers.authentication.login import loginRouter
