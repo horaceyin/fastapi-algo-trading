@@ -130,10 +130,10 @@ class sma_backtest:
         myFeed = csvfeed.GenericBarFeed(Frequency.SECOND * 5)
         res = requests.get(url = URL)
 
-        newData = smabacktest.formattingData(res.status_code, res.text)
+        newData = sma_backtest.formattingData(res.status_code, res.text)
         print(newData)
 
-        dateCol, openCol, highCol, lowCol, closeCol, volumeCol = smabacktest.constructData(newData)
+        dateCol, openCol, highCol, lowCol, closeCol, volumeCol = sma_backtest.constructData(newData)
 
         pdData = {
             'Date Time': dateCol,
@@ -170,7 +170,7 @@ class sma_backtest:
             plt.getInstrumentSubplot(instrument).addDataSeries("SMA", strat.getSMA())
 
         strat.run()
-        smabacktest.print_result(strat, retAnalyzer, sharpeRatioAnalyzer, drawDownAnalyzer, tradesAnalyzer)
+        sma_backtest.print_result(strat, retAnalyzer, sharpeRatioAnalyzer, drawDownAnalyzer, tradesAnalyzer)
 
         if plot:
             plt.plot()
