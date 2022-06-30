@@ -2,14 +2,13 @@
 
 import traceback
 from fastapi.encoders import jsonable_encoder
-from fastapi import HTTPException, status
-from urllib import request
+from fastapi import HTTPException, status, Request
 from requests import get, post
 from dotenv import load_dotenv
 from os import environ
 
 load_dotenv()
-ENDPOINT = environ['SP_END_POINT']
+ENDPOINT = environ['SP_HOST_AND_PORT']
 LOG_FILENAME = environ["LOG_FILENAME"]
 
 class CommonHelper:
@@ -17,8 +16,7 @@ class CommonHelper:
                 pass
         
         @staticmethod
-        def post_url(requestUrl: str, params: request):
-                print(type(params))
+        def post_url(requestUrl: str, params: Request):
                 requestDict = jsonable_encoder(params)
                 try:
                         res = post(url=requestUrl, json=requestDict)
