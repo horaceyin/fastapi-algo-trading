@@ -1,12 +1,7 @@
 from os import environ
 import json
-from dotenv import load_dotenv
-from fastapi import HTTPException, status
 from schemas.backtesting_schemas import BacktestingModel
 from services.sma_simple_strat import sma_backtest
-
-load_dotenv()
-ENDPOINT = environ['SP_END_POINT']
 
 class BacktestingService:
     def __init__(self):

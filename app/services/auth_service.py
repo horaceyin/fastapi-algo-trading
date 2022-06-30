@@ -4,9 +4,13 @@ from fastapi import HTTPException, status
 from fastapi.encoders import jsonable_encoder
 from requests import get, post
 from schemas.auth_schemas import UserLogin, AccountSumModel
+from core.endpoints import USERLOGIN
+from schemas.auth_schemas import UserLogin
+from common.common_helper import CommonHelper
 
 load_dotenv()
-ENDPOINT = environ['SP_END_POINT']
+ENDPOINT = environ['SP_HOST_AND_PORT']
+LOG_FILENAME = environ["LOG_FILENAME"]
 
 class AuthService:
     def __init__(self):
@@ -15,13 +19,10 @@ class AuthService:
 
     @staticmethod # Method is instance method otherwise
     def user_login(request: UserLogin): # Get token for this session
-        myUrl = ENDPOINT + r'/apiCustomer/accessRight/userLogin' 
-        requestDict = jsonable_encoder(request)
-        res = post(url=myUrl, json=requestDict)
-        print(res, "$$$$$$$") # Testing code
-        if res.ok:
-            return res.json()
-        raise HTTPException(status_code=status.HTTP_408_REQUEST_TIMEOUT, detail="Request Timeout with SP Server.")
+        myUrl = ENDPOINT + USERLOGIN
+        res = CommonHelper.post_url(requestUrl=myUrl, params=request)
+        return res
+        
 
     @staticmethod
     def acc_login(request: AccountSumModel): # Get client information for this session
@@ -30,4 +31,4 @@ class AuthService:
         accres = post(url=accUrl, json=requestDict)
         if accres.ok:
             return accres.json()
-        raise HTTPException(status_code=status.HTTP_408_REQUEST_TIMEOUT, detail="Request Timeout with SP Server.")
+
