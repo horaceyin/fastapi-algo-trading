@@ -1,10 +1,6 @@
 from os import environ
 import json
-from dotenv import load_dotenv
 from schemas.backtesting_schemas import BacktestingModel
-
-load_dotenv()
-ENDPOINT = environ['SP_END_POINT']
 
 class BacktestingService:
     def __init__(self):
