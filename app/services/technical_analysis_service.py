@@ -26,8 +26,8 @@ class TaService:
 
     def __init__(self, accName):
         self.__accName = accName
-        self.__pnl = []
-        self.__tradeRecords = []
+        self.pnl = []
+        self.tradeRecords = []
 
     @classmethod
     def __get_done_trade(cls, request: GetDoneTradeModel):
@@ -159,9 +159,9 @@ class TaService:
 
 class Report(TaService):
 
-    def __init__(self, accName):
-        super.__init__(accName)
-        self.__taHelper = TaService(accName)
+    def __init__(self):
+        pass
+
 
     def __separate_list(self):
         positive_list = []
@@ -214,7 +214,6 @@ class Report(TaService):
     
     def __max_min():
         pass
-
 
 
 
