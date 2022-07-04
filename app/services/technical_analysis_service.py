@@ -3,11 +3,8 @@ from dotenv import load_dotenv
 from collections import deque
 from datetime import datetime
 import pandas as pd
-<<<<<<< Updated upstream
-=======
 import statistics
 from pandas.core.frame import DataFrame
->>>>>>> Stashed changes
 from core.endpoints import DONETRADE
 from schemas.technical_analysis_schemas import GetDoneTradeModel
 from common.common_helper import CommonHelper
