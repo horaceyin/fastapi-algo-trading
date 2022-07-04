@@ -32,45 +32,6 @@ class TaService:
     @classmethod
     def __get_done_trade(cls, request: GetDoneTradeModel):
         return CommonHelper.post_url(cls.__url, request)
-    
-    def __create_data_for_feed(self, sortedDoneTradeRecords):
-
-        for trade in sortedDoneTradeRecords:
-            date = datetime.fromtimestamp(trade['timeStamp']).strftime('%Y-%m-%d %H:%M:%S')
-            ordTotalQty: int
-            tradePrice = trade['tradePrice']
-            prodCode = trade['prodCode']
-            if trade["buySell"]=="B": ordTotalQty = -trade['ordTotalQty']
-            elif trade["buySell"]=="S": ordTotalQty = trade['ordTotalQty']
-            self.__tradeNum = self.__tradeNum + 1
-
-            self.__tradeRecords.append(
-                [date, tradePrice, ordTotalQty, prodCode, ordTotalQty]
-            )
-
-    def __data_feed(self):
-        df = pd.DataFrame(data=self.__tradeRecords, columns=TaService.col)
-        df.date = pd.to_datetime(df.date)
-        print(df)
-        self.__df = df.groupby(['ProductCode', 'date', 'Position', 'Balance'])[['TradePrice']].mean()
-
-    def __create_separated_df(self):
-        l=[]
-        index_count=1
-        index_check=self.__df.index[0][0]
-
-        for i in range(len(self.__df.index)):
-            if index_check != self.__df.index[i][0]:
-                index_check = self.__df.index[i][0]
-                index_count = index_count+1
-                l += [i]
-            else:
-                continue
-
-        l_mod = [0] + l + [len(self.__df)]
-        dataframeList = [self.__df.iloc[l_mod[n]:l_mod[n+1]] for n in range(len(l_mod)-1)]
-
-        return dataframeList
 
     @staticmethod
     def __data_for_pnl(posList, priceList):
@@ -113,6 +74,45 @@ class TaService:
 
         return (pnlQueue, pnlNum)
 
+    def __create_data_for_feed(self, sortedDoneTradeRecords):
+
+        for trade in sortedDoneTradeRecords:
+            date = datetime.fromtimestamp(trade['timeStamp']).strftime('%Y-%m-%d %H:%M:%S')
+            ordTotalQty: int
+            tradePrice = trade['tradePrice']
+            prodCode = trade['prodCode']
+            if trade["buySell"]=="B": ordTotalQty = -trade['ordTotalQty']
+            elif trade["buySell"]=="S": ordTotalQty = trade['ordTotalQty']
+            self.__tradeNum = self.__tradeNum + 1
+
+            self.__tradeRecords.append(
+                [date, tradePrice, ordTotalQty, prodCode, ordTotalQty]
+            )
+
+    def __data_feed(self):
+        df = pd.DataFrame(data=self.__tradeRecords, columns=TaService.col)
+        df.date = pd.to_datetime(df.date)
+        print(df)
+        self.__df = df.groupby(['ProductCode', 'date', 'Position', 'Balance'])[['TradePrice']].mean()
+
+    def __create_separated_df(self):
+        l=[]
+        index_count=1
+        index_check=self.__df.index[0][0]
+
+        for i in range(len(self.__df.index)):
+            if index_check != self.__df.index[i][0]:
+                index_check = self.__df.index[i][0]
+                index_count = index_count+1
+                l += [i]
+            else:
+                continue
+
+        l_mod = [0] + l + [len(self.__df)]
+        dataframeList = [self.__df.iloc[l_mod[n]:l_mod[n+1]] for n in range(len(l_mod)-1)]
+
+        return dataframeList
+
     def get_pnl(self, request: GetDoneTradeModel):
 
         # write performance analysis code below
@@ -122,7 +122,6 @@ class TaService:
             res['data']['recordData'], 
             key=lambda trade: (trade['prodCode'], trade['timeStamp'])
         )
-        print(sortedDoneTradeRecords)
         # create csv file for data feed
         self.__create_data_for_feed(sortedDoneTradeRecords)
         
