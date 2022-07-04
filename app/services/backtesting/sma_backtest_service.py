@@ -1,4 +1,4 @@
-from services.sma_simple_cross import SMACrossOver
+from services.backtesting.sma_simple_cross import SMACrossOver
 from pyalgotrade import plotter
 from pyalgotrade import broker
 from pyalgotrade.barfeed import csvfeed
@@ -13,24 +13,30 @@ import pandas as pd
 import requests
 from datetime import datetime
 import time
-import json
+from common.common_helper import CommonHelper
+from schemas.backtesting_schemas import BacktestingModel
 
 class sma_backtest:
-    def __init__(self, instrument, day, second, smaPeriod, plot, startcash):
+    def __init__(self, instrument, day, second, smaPeriod, plot, startcash, barsum):
         self.__instrument = instrument
         self.__day = day
         self.__second = second
         self.__smaPeriod = smaPeriod
         self.__plot = plot
         self.__startcash = startcash
+        self.__barsum = barsum
 
     # Formats text data for each trade
-    def formattingData(status_code, text):
-        if status_code < 400:
+    @staticmethod
+    # def formatting_data(status_code, text): # text of data; modify formatting from browser format
+    #     if status_code < 400:
+    def formatting_data(url, request: BacktestingModel, text):
+        comhelp = CommonHelper.post_url(url, params=request)
+        if comhelp:
             myData = text
             tempData1 = myData.split(':')
-            tempData2 = tempData1[4].split(',0\r\n')
-            tempData3 = map(lambda bar: bar.split(','), tempData2)
+            tempData2 = tempData1[4].split(',0\r\n') # Remove 0 at end of each line
+            tempData3 = map(lambda bar: bar.split(','), tempData2) # Format data for processing in the future
             newData = list(tempData3)
             newData.pop()
             for i, bar in enumerate(newData):
@@ -41,7 +47,8 @@ class sma_backtest:
         return newData
 
     # Create list for each column
-    def constructData(dataList):
+    @staticmethod
+    def construct_data(dataList):
         dateCol = []
         openCol = []
         highCol = []
@@ -57,6 +64,7 @@ class sma_backtest:
             volumeCol.append(bar[5])
         return (dateCol, openCol, highCol, lowCol, closeCol, volumeCol)
 
+    @staticmethod
     def print_result(strat, retAnalyzer, sharpeRatioAnalyzer, drawDownAnalyzer, tradesAnalyzer):
         print("")
         print("Final portfolio value: $%.2f" % strat.getResult())
@@ -110,7 +118,7 @@ class sma_backtest:
             print("Max. return: %2.3f %%" % (returns.max() * 100))
             print("Min. return: %2.3f %%" % (returns.min() * 100))
 
-
+    @staticmethod
     def start_backtesting(self):
         date_time = datetime.fromtimestamp(int(time.time()))
         todayStrDate = date_time.strftime('%Y%m%d')
@@ -127,13 +135,14 @@ class sma_backtest:
         # Frequency.MONTH: The bar summarizes the trading activity during 1 month.
 
         # Download the bars.
-        myFeed = csvfeed.GenericBarFeed(Frequency.SECOND * 5)
+        myFeed = csvfeed.GenericBarFeed(Frequency.SECOND * self.__barsum) # 
         res = requests.get(url = URL)
 
-        newData = sma_backtest.formattingData(res.status_code, res.text)
+        newData = sma_backtest.formatting_data(res.status_code, res.text)
+
         print(newData)
 
-        dateCol, openCol, highCol, lowCol, closeCol, volumeCol = sma_backtest.constructData(newData)
+        dateCol, openCol, highCol, lowCol, closeCol, volumeCol = sma_backtest.construct_data(newData)
 
         pdData = {
             'Date Time': dateCol,
@@ -167,7 +176,7 @@ class sma_backtest:
 
         if self.__plot:
             plt = plotter.StrategyPlotter(strat, True, False, True)
-            plt.getInstrumentSubplot(self.__instrument).addDataSeries("SMA", strat.getSMA())
+            plt.getInstrumentSubplot(self.__instrument).addDataSeries("SMA", strat.get_sma())
 
         strat.run()
         sma_backtest.print_result(strat, retAnalyzer, sharpeRatioAnalyzer, drawDownAnalyzer, tradesAnalyzer)

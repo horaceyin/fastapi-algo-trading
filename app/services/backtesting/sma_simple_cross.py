@@ -11,6 +11,15 @@ import datetime
 
 from iteration_utilities import unique_everseen # Remove duplicates in lists
 
+from os import environ
+from dotenv import load_dotenv
+
+from app.core.endpoints import ADMININFO, PRODINFO, CCYRATES
+
+load_dotenv()
+ENDPOINT = environ['SP_HOST_AND_PORT']
+LOG_FILENAME = environ["LOG_FILENAME"]
+
 class SMACrossOver(strategy.BacktestingStrategy):
     def __init__(self, feed, instrument, smaPeriod):
         super(SMACrossOver, self).__init__(feed)
@@ -22,9 +31,10 @@ class SMACrossOver(strategy.BacktestingStrategy):
         self.__sma = ma.SMA(self.__prices, smaPeriod)
         self.__time = 0
 
-    def getSMA(self):
+    def get_sma(self):
         global access, token2, alltrades, buymoments, sellmoments
-        access = requests.post('http://192.168.123.221:9030/apiTraderAdmin/accessRight/userLogin', 
+        accessurl = ENDPOINT + ADMININFO
+        access = requests.post(accessurl, 
         json = {
             "password": "sp",
             "userId": "SPNICHOLAS",
@@ -46,12 +56,12 @@ class SMACrossOver(strategy.BacktestingStrategy):
         sellmoments.sort(key = lambda x: datetime.strptime(x['Time'], '%H-%M-%S'))
         return self.__sma # <pyalgotrade.technical.ma.SMA object at 0x11c0644c0>
 
-    def onStart(self):
+    def on_start(self):
         def boundary_input(): # Define boundary value
-            global boundary_value
+            global boundaryValue
             while True:
                 try:
-                    boundary_value = float(input("Enter the boundary value: "))
+                    boundaryValue = float(input("Enter the boundary value: "))
                 except ValueError:
                     print("Invalid. Try again: ")
                     continue
@@ -60,11 +70,11 @@ class SMACrossOver(strategy.BacktestingStrategy):
         boundary_input()
         print ("Initial portfolio value: $%.2f" % self.getBroker().getCash()) # Gives initial portfolio value
 
-    def onEnterOk(self, position):
+    def on_enter_ok(self, position):
         global recordval1
         execInfo = position.getEntryOrder().getExecutionInfo()
-        
-        productinfo = requests.post('http://192.168.123.221:9030/apiTraderAdmin/product/productInfo', 
+        produrl = ENDPOINT + PRODINFO
+        productinfo = requests.post(produrl, 
         json = {
             "prodCode": self.__instrument, # Collects product code from sma_cross2, which collects from sma_strat2
             "sessionToken": token2,
@@ -79,7 +89,8 @@ class SMACrossOver(strategy.BacktestingStrategy):
             recordsize = recordDiction['data']['jsonData']['contractSize'] # Size of product
             recordccy = recordDiction['data']['jsonData']['ccy'] # Currency of product
 
-        ccyratein = requests.post('http://192.168.123.221:9030/systemMaintance/systemOperation/getCcyRate', 
+        ccyrate = ENDPOINT + CCYRATES
+        ccyratein = requests.post(ccyrate, 
         json = {
             "ccy": recordccy, # USD = 1
             "sessionToken": token2
@@ -89,8 +100,7 @@ class SMACrossOver(strategy.BacktestingStrategy):
             ccyrateinval = 1 
         else: 
             ccyrateinval = ccyrateintext['data']['recordData'][0]['rate'] # USD to recordccy
-
-        ccyrateout = requests.post('http://192.168.123.221:9030/systemMaintance/systemOperation/getCcyRate', 
+        ccyrateout = requests.post(ccyrate, 
         json = {
             "ccy": "HKD", 
             "sessionToken": token2
@@ -116,13 +126,13 @@ class SMACrossOver(strategy.BacktestingStrategy):
         print ("New portfolio value: $%.2f" % self.getBroker().getCash())
         print(self.__time)
 
-    def onEnterCanceled(self, position):
+    def on_enter_canceled(self, position):
         self.__position = None
     
-    def onExitOk(self, position):
+    def on_exit_ok(self, position):
         execInfo = position.getExitOrder().getExecutionInfo()
-
-        productinfo = requests.post('http://192.168.123.221:9030/apiTraderAdmin/product/productInfo', 
+        produrl = ENDPOINT + PRODINFO
+        productinfo = requests.post(produrl, 
         json = {
             "prodCode": self.__instrument, # Collects product code from sma_cross2, which collects from sma_strat2
             "sessionToken": token2,
@@ -137,7 +147,8 @@ class SMACrossOver(strategy.BacktestingStrategy):
             recordsize = recordDiction['data']['jsonData']['contractSize'] # Size of product
             recordccy = recordDiction['data']['jsonData']['ccy'] # Currency of product
 
-        ccyratein = requests.post('http://192.168.123.221:9030/systemMaintance/systemOperation/getCcyRate', 
+        ccyrate = ENDPOINT + CCYRATES
+        ccyratein = requests.post(ccyrate, 
         json = {
             "ccy": recordccy, # USD = 1
             "sessionToken": token2
@@ -147,8 +158,7 @@ class SMACrossOver(strategy.BacktestingStrategy):
             ccyrateinval = 1 
         else: 
             ccyrateinval = ccyrateintext['data']['recordData'][0]['rate'] # USD to recordccy
-
-        ccyrateout = requests.post('http://192.168.123.221:9030/systemMaintance/systemOperation/getCcyRate', 
+        ccyrateout = requests.post(ccyrate, 
         json = {
             "ccy": "HKD", 
             "sessionToken": token2
@@ -176,14 +186,14 @@ class SMACrossOver(strategy.BacktestingStrategy):
         print("New portfolio value: $%.2f" % self.getBroker().getCash())
         print(self.__time)
         
-    def onExitCanceled(self, position):
+    def on_exit_canceled(self, position):
         # If the exit was canceled, re-submit it.
         self.__position.exitMarket()
 
-    def onBars(self, bars):
+    def on_bars(self, bars):
         execInfo = bars[self.__instrument]
-
-        productinfo = requests.post('http://192.168.123.221:9030/apiTraderAdmin/product/productInfo', 
+        produrl = ENDPOINT + PRODINFO
+        productinfo = requests.post(produrl, 
         json = {
             "prodCode": self.__instrument, # Collects product code from sma_cross2, which collects from sma_strat2
             "sessionToken": token2,
@@ -198,7 +208,8 @@ class SMACrossOver(strategy.BacktestingStrategy):
             recordsize = recordDiction['data']['jsonData']['contractSize'] # Size of product
             recordccy = recordDiction['data']['jsonData']['ccy'] # Currency of product
 
-        ccyratein = requests.post('http://192.168.123.221:9030/systemMaintance/systemOperation/getCcyRate', 
+        ccyrate = ENDPOINT + CCYRATES
+        ccyratein = requests.post(ccyrate, 
         json = {
             "ccy": recordccy, # USD = 1
             "sessionToken": token2
@@ -208,8 +219,7 @@ class SMACrossOver(strategy.BacktestingStrategy):
             ccyrateinval = 1 
         else: 
             ccyrateinval = ccyrateintext['data']['recordData'][0]['rate'] # USD to recordccy
-
-        ccyrateout = requests.post('http://192.168.123.221:9030/systemMaintance/systemOperation/getCcyRate', 
+        ccyrateout = requests.post(ccyrate, 
         json = {
             "ccy": "HKD", 
             "sessionToken": token2
@@ -222,7 +232,7 @@ class SMACrossOver(strategy.BacktestingStrategy):
         recordval3 = recordsize * execInfo.getPrice() * ccyrateoutval/ccyrateinval # Contract size multipled by number of points
         
         # Reach end of self.__sma list or skip over if self.getBroker().getCash() will drop below given value
-        if (self.__sma[-1] is None or self.getBroker().getCash() < boundary_value): # Need to find way to limit number of positions
+        if (self.__sma[-1] is None or self.getBroker().getCash() < boundaryValue): # Need to find way to limit number of positions
             return
         
         # If a position was not opened, check if we should enter a long position. # Heavily simplified version of SMA

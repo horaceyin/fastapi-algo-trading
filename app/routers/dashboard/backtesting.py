@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, status
 from schemas.backtesting_schemas import BacktestingModel
-from services.backtesting_service import BacktestingService
+from services.backtesting.backtesting_service import BacktestingService
 
 @staticmethod
 def print_msg():

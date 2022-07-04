@@ -4,7 +4,7 @@ from fastapi import HTTPException, status
 from fastapi.encoders import jsonable_encoder
 from requests import get, post
 from schemas.auth_schemas import UserLogin, AccountSumModel
-from core.endpoints import USERLOGIN
+from core.endpoints import USERLOGIN, ACCOUNTINFO
 from schemas.auth_schemas import UserLogin
 from common.common_helper import CommonHelper
 
@@ -25,10 +25,8 @@ class AuthService:
         
 
     @staticmethod
-    def acc_login(request: AccountSumModel): # Get client information for this session
-        accUrl = ENDPOINT + r'/apiCustomer/account/accountSummary' 
-        requestDict = jsonable_encoder(request)
-        accres = post(url=accUrl, json=requestDict)
-        if accres.ok:
-            return accres.json()
+    def get_acc_info(request: AccountSumModel): # Get client information for this session
+        accUrl = ENDPOINT + ACCOUNTINFO
+        accres = CommonHelper.post_url(requestUrl=accUrl, params=request)
+        return accres
 
