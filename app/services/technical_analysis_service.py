@@ -5,6 +5,7 @@ from datetime import datetime
 import pandas as pd
 import statistics
 from pandas.core.frame import DataFrame
+from requests import request
 from core.endpoints import DONETRADE
 from schemas.technical_analysis_schemas import GetDoneTradeModel
 from common.common_helper import CommonHelper
@@ -157,48 +158,63 @@ class TaService:
         # if exception rasied,
         # raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=errMsg)
 
-    def get_totaltrade(self):
+class Report(TaService):
+
+    def __init__(self, accName):
+        super.__init__(accName)
+        self.__taHelper = TaService(accName)
+
+    def __separate_list(self):
+        positive_list = []
+        negative_list = []
+        for i in self.__taHelper.get_pnl(request):
+            if i>0:
+                positive_list += i
+            else:
+                negative_list +=i 
+
+    def __get_totaltrade(self):
         count=0
         for _ in self:
             count=count+1
         return count
     
-    def get_totalpnl(self):
+    def __get_totalpnl(self):
         totalpnl=0
-        for i in self:
+        for i in self.taHelper.get_pnl(request):
             totalpnl+=i
         return totalpnl
     
-    def get_sd(self):
+    def __get_sd(self):
         return (statistics.stdev(self))
 
-
     @staticmethod
-    def max_min(pnl):
+    def __max_min(pnl):
         min = pnl.index(min(pnl))
         max = pnl.index(max(pnl))
         return max, min
 
 
     @staticmethod
-    def cost(tradeRecordObj):
-        buyRecordQueue: deque = tradeRecordObj['buyRecordQueue']
-        buyTradeNum: int = tradeRecordObj['buyTradeNum']
-        return buyRecordQueue*buyTradeNum
+    def __cost(self):
+        self.__cal_pnl(self)
+        self.taHelper.get_pnl(request)
+        return self.buyRecordQueue*self.buyTradeNum
 
 
     @classmethod
-    def avg_return(cls, listofpnl):
-        avg_return = ((cls.get_totalpnl(listofpnl) / cls.cost())*100)
+    def __avg_return(cls, listofpnl):
+        avg_return = ((cls.__get_totalpnl(listofpnl) / cls.__cost())*100)
         return avg_return
 
 
     @classmethod
-    def avg_return_sd(cls,listofpnl):
-        avg_return_sd = statistics.stdev(cls.avg_return(listofpnl))
+    def __avg_return_sd(cls,listofpnl):
+        avg_return_sd = statistics.stdev(cls.__avg_return(listofpnl))
         return avg_return_sd
     
-    
+    def __max_min():
+        pass
 
 
 
