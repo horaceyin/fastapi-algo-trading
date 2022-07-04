@@ -3,6 +3,11 @@ from dotenv import load_dotenv
 from collections import deque
 from datetime import datetime
 import pandas as pd
+<<<<<<< Updated upstream
+=======
+import statistics
+from pandas.core.frame import DataFrame
+>>>>>>> Stashed changes
 from core.endpoints import DONETRADE
 from schemas.technical_analysis_schemas import GetDoneTradeModel
 from common.common_helper import CommonHelper
@@ -154,3 +159,68 @@ class TaService:
         
         # if exception rasied,
         # raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=errMsg)
+
+    def get_totaltrade(self):
+        count=0
+        for _ in self:
+            count=count+1
+        return count
+    
+    def get_totalpnl(self):
+        totalpnl=0
+        for i in self:
+            totalpnl+=i
+        return totalpnl
+    
+    def get_sd(self):
+        return (statistics.stdev(self))
+
+
+    @staticmethod
+    def max_min(pnl):
+        min = pnl.index(min(pnl))
+        max = pnl.index(max(pnl))
+        return max, min
+
+
+    @staticmethod
+    def cost(tradeRecordObj):
+        buyRecordQueue: deque = tradeRecordObj['buyRecordQueue']
+        buyTradeNum: int = tradeRecordObj['buyTradeNum']
+        return buyRecordQueue*buyTradeNum
+
+
+    @classmethod
+    def avg_return(cls, listofpnl):
+        avg_return = ((cls.get_totalpnl(listofpnl) / cls.cost())*100)
+        return avg_return
+
+
+    @classmethod
+    def avg_return_sd(cls,listofpnl):
+        avg_return_sd = statistics.stdev(cls.avg_return(listofpnl))
+        return avg_return_sd
+    
+    
+
+
+
+
+
+
+
+        #total trade = total count of pnl
+        #total pnl / total count of pnl = avg. profit
+        #use statistics library to cal sd
+        #Max profit = Max number in pnl
+        #Min profit = Min number in pnl
+        #avg return = [total pnl / (buyRecordQueue * buyTradeNum) *100%] / total count of pnl
+        #Return sd: 
+        #First, cal the total pnl of one product. dataframeList[int]
+        #Second, [total pnl of one product  / (buyRecordQueue * buyTradeNum) *100%] then get a list of returns.
+        #Third, use statistics library to cal sd
+        #
+        #Max return = Max number in a list of returns
+        #Min return = Min number in a list of returns
+
+        #Profitable and Unprofitable = separate the total trade with one positive list and one negative list
