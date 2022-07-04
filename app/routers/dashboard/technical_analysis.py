@@ -12,6 +12,12 @@ taRouter = APIRouter(
     dependencies=[Depends(print_msg)]
 )
 
-@taRouter.post('/', status_code=status.HTTP_200_OK)
-async def done_trade_report_analysis(request: GetDoneTradeModel):
-    return TaService.run_done_trade_analysis(request)
+@taRouter.post('/get-pnl', status_code=status.HTTP_200_OK)
+async def get_pnl_for_report_analysis(request: GetDoneTradeModel):
+    accName = request.targetAccNo
+    taHelper = TaService(accName)
+    return taHelper.get_pnl(request)
+
+@taRouter.post('/report', status_code=status.HTTP_200_OK)
+async def done_trade_report_analysis():
+    pass
