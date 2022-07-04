@@ -115,12 +115,15 @@ class TaService:
         # write performance analysis code below
 
         res = self.__get_done_trade(request)
-        sortedDoneTradeRecords = sorted(
-            res['data']['recordData'], 
-            key=lambda trade: (trade['prodCode'], trade['timeStamp'])
-        )
+        allTradeData = res['data']['recordData']
+
+        # sortedDoneTradeRecords = sorted(
+        #     res['data']['recordData'], 
+        #     key=lambda trade: (trade['prodCode'], trade['timeStamp'])
+        # )
+
         # create csv file for data feed
-        self.__create_data_for_feed(sortedDoneTradeRecords)
+        self.__create_data_for_feed(allTradeData)
         
         # data feed
         self.__data_feed()
