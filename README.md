@@ -12,7 +12,6 @@ Then, run:
 
 #### `python app/main.py`
 
-
 ## Installation
 
 If you clone this project at the first time, make sure python and pipenv have been install in your local machine.
@@ -26,8 +25,8 @@ Next, you can run:
 
 #### `python -m pipenv --three`
 
-This command basically means that creates a virtualenv by python 3.
-And virtualenv location should be the hidden folder inside project directory.
+This command basically means that creates a virtualenv by python 3.<br>
+And virtualenv location should be the hidden folder inside project directory.<br>
 In this example, it is .venv
 
 Then, you can also run:
