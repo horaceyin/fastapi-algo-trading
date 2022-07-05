@@ -14,8 +14,9 @@ from iteration_utilities import unique_everseen # Remove duplicates in lists
 from os import environ
 from dotenv import load_dotenv
 
-from app.core.endpoints import ADMININFO, PRODINFO, CCYRATES
+from core.endpoints import ADMININFO, PRODINFO, CCYRATES
 
+# Access info from .env
 load_dotenv()
 ENDPOINT = environ['SP_HOST_AND_PORT']
 LOG_FILENAME = environ["LOG_FILENAME"]
@@ -57,17 +58,17 @@ class SMACrossOver(strategy.BacktestingStrategy):
         return self.__sma # <pyalgotrade.technical.ma.SMA object at 0x11c0644c0>
 
     def on_start(self):
-        def boundary_input(): # Define boundary value
-            global boundaryValue
-            while True:
-                try:
-                    boundaryValue = float(input("Enter the boundary value: "))
-                except ValueError:
-                    print("Invalid. Try again: ")
-                    continue
-                else:
-                    break
-        boundary_input()
+        # def boundary_input(): # Define boundary value
+        #     global boundaryValue
+        #     while True:
+        #         try:
+        #             boundaryValue = float(input("Enter the boundary value: "))
+        #         except ValueError:
+        #             print("Invalid. Try again: ")
+        #             continue
+        #         else:
+        #             break
+        # boundary_input()
         print ("Initial portfolio value: $%.2f" % self.getBroker().getCash()) # Gives initial portfolio value
 
     def on_enter_ok(self, position):
@@ -169,7 +170,7 @@ class SMACrossOver(strategy.BacktestingStrategy):
         else: 
             ccyrateoutval = ccyrateouttext['data']['recordData'][0]['rate'] # USD to HKD
         recordval2 = recordsize * execInfo.getPrice() * ccyrateoutval/ccyrateinval # Contract size multipled by number of points
-        
+        # self.info("SELL at $%.2f" % (execInfo.getPrice())) # In terms of points
         self.info("SELL at $%.2f" % (recordval2)) # Actual price
 
         currenttime = self.getCurrentDateTime()
@@ -232,7 +233,8 @@ class SMACrossOver(strategy.BacktestingStrategy):
         recordval3 = recordsize * execInfo.getPrice() * ccyrateoutval/ccyrateinval # Contract size multipled by number of points
         
         # Reach end of self.__sma list or skip over if self.getBroker().getCash() will drop below given value
-        if (self.__sma[-1] is None or self.getBroker().getCash() < boundaryValue): # Need to find way to limit number of positions
+        if self.__sma[-1] is None:
+        # if (self.__sma[-1] is None or self.getBroker().getCash() < boundaryValue): # Need to find way to limit number of positions
             return
         
         # If a position was not opened, check if we should enter a long position. # Heavily simplified version of SMA

@@ -8,15 +8,15 @@ class BacktestingService:
         pass
 
     @staticmethod
-    def run_backtesting(request: BacktestingModel):
+    def run_backtesting(request: BacktestingModel): # Make request that follows the BacktestingModel format
         print(request)
         errMsg = ''
         # return json.dumps({'msg': 'from backtesting.'}) # Result given
         # write backtesting code here
-        
-        return sma_backtest(BacktestingModel.prodCode, 2, 120, 80, True, BacktestingModel.portfolioValue).start_backtesting() 
+        productCode = request.prodCode
+        portfValue = request.portfolioValue
+        return sma_backtest(productCode, 2, 120, 80, True, portfValue, 1).start_backtesting() 
         # May need to add timeframe and method for data collection
-        # AttributeError: type object 'BacktestingModel' has no attribute 'prodCode'
 
         #if exception rasied,
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=errMsg)

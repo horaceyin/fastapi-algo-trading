@@ -19,8 +19,10 @@ class CommonHelper:
         def post_url(requestUrl: str, params: Request):
                 requestDict = jsonable_encoder(params)
                 try:
-                        res = post(url=requestUrl, json=requestDict)
+                        # Make post request
+                        res = post(url=requestUrl, json=requestDict) 
+                        # Return JSON response if any, so long as status code < 400, otherwise give error
                         return res.json() if (res.ok) else HTTPException(status_code=res.status_code, detail=res.reason)
-                except:
-                        traceback.print_exc(file=LOG_FILENAME)
+                except: 
+                        traceback.print_exc(file=LOG_FILENAME) # May fall apart if file does not exist (AttributeError: 'str' object has no attribute 'write')
                         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="INTERNAL SERVER ERROR")

@@ -15,6 +15,7 @@ from datetime import datetime
 import time
 from common.common_helper import CommonHelper
 from schemas.backtesting_schemas import BacktestingModel
+from services.backtesting.sma_datainfo import DataInfo
 
 class sma_backtest:
     def __init__(self, instrument, day, second, smaPeriod, plot, startcash, barsum):
@@ -28,97 +29,27 @@ class sma_backtest:
 
     # Formats text data for each trade
     @staticmethod
+    def formatting_data(url, request: BacktestingModel):
+        comhelp = CommonHelper.post_url(url, params=request)
+        myData = comhelp
+        print(myData)
     # def formatting_data(status_code, text): # text of data; modify formatting from browser format
     #     if status_code < 400:
-    def formatting_data(url, request: BacktestingModel, text):
-        comhelp = CommonHelper.post_url(url, params=request)
-        if comhelp:
-            myData = text
-            tempData1 = myData.split(':')
-            tempData2 = tempData1[4].split(',0\r\n') # Remove 0 at end of each line
-            tempData3 = map(lambda bar: bar.split(','), tempData2) # Format data for processing in the future
-            newData = list(tempData3)
-            newData.pop()
-            for i, bar in enumerate(newData):
-                oriDate = bar.pop()
-                dateTime = datetime.fromtimestamp(int(oriDate))
-                strDate = dateTime.strftime('%Y-%m-%d %H:%M:%S')
-                bar.insert(0, strDate)
-        return newData
+        # myData = text
+        # tempData1 = myData.split(':')
+        # tempData2 = tempData1[4].split(',0\r\n') # Remove 0 at end of each line
+        # tempData3 = map(lambda bar: bar.split(','), tempData2) # Format data for processing in the future
+        # newData = list(tempData3)
+        # newData.pop()
+        # for i, bar in enumerate(newData):
+        #     oriDate = bar.pop()
+        #     dateTime = datetime.fromtimestamp(int(oriDate))
+        #     strDate = dateTime.strftime('%Y-%m-%d %H:%M:%S')
+        #     bar.insert(0, strDate)
+        # return newData
 
-    # Create list for each column
-    @staticmethod
-    def construct_data(dataList):
-        dateCol = []
-        openCol = []
-        highCol = []
-        lowCol = []
-        closeCol = []
-        volumeCol = []
-        for bar in dataList:
-            dateCol.append(bar[0])
-            openCol.append(bar[1])
-            highCol.append(bar[2])
-            lowCol.append(bar[3])
-            closeCol.append(bar[4])
-            volumeCol.append(bar[5])
-        return (dateCol, openCol, highCol, lowCol, closeCol, volumeCol)
 
-    @staticmethod
-    def print_result(strat, retAnalyzer, sharpeRatioAnalyzer, drawDownAnalyzer, tradesAnalyzer):
-        print("")
-        print("Final portfolio value: $%.2f" % strat.getResult())
-        print("Cumulative returns: %.4f %%" % (retAnalyzer.getCumulativeReturns()[-1] * 100))
-        print("Sharpe ratio: %.2f" % (sharpeRatioAnalyzer.getSharpeRatio(0.05)))
-        print("Max. drawdown: %.4f %%" % (drawDownAnalyzer.getMaxDrawDown() * 100))
-        print("Longest drawdown duration: %s" % (drawDownAnalyzer.getLongestDrawDownDuration()))
 
-        print("")
-        print("Total trades: %d" % (tradesAnalyzer.getCount()))
-        if tradesAnalyzer.getCount() > 0:
-            profits = tradesAnalyzer.getAll()
-            print("Avg. profit: $%2.2f" % (profits.mean()))
-            print("Profits std. dev.: $%2.2f" % (profits.std()))
-            print("Max. profit: $%2.2f" % (profits.max()))
-            print("Min. profit: $%2.2f" % (profits.min()))
-
-            returns = tradesAnalyzer.getAllReturns()
-            print("Avg. return: %2.3f %%" % (returns.mean() * 100))
-            print("Returns std. dev.: %2.3f %%" % (returns.std() * 100))
-            print("Max. return: %2.3f %%" % (returns.max() * 100))
-            print("Min. return: %2.3f %%" % (returns.min() * 100))
-
-        print("")
-        print("Profitable trades: %d" % (tradesAnalyzer.getProfitableCount()))
-
-        if tradesAnalyzer.getProfitableCount() > 0:
-            profits = tradesAnalyzer.getProfits()
-            print("Avg. profit: $%2.2f" % (profits.mean()))
-            print("Profits std. dev.: $%2.2f" % (profits.std()))
-            print("Max. profit: $%2.2f" % (profits.max()))
-            print("Min. profit: $%2.2f" % (profits.min()))
-            returns = tradesAnalyzer.getPositiveReturns()
-            print("Avg. return: %2.3f %%" % (returns.mean() * 100))
-            print("Returns std. dev.: %2.3f %%" % (returns.std() * 100))
-            print("Max. return: %2.3f %%" % (returns.max() * 100))
-            print("Min. return: %2.3f %%" % (returns.min() * 100))
-
-        print("")
-        print("Unprofitable trades: %d" % (tradesAnalyzer.getUnprofitableCount()))
-
-        if tradesAnalyzer.getUnprofitableCount() > 0:
-            losses = tradesAnalyzer.getLosses()
-            print("Avg. loss: $%2.2f" % (losses.mean()))
-            print("Losses std. dev.: $%2.2f" % (losses.std()))
-            print("Max. loss: $%2.2f" % (losses.min()))
-            print("Min. loss: $%2.2f" % (losses.max()))
-            returns = tradesAnalyzer.getNegativeReturns()
-            print("Avg. return: %2.3f %%" % (returns.mean() * 100))
-            print("Returns std. dev.: %2.3f %%" % (returns.std() * 100))
-            print("Max. return: %2.3f %%" % (returns.max() * 100))
-            print("Min. return: %2.3f %%" % (returns.min() * 100))
-
-    @staticmethod
     def start_backtesting(self):
         date_time = datetime.fromtimestamp(int(time.time()))
         todayStrDate = date_time.strftime('%Y%m%d')
@@ -140,9 +71,9 @@ class sma_backtest:
 
         newData = sma_backtest.formatting_data(res.status_code, res.text)
 
-        print(newData)
+        # print(newData)
 
-        dateCol, openCol, highCol, lowCol, closeCol, volumeCol = sma_backtest.construct_data(newData)
+        dateCol, openCol, highCol, lowCol, closeCol, volumeCol = DataInfo.construct_data(newData)
 
         pdData = {
             'Date Time': dateCol,
@@ -179,7 +110,7 @@ class sma_backtest:
             plt.getInstrumentSubplot(self.__instrument).addDataSeries("SMA", strat.get_sma())
 
         strat.run()
-        sma_backtest.print_result(strat, retAnalyzer, sharpeRatioAnalyzer, drawDownAnalyzer, tradesAnalyzer)
+        DataInfo.print_result(strat, retAnalyzer, sharpeRatioAnalyzer, drawDownAnalyzer, tradesAnalyzer)
 
         if self.__plot:
             plt.plot()
