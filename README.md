@@ -33,5 +33,5 @@ Then, you can also run:
 
 #### `python -m pipenv install`
 
-All the packages needed will be install after running the command.<br>
+All the packages needed will be installed after running the command.<br>
 Go back to [Available Scripts](#start) to start the project
