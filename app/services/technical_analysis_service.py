@@ -13,17 +13,17 @@ from common.common_helper import CommonHelper
 load_dotenv
 ENDPOINT = environ['SP_HOST_AND_PORT']
 
-class TaService:
+class PnLService:
     __url = ENDPOINT + DONETRADE
-    __accName: str
-    __tradeNum = 0
-    __totalDoneContract = 0
     __df: pd.DataFrame
+    accName: str
     col = ['date', 'TradePrice', 'Position', 'ProductCode', 'Balance']
 
     def __init__(self, accName):
-        self.__accName = accName
-        self.__pnl = []
+        self.accName = accName
+        self.tradeNum = 0
+        self.totalDoneContract = 0
+        self._pnl = []
         self.__tradeRecords = []
 
     @classmethod
@@ -80,16 +80,15 @@ class TaService:
             prodCode = trade['prodCode']
             if trade["buySell"]=="B": ordTotalQty = -trade['ordTotalQty']
             elif trade["buySell"]=="S": ordTotalQty = trade['ordTotalQty']
-            self.__tradeNum = self.__tradeNum + 1
+            self.tradeNum = self.tradeNum + 1
 
             self.__tradeRecords.append(
                 [date, tradePrice, ordTotalQty, prodCode, ordTotalQty]
             )
 
     def __data_feed(self):
-        df = pd.DataFrame(data=self.__tradeRecords, columns=TaService.col)
+        df = pd.DataFrame(data=self.__tradeRecords, columns=PnLService.col)
         df.date = pd.to_datetime(df.date)
-        print(df)
         self.__df = df.groupby(['ProductCode', 'date', 'Position', 'Balance'])[['TradePrice']].mean()
 
     def __create_separated_df(self):
@@ -100,13 +99,13 @@ class TaService:
         for i in range(len(self.__df.index)):
             if index_check != self.__df.index[i][0]:
                 index_check = self.__df.index[i][0]
-                index_count = index_count+1
+                index_count = index_count + 1
                 l += [i]
             else:
                 continue
 
         l_mod = [0] + l + [len(self.__df)]
-        dataframeList = [self.__df.iloc[l_mod[n]:l_mod[n+1]] for n in range(len(l_mod)-1)]
+        dataframeList = [self.__df.iloc[l_mod[n]:l_mod[n + 1]] for n in range(len(l_mod) - 1)]
 
         return dataframeList
 
@@ -142,16 +141,16 @@ class TaService:
             
             tradeRecordObj = self.__data_for_pnl(posList, priceList)
             pnlQueue, pnlNum= self.__cal_pnl(tradeRecordObj)
-            self.__pnl.append(
+            self._pnl.append(
                 {
                     'prodCode': prodCode,
                     "pnl": pnlQueue,
                     'num': pnlNum
                 }
             )
-            self.__totalDoneContract = self.__totalDoneContract + 1
+            self.totalDoneContract = self.totalDoneContract + 1
             # print("P/L for ({}): {}\n\n".format(prodCode, pnlQueue))
-        return self.__pnl
+        return self._pnl
         #return json.dumps({'msg': 'from done trade analysis.'})
         
         # if exception rasied,
