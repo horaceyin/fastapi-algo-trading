@@ -29,9 +29,8 @@ class sma_backtest:
 
     # Formats text data for each trade
     @staticmethod
-    def formatting_data(url, request: BacktestingModel):
-        comhelp = CommonHelper.post_url(url, params=request)
-        myData = comhelp
+    def formatting_data(data):
+        myData = data
         print(myData)
     # def formatting_data(status_code, text): # text of data; modify formatting from browser format
     #     if status_code < 400:
@@ -50,7 +49,7 @@ class sma_backtest:
 
 
 
-    def start_backtesting(self):
+    def start_backtesting(self, request):
         date_time = datetime.fromtimestamp(int(time.time()))
         todayStrDate = date_time.strftime('%Y%m%d')
         csvName = f'{self.__instrument}-{todayStrDate}-sp.csv'
@@ -67,9 +66,10 @@ class sma_backtest:
 
         # Download the bars.
         myFeed = csvfeed.GenericBarFeed(Frequency.SECOND * self.__barsum) # 
-        res = requests.get(url = URL)
+        data = CommonHelper.post_url(URL, request)
+        print(data)
 
-        newData = sma_backtest.formatting_data(res.status_code, res.text)
+        newData = sma_backtest.formatting_data(data)
 
         # print(newData)
 
@@ -113,4 +113,5 @@ class sma_backtest:
         DataInfo.print_result(strat, retAnalyzer, sharpeRatioAnalyzer, drawDownAnalyzer, tradesAnalyzer)
 
         if self.__plot:
-            plt.plot()
+            pass
+            # plt.plot()
