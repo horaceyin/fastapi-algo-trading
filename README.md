@@ -1,6 +1,6 @@
 # fastapi-algo-trading
 
-## Available Scripts
+## <a name="start"></a>Available Scripts
 
 In the project directory, you can run:
 
@@ -34,4 +34,4 @@ Then, you can also run:
 #### `python -m pipenv install`
 
 All the packages needed will be install after running the command.<br>
-Go back to Available Scripts to start the project
+Go back to [Available Scripts](#start) to start the project
