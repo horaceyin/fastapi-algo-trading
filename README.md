@@ -4,9 +4,9 @@
 
 In the project directory, you can run:
 
-### `python -m pipenv shell`
+#### `python -m pipenv shell`
 
-activate the virtual environment frist
+Activate the virtual environment frist
 
 Then, run:
 
@@ -26,7 +26,7 @@ Next, you can run:
 
 ### `python -m pipenv --three`
 
-This command basically means that creates a virtualenv by python 3
+This command basically means that creates a virtualenv by python 3.
 And virtualenv location should be the hidden folder inside project directory.
 In this example, it is .venv
 
@@ -34,5 +34,5 @@ Then, you can also run:
 
 ### `python -m pipenv install`
 
-All the packages needed will be install after running the command
+All the packages needed will be install after running the command.
 Go back to Available Scripts to start the project
