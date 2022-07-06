@@ -17,7 +17,6 @@ from core.endpoints import ADMININFO, PRODINFO, CCYRATES
 # Access info from .env
 load_dotenv()
 ENDPOINT = environ['SP_HOST_AND_PORT']
-LOG_FILENAME = environ["LOG_FILENAME"]
 
 class SMACrossOver(strategy.BacktestingStrategy):
     def __init__(self, feed, instrument, smaPeriod, boundaryValue):
@@ -179,7 +178,7 @@ class SMACrossOver(strategy.BacktestingStrategy):
         # If the exit was canceled, re-submit it.
         self.__position.exitMarket()
 
-    def on_bars(self, bars):
+    def onBars(self, bars):
         execInfo = bars[self.__instrument]
         produrl = ENDPOINT + PRODINFO
         productinfo = requests.post(produrl, 
