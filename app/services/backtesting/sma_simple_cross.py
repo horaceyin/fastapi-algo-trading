@@ -9,7 +9,7 @@ import requests
 import json
 import datetime
 
-from iteration_utilities import unique_everseen # Remove duplicates in lists
+# from iteration_utilities import unique_everseen # Remove duplicates in lists
 
 from os import environ
 from dotenv import load_dotenv
@@ -241,7 +241,7 @@ class SMACrossOver(strategy.BacktestingStrategy):
         if self.__position is None:
             if cross.cross_above(self.__prices, self.__sma) > 0 and recordval3 != 0:
 
-                alltrading = list(unique_everseen(alltrades))
+                # alltrading = list(unique_everseen(alltrades)) @@@@@@@@@@@@@@@@@@@@
 
                 if buymoments and sellmoments:
                     def fun(l1, l2): # Apply for every pair that exists
@@ -252,8 +252,8 @@ class SMACrossOver(strategy.BacktestingStrategy):
                         return alltrades
                     fun(sellmoments, buymoments)
 
-                    alltrading = list(unique_everseen(alltrades)) # Removes duplicates
-                print(alltrading)
+                    # alltrading = list(unique_everseen(alltrades)) # Removes duplicates@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+                # print(alltrading)@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
                 shares = int(self.getBroker().getCash() * 0.9 / recordval3) # Actual price
                 # Enter a buy market order. The order is good till canceled.
                 self.__position = self.enterLong(self.__instrument, shares, True)

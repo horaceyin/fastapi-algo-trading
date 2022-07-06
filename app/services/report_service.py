@@ -10,15 +10,6 @@ class Report(PnLService):
         self.date = date
         # super class attr: accName, col, tradeNum, totalDoneContract, _pnl
 
-    def __separate_list(self, request):
-        positive_list = []
-        negative_list = []
-        for i in self.get_pnl(request):
-            if i>0:
-                positive_list += i
-            else:
-                negative_list += i 
-
     def __get_totaltrade(self):
         count=0
         for _ in self:
@@ -63,7 +54,8 @@ class Report(PnLService):
         pass
 
 
-    def get_report(request: reportModel):
+    def get_report(self, request: reportModel):
+        self.__get_done_trade
         pass
         
         #total trade = total count of pnl

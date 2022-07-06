@@ -3,7 +3,6 @@ from dotenv import load_dotenv
 from collections import deque
 from datetime import datetime
 import pandas as pd
-import statistics
 from pandas.core.frame import DataFrame
 from requests import request
 from core.endpoints import DONETRADE

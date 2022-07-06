@@ -28,5 +28,5 @@ class CommonHelper:
                         else:
                                HTTPException(status_code=res.status_code, detail=res.reason)
                 except: 
-                        traceback.print_exc(file=LOG_FILENAME) # May fall apart if file does not exist (AttributeError: 'str' object has no attribute 'write')
+                        logging.error(traceback.print_exc()) # May fall apart if file does not exist (AttributeError: 'str' object has no attribute 'write')
                         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="INTERNAL SERVER ERROR")
