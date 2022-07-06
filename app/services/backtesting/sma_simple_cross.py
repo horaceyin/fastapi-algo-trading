@@ -18,7 +18,6 @@ from services.backtesting.sma_datainfo import DataInfo
 # Access info from .env
 load_dotenv()
 ENDPOINT = environ['SP_HOST_AND_PORT']
-LOG_FILENAME = environ["LOG_FILENAME"]
 
 class SMACrossOver(strategy.BacktestingStrategy):
     def __init__(self, feed, instrument, smaPeriod, boundaryValue):

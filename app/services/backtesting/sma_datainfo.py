@@ -11,7 +11,6 @@ from dotenv import load_dotenv
 # Access info from .env
 load_dotenv()
 ENDPOINT = environ['SP_HOST_AND_PORT']
-LOG_FILENAME = environ["LOG_FILENAME"]
 
 class DataInfo:
     def __init__(self, instrument, token2):

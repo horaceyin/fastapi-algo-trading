@@ -7,7 +7,6 @@ from common.common_helper import CommonHelper
 
 load_dotenv()
 ENDPOINT = environ['SP_HOST_AND_PORT']
-LOG_FILENAME = environ["LOG_FILENAME"]
 
 class AuthService:
     def __init__(self):

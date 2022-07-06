@@ -87,8 +87,6 @@ class sma_backtest:
 
         myFeed.addBarsFromCSV(self.__instrument, csvName)
         strat = SMACrossOver(myFeed, self.__instrument, self.__smaPeriod, self.__boundaryValue) 
-        # TypeError: Can't instantiate abstract class SMACrossOver with abstract method onBars
-        # onBars from BacktestingStrategy
 
         strat.getBroker().setCash(self.__startcash) # Set new value of portfolio
 

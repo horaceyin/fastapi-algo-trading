@@ -17,7 +17,7 @@ class BacktestingService:
         portfolioValue = request.portfolioValue
         barSummary = request.barSummary
         boundaryValue = request.boundaryValue
-        return sma_backtest(prodCode, 2, 120, 80, True, portfolioValue, barSummary, boundaryValue).start_backtesting(request) 
+        return sma_backtest(prodCode, 1, 300, 160, True, portfolioValue, barSummary, boundaryValue).start_backtesting(request) 
         # May need to add timeframe and method for data collection
 
         #if exception rasied,
