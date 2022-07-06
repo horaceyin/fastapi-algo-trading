@@ -71,6 +71,12 @@ class PnLService:
 
         return (pnlQueue, pnlNum)
 
+    @staticmethod
+    def __pnl_separation(pnlQueue: deque):
+        positivePnl = deque([pnl for pnl in pnlQueue if pnl > 0])
+        negativePnl = deque([pnl for pnl in pnlQueue if pnl < 0])
+        return (positivePnl, negativePnl)
+
     def __create_data_for_feed(self, sortedDoneTradeRecords):
 
         for trade in sortedDoneTradeRecords:
@@ -130,10 +136,8 @@ class PnLService:
         #create separated dataframe
         dataframeList = self.__create_separated_df()
 
-        for product in dataframeList:
-            product.reset_index(level=['Position', 'Balance'], inplace=True)
-
         for dataframe in dataframeList:
+            dataframe.reset_index(level=['Position', 'Balance'], inplace=True)
             indexList = dataframe.index.to_list()
             prodCode = indexList[0][0]
             posList = dataframe['Position'].values.tolist()
@@ -141,15 +145,17 @@ class PnLService:
             
             tradeRecordObj = self.__data_for_pnl(posList, priceList)
             pnlQueue, pnlNum= self.__cal_pnl(tradeRecordObj)
+            positivePnl, negativePnl = self.__pnl_separation(pnlQueue)
             self._pnl.append(
                 {
                     'prodCode': prodCode,
                     "pnl": pnlQueue,
-                    'num': pnlNum
+                    'num': pnlNum,
+                    'positivePnl': positivePnl,
+                    'negativePnl': negativePnl
                 }
             )
-            self.totalDoneContract = self.totalDoneContract + 1
-            # print("P/L for ({}): {}\n\n".format(prodCode, pnlQueue))
+            self.totalDoneContract = self.totalDoneContract + pnlNum
         return self._pnl
         #return json.dumps({'msg': 'from done trade analysis.'})
         
