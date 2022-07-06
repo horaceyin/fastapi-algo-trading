@@ -6,3 +6,10 @@ class UserLogin(BaseModel):
     mode: Optional[int] = 0
     password: str = 'sp'
     userId: str = 'ANSONLI01'
+
+class AccountSumModel(BaseModel):
+    sessionToken: str
+    targetAccNo: str
+    dataSource: Optional[int] = 4
+    password: str = 'sp'
+    userId: str = 'ANSONLI01'
