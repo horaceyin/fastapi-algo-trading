@@ -11,6 +11,7 @@ ENDPOINT = environ['SP_HOST_AND_PORT']
 LOG_FILENAME = environ["LOG_FILENAME"]
 
 class CommonHelper:
+        logging.basicConfig(filename=LOG_FILENAME, filemode='a', level=logging.WARN, encoding='utf-8', format='%(asctime)s - %(levelname)s - %(message)s')
         def __init__(self):
                 pass
         
