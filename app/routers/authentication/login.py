@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, status
 from services.auth_service import AuthService
 from schemas.auth_schemas import UserLogin, UserInfo
+import json
 
 @staticmethod
 def print_msg():
@@ -18,4 +19,16 @@ async def user_login(request: UserLogin):
 
 @loginRouter.post('/info', status_code=status.HTTP_200_OK)
 async def infomation(requset: UserInfo):
-    return AuthService.user_info(requset)
+    # return AuthService.user_info(requset)
+    client = AuthService.user_login(request) # Output of userLogin # Will hold until data is retrived # Need await to do rest of code
+    print(client)
+    token = client['data']['sessionToken'] # Session token
+    targetacc = client['data']['userId']
+
+    secReq = {
+        'sessionToken': token,
+        'targetAccNo': targetacc
+    }
+    # info = await AuthService.acc_login(request= json.dumps(secReq)) # Turn secReq into json object, then pass as request
+    info = "Hello" # Testing code # Currently: Code 200, "string"
+    return info

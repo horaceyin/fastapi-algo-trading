@@ -5,7 +5,9 @@ name = "pypi"
 
 [packages]
 fastapi = {extras = ["all"], version = "*"}
+pyalgotrade = "*"
 pandas = "*"
+iteration-utilities = "*"
 
 [dev-packages]
 
