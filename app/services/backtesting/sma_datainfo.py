@@ -1,8 +1,22 @@
-# For analysers in sma_backtest_service
+# For functions in the backtesting file
+
+import requests
+import json
+
+from core.endpoints import PRODINFO, CCYRATES
+
+from os import environ
+from dotenv import load_dotenv
+
+# Access info from .env
+load_dotenv()
+ENDPOINT = environ['SP_HOST_AND_PORT']
+LOG_FILENAME = environ["LOG_FILENAME"]
 
 class DataInfo:
-    def __init__():
-        pass
+    def __init__(self, instrument, token2):
+        self.__instrument = instrument
+        self.__token2 = token2
 
     def construct_data(dataList):
         dateCol = []
@@ -11,7 +25,7 @@ class DataInfo:
         lowCol = []
         closeCol = []
         volumeCol = []
-        for bar in dataList:
+        for bar in dataList: # TypeError: 'NoneType' object is not iterable
             dateCol.append(bar[0])
             openCol.append(bar[1])
             highCol.append(bar[2])
@@ -73,43 +87,72 @@ class DataInfo:
             print("Max. return: %2.3f %%" % (returns.max() * 100))
             print("Min. return: %2.3f %%" % (returns.min() * 100))
 
-    # def prod_n_ccy(token2):
-    #     produrl = ENDPOINT + PRODINFO
-    #     productinfo = requests.post(produrl, 
-    #     json = {
-    #         "prodCode": self.__instrument, # Collects product code from sma_cross2, which collects from sma_strat2
-    #         "sessionToken": token2,
-    #         "dataRecordTotal": 100,
-    #         "dataStartFromRecord": 0
-    #     })
-    #     recordDiction = json.loads(productinfo.text) 
-    #     if recordDiction['result_code'] == 40011:
-    #         recordsize = 0
-    #         recordccy = "HKD"
-    #     else:
-    #         recordsize = recordDiction['data']['jsonData']['contractSize'] # Size of product
-    #         recordccy = recordDiction['data']['jsonData']['ccy'] # Currency of product
+    def getInfo(self):
+        global recordDiction
+        produrl = ENDPOINT + PRODINFO
+        productinfo = requests.post(produrl, 
+        json = {
+            "prodCode": self.__instrument, # Collects product code from sma_cross2, which collects from sma_strat2
+            "sessionToken": self.__token2,
+            "dataRecordTotal": 100,
+            "dataStartFromRecord": 0
+        })
+        recordDiction = json.loads(productinfo.text) 
+        # return recordDiction
 
-    #     ccyrate = ENDPOINT + CCYRATES
-    #     ccyratein = requests.post(ccyrate, 
-    #     json = {
-    #         "ccy": recordccy, # USD = 1
-    #         "sessionToken": token2
-    #     })
-    #     ccyrateintext = json.loads(ccyratein.text) 
-    #     if ccyrateintext['result_code'] == 40011:
-    #         ccyrateinval = 1 
-    #     else: 
-    #         ccyrateinval = ccyrateintext['data']['recordData'][0]['rate'] # USD to recordccy
-    #     ccyrateout = requests.post(ccyrate, 
-    #     json = {
-    #         "ccy": "HKD", 
-    #         "sessionToken": token2
-    #     })
-    #     ccyrateouttext = json.loads(ccyrateout.text) 
-    #     if ccyrateouttext['result_code'] == 40011:
-    #         ccyrateoutval = 1 
-    #     else: 
-    #         ccyrateoutval = ccyrateouttext['data']['recordData'][0]['rate'] # USD to HKD
-    #     ccyhkd = ccyrateoutval/ccyrateinval
-    #     return recordsize, ccyhkd
+    def recordSize(self):
+        # produrl = ENDPOINT + PRODINFO
+        # productinfo = requests.post(produrl, 
+        # json = {
+        #     "prodCode": self.__instrument, # Collects product code from sma_cross2, which collects from sma_strat2
+        #     "sessionToken": self.__token2,
+        #     "dataRecordTotal": 100,
+        #     "dataStartFromRecord": 0
+        # })
+        # recordDiction = json.loads(productinfo.text) 
+        if recordDiction['result_code'] == 40011:
+            recordsize = 0
+        else:
+            recordsize = recordDiction['data']['jsonData']['contractSize'] # Size of product
+        return recordsize
+
+    def ccyRate(self):
+        # produrl = ENDPOINT + PRODINFO
+        # productinfo = requests.post(produrl, 
+        # json = {
+        #     "prodCode": self.__instrument, # Collects product code from sma_cross2, which collects from sma_strat2
+        #     "sessionToken": self.__token2,
+        #     "dataRecordTotal": 100,
+        #     "dataStartFromRecord": 0
+        # })
+        # recordDiction = json.loads(productinfo.text) 
+        if recordDiction['result_code'] == 40011:
+            recordccy = "HKD"
+        else:
+            recordccy = recordDiction['data']['jsonData']['ccy'] # Currency of product
+    #     return recordccy
+
+    # def ccyRate(self):
+        ccyrate = ENDPOINT + CCYRATES
+        ccyratein = requests.post(ccyrate, 
+        json = {
+            "ccy": recordccy, # USD = 1
+            "sessionToken": self.__token2
+        })
+        ccyrateintext = json.loads(ccyratein.text) 
+        if ccyrateintext['result_code'] == 40011:
+            ccyrateinval = 1 
+        else: 
+            ccyrateinval = ccyrateintext['data']['recordData'][0]['rate'] # USD to recordccy
+        ccyrateout = requests.post(ccyrate, 
+        json = {
+            "ccy": "HKD", 
+            "sessionToken": self.__token2
+        })
+        ccyrateouttext = json.loads(ccyrateout.text) 
+        if ccyrateouttext['result_code'] == 40011:
+            ccyrateoutval = 1 
+        else: 
+            ccyrateoutval = ccyrateouttext['data']['recordData'][0]['rate'] # USD to HKD
+        ccyhkd = ccyrateoutval/ccyrateinval
+        return ccyhkd

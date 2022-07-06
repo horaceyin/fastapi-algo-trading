@@ -13,7 +13,12 @@ class BacktestingService:
         errMsg = ''
         # return json.dumps({'msg': 'from backtesting.'}) # Result given
         # write backtesting code here
-        productCode = request.prodCode
-        portfValue = request.portfolioValue
-        return sma_backtest(productCode, 2, 120, 80, True, portfValue, 1).start_backtesting(request) 
+        prodCode = request.prodCode
+        portfolioValue = request.portfolioValue
+        barSummary = request.barSummary
+        boundaryValue = request.boundaryValue
+        return sma_backtest(prodCode, 2, 120, 80, True, portfolioValue, barSummary, boundaryValue).start_backtesting(request) 
         # May need to add timeframe and method for data collection
+
+        #if exception rasied,
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=errMsg)

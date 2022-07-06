@@ -16,7 +16,7 @@ from schemas.backtesting_schemas import BacktestingModel
 from services.backtesting.sma_datainfo import DataInfo
 
 class sma_backtest:
-    def __init__(self, instrument, day, second, smaPeriod, plot, startcash, barsum):
+    def __init__(self, instrument, day, second, smaPeriod, plot, startcash, barsum, boundaryValue):
         self.__instrument = instrument
         self.__day = day
         self.__second = second
@@ -24,26 +24,24 @@ class sma_backtest:
         self.__plot = plot
         self.__startcash = startcash
         self.__barsum = barsum
+        self.__boundaryValue = boundaryValue
 
     # Formats text data for each trade
     @staticmethod
     def formatting_data(data):
         myData = data
-        print(myData)
-    # def formatting_data(status_code, text): # text of data; modify formatting from browser format
-    #     if status_code < 400:
-        # myData = text
-        # tempData1 = myData.split(':')
-        # tempData2 = tempData1[4].split(',0\r\n') # Remove 0 at end of each line
-        # tempData3 = map(lambda bar: bar.split(','), tempData2) # Format data for processing in the future
-        # newData = list(tempData3)
-        # newData.pop()
-        # for i, bar in enumerate(newData):
-        #     oriDate = bar.pop()
-        #     dateTime = datetime.fromtimestamp(int(oriDate))
-        #     strDate = dateTime.strftime('%Y-%m-%d %H:%M:%S')
-        #     bar.insert(0, strDate)
-        # return newData
+        tempData1 = myData.split(':')
+        tempData2 = tempData1[4].split(',0\r\n') # Remove 0 at end of each line
+        tempData3 = map(lambda bar: bar.split(','), tempData2) # Format data for processing in the future
+        newData = list(tempData3)
+        newData.pop()
+        for i, bar in enumerate(newData):
+            oriDate = bar.pop()
+            dateTime = datetime.fromtimestamp(int(oriDate))
+            strDate = dateTime.strftime('%Y-%m-%d %H:%M:%S')
+            bar.insert(0, strDate)
+        print(newData)
+        return newData
 
 
 
@@ -69,7 +67,8 @@ class sma_backtest:
 
         newData = sma_backtest.formatting_data(data)
 
-        # print(newData)
+        # print("0000000000000000000000000000000000000000000000000000000") # Testing data
+        print(newData) # None
 
         dateCol, openCol, highCol, lowCol, closeCol, volumeCol = DataInfo.construct_data(newData)
 
@@ -87,7 +86,9 @@ class sma_backtest:
         print(len(dateCol))
 
         myFeed.addBarsFromCSV(self.__instrument, csvName)
-        strat = SMACrossOver(myFeed, self.__instrument, self.__smaPeriod)
+        strat = SMACrossOver(myFeed, self.__instrument, self.__smaPeriod, self.__boundaryValue) 
+        # TypeError: Can't instantiate abstract class SMACrossOver with abstract method onBars
+        # onBars from BacktestingStrategy
 
         strat.getBroker().setCash(self.__startcash) # Set new value of portfolio
 

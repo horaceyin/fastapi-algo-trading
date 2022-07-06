@@ -12,7 +12,8 @@ import datetime
 from os import environ
 from dotenv import load_dotenv
 
-from core.endpoints import ADMININFO, PRODINFO, CCYRATES
+from core.endpoints import ADMININFO
+from services.backtesting.sma_datainfo import DataInfo
 
 # Access info from .env
 load_dotenv()
@@ -31,6 +32,9 @@ class SMACrossOver(strategy.BacktestingStrategy):
         self.__time = 0
         self.__boundaryValue = boundaryValue # For boundary value below
 
+    def onBars(self, bars):
+        return super().onBars(bars)
+        
     def get_sma(self):
         global access, token2, alltrades, buymoments, sellmoments
         accessurl = ENDPOINT + ADMININFO
@@ -62,44 +66,10 @@ class SMACrossOver(strategy.BacktestingStrategy):
     def on_enter_ok(self, position):
         global recordval1
         execInfo = position.getEntryOrder().getExecutionInfo()
-        produrl = ENDPOINT + PRODINFO
-        productinfo = requests.post(produrl, 
-        json = {
-            "prodCode": self.__instrument, # Collects product code from sma_cross2, which collects from sma_strat2
-            "sessionToken": token2,
-            "dataRecordTotal": 100,
-            "dataStartFromRecord": 0
-        })
-        recordDiction = json.loads(productinfo.text) 
-        if recordDiction['result_code'] == 40011:
-            recordsize = 0
-            recordccy = "HKD"
-        else:
-            recordsize = recordDiction['data']['jsonData']['contractSize'] # Size of product
-            recordccy = recordDiction['data']['jsonData']['ccy'] # Currency of product
-
-        ccyrate = ENDPOINT + CCYRATES
-        ccyratein = requests.post(ccyrate, 
-        json = {
-            "ccy": recordccy, # USD = 1
-            "sessionToken": token2
-        })
-        ccyrateintext = json.loads(ccyratein.text) 
-        if ccyrateintext['result_code'] == 40011:
-            ccyrateinval = 1 
-        else: 
-            ccyrateinval = ccyrateintext['data']['recordData'][0]['rate'] # USD to recordccy
-        ccyrateout = requests.post(ccyrate, 
-        json = {
-            "ccy": "HKD", 
-            "sessionToken": token2
-        })
-        ccyrateouttext = json.loads(ccyrateout.text) 
-        if ccyrateouttext['result_code'] == 40011:
-            ccyrateoutval = 1 
-        else: 
-            ccyrateoutval = ccyrateouttext['data']['recordData'][0]['rate'] # USD to HKD
-        recordval1 = recordsize * execInfo.getPrice() * ccyrateoutval/ccyrateinval # Contract size multipled by number of points
+        DataInfo(self.__instrument, token2).getInfo()
+        recordsize = DataInfo(self.__instrument, token2).recordSize()
+        ccyhkd = DataInfo(self.__instrument, token2).ccyRate()
+        recordval1 = recordsize * execInfo.getPrice() * ccyhkd # Contract size multipled by number of points in HKD
         
         self.info("BUY at $%.2f" % (recordval1)) # Actual price
         # self.info("BUY at $%.2f" % (execInfo.getPrice())) # In terms of points
@@ -120,44 +90,10 @@ class SMACrossOver(strategy.BacktestingStrategy):
     
     def on_exit_ok(self, position):
         execInfo = position.getExitOrder().getExecutionInfo()
-        produrl = ENDPOINT + PRODINFO
-        productinfo = requests.post(produrl, 
-        json = {
-            "prodCode": self.__instrument, # Collects product code from sma_cross2, which collects from sma_strat2
-            "sessionToken": token2,
-            "dataRecordTotal": 100,
-            "dataStartFromRecord": 0
-        })
-        recordDiction = json.loads(productinfo.text) 
-        if recordDiction['result_code'] == 40011:
-            recordsize = 0
-            recordccy = "HKD"
-        else:
-            recordsize = recordDiction['data']['jsonData']['contractSize'] # Size of product
-            recordccy = recordDiction['data']['jsonData']['ccy'] # Currency of product
-
-        ccyrate = ENDPOINT + CCYRATES
-        ccyratein = requests.post(ccyrate, 
-        json = {
-            "ccy": recordccy, # USD = 1
-            "sessionToken": token2
-        })
-        ccyrateintext = json.loads(ccyratein.text) 
-        if ccyrateintext['result_code'] == 40011:
-            ccyrateinval = 1 
-        else: 
-            ccyrateinval = ccyrateintext['data']['recordData'][0]['rate'] # USD to recordccy
-        ccyrateout = requests.post(ccyrate, 
-        json = {
-            "ccy": "HKD", 
-            "sessionToken": token2
-        })
-        ccyrateouttext = json.loads(ccyrateout.text) 
-        if ccyrateouttext['result_code'] == 40011:
-            ccyrateoutval = 1 
-        else: 
-            ccyrateoutval = ccyrateouttext['data']['recordData'][0]['rate'] # USD to HKD
-        recordval2 = recordsize * execInfo.getPrice() * ccyrateoutval/ccyrateinval # Contract size multipled by number of points
+        DataInfo(self.__instrument, token2).getInfo()
+        recordsize = DataInfo(self.__instrument, token2).recordSize()
+        ccyhkd = DataInfo(self.__instrument, token2).ccyRate()
+        recordval2 = recordsize * execInfo.getPrice() * ccyhkd # Contract size multipled by number of points
         # self.info("SELL at $%.2f" % (execInfo.getPrice())) # In terms of points
         self.info("SELL at $%.2f" % (recordval2)) # Actual price
 
@@ -181,44 +117,11 @@ class SMACrossOver(strategy.BacktestingStrategy):
 
     def on_bars(self, bars):
         execInfo = bars[self.__instrument]
-        produrl = ENDPOINT + PRODINFO
-        productinfo = requests.post(produrl, 
-        json = {
-            "prodCode": self.__instrument, # Collects product code from sma_cross2, which collects from sma_strat2
-            "sessionToken": token2,
-            "dataRecordTotal": 100,
-            "dataStartFromRecord": 0
-        })
-        recordDiction = json.loads(productinfo.text) 
-        if recordDiction['result_code'] == 40011:
-            recordsize = 0
-            recordccy = "HKD"
-        else:
-            recordsize = recordDiction['data']['jsonData']['contractSize'] # Size of product
-            recordccy = recordDiction['data']['jsonData']['ccy'] # Currency of product
-
-        ccyrate = ENDPOINT + CCYRATES
-        ccyratein = requests.post(ccyrate, 
-        json = {
-            "ccy": recordccy, # USD = 1
-            "sessionToken": token2
-        })
-        ccyrateintext = json.loads(ccyratein.text) 
-        if ccyrateintext['result_code'] == 40011:
-            ccyrateinval = 1 
-        else: 
-            ccyrateinval = ccyrateintext['data']['recordData'][0]['rate'] # USD to recordccy
-        ccyrateout = requests.post(ccyrate, 
-        json = {
-            "ccy": "HKD", 
-            "sessionToken": token2
-        })
-        ccyrateouttext = json.loads(ccyrateout.text) 
-        if ccyrateouttext['result_code'] == 40011:
-            ccyrateoutval = 1 
-        else: 
-            ccyrateoutval = ccyrateouttext['data']['recordData'][0]['rate'] # USD to HKD
-        recordval3 = recordsize * execInfo.getPrice() * ccyrateoutval/ccyrateinval # Contract size multipled by number of points
+        DataInfo(self.__instrument, token2).getInfo()
+        recordsize = DataInfo(self.__instrument, token2).recordSize()
+        ccyhkd = DataInfo(self.__instrument, token2).ccyRate()
+        recordval3 = recordsize * execInfo.getPrice() * ccyhkd # Contract size multipled by number of points
+        
         
         # Reach end of self.__sma list or skip over if self.getBroker().getCash() will drop below given value
         # if self.__sma[-1] is None:
