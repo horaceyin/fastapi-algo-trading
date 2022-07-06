@@ -17,7 +17,7 @@ Then, run:
 If you clone this project at the first time, make sure python and pipenv have been install in your local machine.
 
 Pipenv is a tool that automatically creates and manages a virtualenv for projects.<br>
-Open [https://pipenv.pypa.io/en/latest/] to read more.
+Open https://pipenv.pypa.io/en/latest/ to read more.
 
 Create a hidden folder inside project directory, like .venv
 
