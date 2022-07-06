@@ -115,7 +115,7 @@ class SMACrossOver(strategy.BacktestingStrategy):
         # If the exit was canceled, re-submit it.
         self.__position.exitMarket()
 
-    def on_bars(self, bars):
+    def onBars(self, bars):
         execInfo = bars[self.__instrument]
         DataInfo(self.__instrument, token2).getInfo()
         recordsize = DataInfo(self.__instrument, token2).recordSize()
