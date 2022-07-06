@@ -21,7 +21,7 @@ class CommonHelper:
                 try:
                         # Make post request
                         res = post(url=requestUrl, json=requestDict) 
-                        # Return JSON response if any, so long as status code < 400, otherwise give error
+                        # Return text/JSON response if any, so long as status code < 400, otherwise give error
                         if res.ok:
                                 try: return res.json()
                                 except: return res.text

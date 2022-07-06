@@ -1,8 +1,5 @@
 from os import environ
 from dotenv import load_dotenv
-from fastapi import HTTPException, status
-from fastapi.encoders import jsonable_encoder
-from requests import get, post
 from schemas.auth_schemas import UserLogin, AccountSumModel
 from core.endpoints import USERLOGIN, ACCOUNTINFO
 from schemas.auth_schemas import UserLogin
