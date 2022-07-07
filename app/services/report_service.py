@@ -1,3 +1,4 @@
+from matplotlib.font_manager import json_load
 from services.technical_analysis_service import PnLService
 from schemas.report_schemas import reportModel
 import statistics
@@ -16,9 +17,9 @@ class Report(PnLService):
             count=count+1
         return count
     
-    def __get_totalpnl(self, request):
-        totalpnl=0
-        for i in self.get_pnl(request):
+    def __get_totalpnl(self, pnlList):
+        totalpnl: int
+        for i in pnlList:
             totalpnl+=i
         return totalpnl
     
@@ -62,41 +63,47 @@ class Report(PnLService):
 
 
     def get_report(self, request: reportModel):
-        report = {{
-        "Total trades": self.__get_totaltrade(),
-        "Avg. profit": (self.__get_totalpnl()/self.__get_totaltrade()),
-        "Profits. std. dev.": self.__avg_return_sd,
-        "Max. profit": self.__min(),
-        "Max. profit": self.__max(),
-        "Avg. return": self.__avg_return,
-        "Return std. dev.": self.__return_std_dev,
-        "Max. Return": self.__max_return,
-        "Min. Return": self.__min_return
-        },
-        {
-        "Profitable trades": self.__get_totaltrade(),
-        "Avg. profit": (self.__get_totalpnl()/self.__get_totaltrade()),
-        "Profits. std. dev.": self.__avg_return_sd,
-        "Max. profit": self.__min(),
-        "Max. profit": self.__max(),
-        "Avg. return": self.__avg_return,
-        "Return std. dev.": self.__return_std_dev,
-        "Max. Return": self.__max_return,
-        "Min. Return": self.__min_return   
-        },
-        {
-        "Unprofitable trades": self.__get_totaltrade(),
-        "Avg. loss": (self.__get_totalpnl()/self.__get_totaltrade()),
-        "Losses. std. dev.": self.__avg_return_sd,
-        "Max. Loss": self.__min(),
-        "Max. Loss": self.__max(),
-        "Avg. return": self.__avg_return,
-        "Return std. dev.": self.__return_std_dev,
-        "Max. Return": self.__max_return,
-        "Min. Return": self.__min_return
-        }}
-        self.__get_done_trade
-        return report
+        data = self.get_pnl(request)
+        pnl = list(map(lambda x : x['pnl'],data))
+        positivePnl = list(map(lambda x : x['positivePnl'],data))
+        negativePnl = list(map(lambda x : x['negativePnl'],data))
+        contractSize = list(map(lambda x : x['contractSize'],data))
+        tradeNumber = list(map(lambda x : x['num'],data))
+        # report = {{
+        # "Total trades": self.__get_totaltrade(),
+        # "Avg. profit": (self.__get_totalpnl()/self.__get_totaltrade()),
+        # "Profits. std. dev.": self.__avg_return_sd,
+        # "Max. profit": self.__min(),
+        # "Max. profit": self.__max(),
+        # "Avg. return": self.__avg_return,
+        # "Return std. dev.": self.__return_std_dev,
+        # "Max. Return": self.__max_return,
+        # "Min. Return": self.__min_return
+        # },
+        # {
+        # "Profitable trades": self.__get_totaltrade(),
+        # "Avg. profit": (self.__get_totalpnl()/self.__get_totaltrade()),
+        # "Profits. std. dev.": self.__avg_return_sd,
+        # "Max. profit": self.__min(),
+        # "Max. profit": self.__max(),
+        # "Avg. return": self.__avg_return,
+        # "Return std. dev.": self.__return_std_dev,
+        # "Max. Return": self.__max_return,
+        # "Min. Return": self.__min_return   
+        # },
+        # {
+        # "Unprofitable trades": self.__get_totaltrade(),
+        # "Avg. loss": (self.__get_totalpnl()/self.__get_totaltrade()),
+        # "Losses. std. dev.": self.__avg_return_sd,
+        # "Max. Loss": self.__min(),
+        # "Max. Loss": self.__max(),
+        # "Avg. return": self.__avg_return,
+        # "Return std. dev.": self.__return_std_dev,
+        # "Max. Return": self.__max_return,
+        # "Min. Return": self.__min_return
+        # }}
+        # self.__get_done_trade
+        return pnl
         
         #total trade = total count of pnl
         #total pnl / total count of pnl = avg. profit

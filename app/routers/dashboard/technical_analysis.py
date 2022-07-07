@@ -33,7 +33,7 @@ async def done_trade_report_analysis(request: GetDoneTradeModel):
     date = datetime.now()
     date = date.strftime('%Y-%m-%d')
     pnlReport = Report(accName, date)
-    return pnlReport.get_pnl(request)
+    return pnlReport.get_report(request)
 
 @taRouter.post('/contract-size',status_code=status.HTTP_200_OK)
 async def get_contract_size(request: GetContractSize):
