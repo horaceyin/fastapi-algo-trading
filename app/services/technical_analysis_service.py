@@ -19,7 +19,7 @@ class PnLService:
     __url = ENDPOINT + DONETRADE
     __df: pd.DataFrame
     accName: str
-    col = ['date', 'TradePrice', 'Position', 'ProductCode', 'Balance','InstCode']
+    col = ['date', 'TradePrice', 'Position', 'ProductCode', 'Balance', 'InstCode', 'ContractSize']
 
     def __init__(self, accName):
         self.accName = accName
@@ -87,18 +87,19 @@ class PnLService:
             tradePrice = trade['tradePrice']
             prodCode = trade['prodCode']
             instCode = trade['instCode']
+            contractSize = trade['tsContractSize']
             if trade["buySell"]=="B": ordTotalQty = -trade['ordTotalQty']
             elif trade["buySell"]=="S": ordTotalQty = trade['ordTotalQty']
             self.tradeNum = self.tradeNum + 1
 
             self.__tradeRecords.append(
-                [date, tradePrice, ordTotalQty, prodCode, ordTotalQty, instCode]
+                [date, tradePrice, ordTotalQty, prodCode, ordTotalQty, instCode, contractSize]
             )
 
     def __data_feed(self):
         df = pd.DataFrame(data=self.__tradeRecords, columns=PnLService.col)
         df.date = pd.to_datetime(df.date)
-        self.__df = df.groupby(['ProductCode', 'date', 'Position', 'Balance', 'InstCode'])[['TradePrice']].mean()
+        self.__df = df.groupby(['ProductCode', 'date', 'Position', 'Balance', 'InstCode', 'ContractSize'])[['TradePrice']].mean()
 
     def __create_separated_df(self):
         l=[]
@@ -139,32 +140,40 @@ class PnLService:
         #create separated dataframe
         dataframeList = self.__create_separated_df()
 
-        for product in dataframeList:
-            product.reset_index(level=['Position', 'Balance', 'InstCode'], inplace=True)
-
         for dataframe in dataframeList:
-            dataframe.reset_index(level=['Position', 'Balance'], inplace=True)
+            dataframe.reset_index(level=['Position', 'Balance','InstCode','ContractSize'], inplace=True)
             indexList = dataframe.index.to_list()
             prodCode = indexList[0][0]
             posList = dataframe['Position'].values.tolist()
             priceList = dataframe['TradePrice'].values.tolist()
-            for instcode in dataframe['InstCode']:
-                InstCode = instcode
-                break   
             tradeRecordObj = self.__data_for_pnl(posList, priceList)
             pnlQueue, pnlNum= self.__cal_pnl(tradeRecordObj)
             positivePnl, negativePnl = self.__pnl_separation(pnlQueue)
+            for code in dataframe['InstCode']: #get one instcode and one contractsize instead of all
+                InstCode = code
+                break 
+            for size in dataframe['ContractSize']:
+                contractSize = size
+                break
             self._pnl.append(
                 {
+                    InstCode:
+                    {
                     'prodCode': prodCode,
                     "pnl": pnlQueue,
+                    'contractSize': contractSize,
                     'num': pnlNum,
                     'positivePnl': positivePnl,
                     'negativePnl': negativePnl
+                    }
                 }
             )
             self.totalDoneContract = self.totalDoneContract + pnlNum
-        return self._pnl
+        pnl = {   #combine the values in one list if the instcode is the same
+            k: [d.get(k) for d in self._pnl if k in d]
+            for k in set().union(*self._pnl)
+        }
+        return pnl
         #return json.dumps({'msg': 'from done trade analysis.'})
         
         # if exception rasied,
