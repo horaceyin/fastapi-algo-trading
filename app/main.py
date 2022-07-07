@@ -1,44 +1,40 @@
-from os import environ, path, mkdir
-from dotenv import load_dotenv
+from os import path, mkdir
+from core import config
 
-load_dotenv()
-logdir = environ['LOG_DIRECTORY']
+# create logs folder if it doesn't exists in the first run
+logdir = config.ENV_FILE['LOG_DIRECTORY']
 if not path.exists(logdir): mkdir(logdir)
 
 from fastapi import FastAPI
 import uvicorn
-from core import config
-from routers.authentication.login import loginRouter
-from routers.dashboard.backtesting import backtestingRouter
-from routers.dashboard.technical_analysis import taRouter
-
-ROUTERSLIST = [
-    loginRouter,
-    backtestingRouter,
-    taRouter
-]
+from core.routers_list import ROUTERS_LIST
 
 app = FastAPI()
 
-for router in ROUTERSLIST:
+# set up routers list
+for router in ROUTERS_LIST:
     app.include_router(router)
 
 @app.get('/')
 async def root():
     return {'msg':'render main page'}
 
+# create fastapi_logging.log inside logs folder
 def create_log():
-    logFile = environ['LOG_PATH']
+    logFile = config.ENV_FILE['LOG_PATH']
     if not path.exists(logFile):
         log = open(logFile, 'w')
         log.close()
 
+# return configuration for production environment
 def get_config():
-    if environ['ENV_STATE'] == 'dev':
+    if config.ENV_FILE['ENV_STATE'] == 'dev':
         return config.DevConfig()
     return config.ProdConfig()
 
+# starting point
 if __name__ == '__main__':
     create_log()
     myConfig = get_config()
+    # 'main:app' means FastAPI object called app under main.py
     uvicorn.run('main:app', host = myConfig.HOST, port=myConfig.PORT, reload = True)
