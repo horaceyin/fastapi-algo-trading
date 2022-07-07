@@ -8,10 +8,10 @@ from os import environ
 
 load_dotenv()
 ENDPOINT = environ['SP_HOST_AND_PORT']
-LOG_FILENAME = environ["LOG_FILENAME"]
+LOG_PATH = environ["LOG_PATH"]
 
 class CommonHelper:
-        logging.basicConfig(filename=LOG_FILENAME, filemode='a', level=logging.WARN, encoding='utf-8', format='%(asctime)s - %(levelname)s - %(message)s')
+        logging.basicConfig(filename=LOG_PATH, filemode='a', level=logging.WARN, encoding='utf-8', format='%(asctime)s - %(levelname)s - %(message)s')
         def __init__(self):
                 pass
         
@@ -21,12 +21,12 @@ class CommonHelper:
                 try:
                         # Make post request
                         res = post(url=requestUrl, json=requestDict) 
-                        # Return JSON response if any, so long as status code < 400, otherwise give error
+                        # Return text/JSON response if any, so long as status code < 400, otherwise give error
                         if res.ok:
                                 try: return res.json()
                                 except: return res.text
                         else:
                                HTTPException(status_code=res.status_code, detail=res.reason)
                 except: 
-                        logging.error(traceback.print_exc()) # May fall apart if file does not exist (AttributeError: 'str' object has no attribute 'write')
+                        logging.error(traceback.print_exc())
                         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="INTERNAL SERVER ERROR")

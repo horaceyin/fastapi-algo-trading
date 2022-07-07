@@ -8,9 +8,7 @@ from pyalgotrade.stratanalyzer import sharpe
 from pyalgotrade.stratanalyzer import drawdown
 from pyalgotrade.stratanalyzer import trades
 from pyalgotrade.broker import backtesting
-
 import pandas as pd
-import requests
 from datetime import datetime
 import time
 from common.common_helper import CommonHelper

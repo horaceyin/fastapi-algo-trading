@@ -17,6 +17,3 @@ class BacktestingService:
         portfValue = request.portfolioValue
         return sma_backtest(productCode, 2, 120, 80, True, portfValue, 1).start_backtesting(request) 
         # May need to add timeframe and method for data collection
-
-        #if exception rasied,
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=errMsg)

@@ -9,8 +9,6 @@ import requests
 import json
 import datetime
 
-# from iteration_utilities import unique_everseen # Remove duplicates in lists
-
 from os import environ
 from dotenv import load_dotenv
 
@@ -19,10 +17,9 @@ from core.endpoints import ADMININFO, PRODINFO, CCYRATES
 # Access info from .env
 load_dotenv()
 ENDPOINT = environ['SP_HOST_AND_PORT']
-LOG_FILENAME = environ["LOG_FILENAME"]
 
 class SMACrossOver(strategy.BacktestingStrategy):
-    def __init__(self, feed, instrument, smaPeriod):
+    def __init__(self, feed, instrument, smaPeriod, boundaryValue):
         super(SMACrossOver, self).__init__(feed)
         self.__instrument = instrument
         self.__position = None
@@ -31,6 +28,7 @@ class SMACrossOver(strategy.BacktestingStrategy):
         self.__prices = feed[instrument].getPriceDataSeries()
         self.__sma = ma.SMA(self.__prices, smaPeriod)
         self.__time = 0
+        self.__boundaryValue = boundaryValue # For boundary value below
 
     def get_sma(self):
         global access, token2, alltrades, buymoments, sellmoments
@@ -58,17 +56,6 @@ class SMACrossOver(strategy.BacktestingStrategy):
         return self.__sma # <pyalgotrade.technical.ma.SMA object at 0x11c0644c0>
 
     def on_start(self):
-        # def boundary_input(): # Define boundary value
-        #     global boundaryValue
-        #     while True:
-        #         try:
-        #             boundaryValue = float(input("Enter the boundary value: "))
-        #         except ValueError:
-        #             print("Invalid. Try again: ")
-        #             continue
-        #         else:
-        #             break
-        # boundary_input()
         print ("Initial portfolio value: $%.2f" % self.getBroker().getCash()) # Gives initial portfolio value
 
     def on_enter_ok(self, position):
@@ -191,7 +178,7 @@ class SMACrossOver(strategy.BacktestingStrategy):
         # If the exit was canceled, re-submit it.
         self.__position.exitMarket()
 
-    def on_bars(self, bars):
+    def onBars(self, bars):
         execInfo = bars[self.__instrument]
         produrl = ENDPOINT + PRODINFO
         productinfo = requests.post(produrl, 
@@ -233,15 +220,23 @@ class SMACrossOver(strategy.BacktestingStrategy):
         recordval3 = recordsize * execInfo.getPrice() * ccyrateoutval/ccyrateinval # Contract size multipled by number of points
         
         # Reach end of self.__sma list or skip over if self.getBroker().getCash() will drop below given value
-        if self.__sma[-1] is None:
-        # if (self.__sma[-1] is None or self.getBroker().getCash() < boundaryValue): # Need to find way to limit number of positions
+        # if self.__sma[-1] is None:
+        if (self.__sma[-1] is None or self.getBroker().getCash() < self.__boundaryValue): # Need to find way to limit number of positions
             return
         
         # If a position was not opened, check if we should enter a long position. # Heavily simplified version of SMA
         if self.__position is None:
             if cross.cross_above(self.__prices, self.__sma) > 0 and recordval3 != 0:
+                def duplremov(l, m):
+                    seen = set()
+                    for d in l:
+                        t = tuple(sorted(d.items()))
+                        if t not in seen:
+                            seen.add(t)
+                            m.append(d)
 
-                # alltrading = list(unique_everseen(alltrades)) @@@@@@@@@@@@@@@@@@@@
+                alltrading = []
+                duplremov(alltrades, alltrading)
 
                 if buymoments and sellmoments:
                     def fun(l1, l2): # Apply for every pair that exists
@@ -252,8 +247,8 @@ class SMACrossOver(strategy.BacktestingStrategy):
                         return alltrades
                     fun(sellmoments, buymoments)
 
-                    # alltrading = list(unique_everseen(alltrades)) # Removes duplicates@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-                # print(alltrading)@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+                    duplremov(alltrades, alltrading)# Removes duplicates
+                print(alltrading)
                 shares = int(self.getBroker().getCash() * 0.9 / recordval3) # Actual price
                 # Enter a buy market order. The order is good till canceled.
                 self.__position = self.enterLong(self.__instrument, shares, True)
