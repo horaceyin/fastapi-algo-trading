@@ -19,7 +19,7 @@ class PnLService:
     __url = ENDPOINT + DONETRADE
     __df: pd.DataFrame
     accName: str
-    col = ['date', 'TradePrice', 'Position', 'ProductCode', 'Balance']
+    col = ['date', 'TradePrice', 'Position', 'ProductCode', 'Balance','InstCode']
 
     def __init__(self, accName):
         self.accName = accName
@@ -80,18 +80,19 @@ class PnLService:
             ordTotalQty: int
             tradePrice = trade['tradePrice']
             prodCode = trade['prodCode']
+            instCode = trade['instCode']
             if trade["buySell"]=="B": ordTotalQty = -trade['ordTotalQty']
             elif trade["buySell"]=="S": ordTotalQty = trade['ordTotalQty']
             self.tradeNum = self.tradeNum + 1
 
             self.__tradeRecords.append(
-                [date, tradePrice, ordTotalQty, prodCode, ordTotalQty]
+                [date, tradePrice, ordTotalQty, prodCode, ordTotalQty, instCode]
             )
 
     def __data_feed(self):
         df = pd.DataFrame(data=self.__tradeRecords, columns=PnLService.col)
         df.date = pd.to_datetime(df.date)
-        self.__df = df.groupby(['ProductCode', 'date', 'Position', 'Balance'])[['TradePrice']].mean()
+        self.__df = df.groupby(['ProductCode', 'date', 'Position', 'Balance', 'InstCode'])[['TradePrice']].mean()
 
     def __create_separated_df(self):
         l=[]
@@ -133,21 +134,23 @@ class PnLService:
         dataframeList = self.__create_separated_df()
 
         for product in dataframeList:
-            product.reset_index(level=['Position', 'Balance'], inplace=True)
+            product.reset_index(level=['Position', 'Balance', 'InstCode'], inplace=True)
 
         for dataframe in dataframeList:
             indexList = dataframe.index.to_list()
             prodCode = indexList[0][0]
             posList = dataframe['Position'].values.tolist()
             priceList = dataframe['TradePrice'].values.tolist()
-            
+            for instcode in dataframe['InstCode']:
+                InstCode = instcode
+                break   
             tradeRecordObj = self.__data_for_pnl(posList, priceList)
             pnlQueue, pnlNum= self.__cal_pnl(tradeRecordObj)
             self._pnl.append(
                 {
                     'prodCode': prodCode,
                     "pnl": pnlQueue,
-                    'num': pnlNum
+                    'num': pnlNum,
                 }
             )
             self.totalDoneContract = self.totalDoneContract + 1
