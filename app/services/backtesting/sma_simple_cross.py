@@ -13,11 +13,14 @@ from core.config import SP_HOST_AND_PORT
 
 from core.endpoints import ADMININFO
 from services.backtesting.sma_datainfo import DataInfo
+from schemas.backtesting_schemas import BacktestingModel
+from os import environ
+from dotenv import load_dotenv
 
 # Access info from .env
 ENDPOINT = SP_HOST_AND_PORT
 
-class SMACrossOver(strategy.BacktestingStrategy):
+class SMACrossOver(strategy.BacktestingStrategy): 
     def __init__(self, feed, instrument, smaPeriod, boundaryValue):
         super(SMACrossOver, self).__init__(feed)
         self.__instrument = instrument
@@ -35,13 +38,21 @@ class SMACrossOver(strategy.BacktestingStrategy):
     def get_sma(self):
         global access, token2, alltrades, buymoments, sellmoments
         accessurl = ENDPOINT + ADMININFO
-        access = requests.post(accessurl, 
+        # Only required to be able to access system 
+        # May fail due to server being unable to respond; currently testing potential 
+        # TimeoutError: [WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond
+        #  (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x00000282A1E07CA0>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+        
+        requests.adapters.DEFAULT_RETRIES = 5 # Increase retries number
+        s = requests.session()
+        s.keep_alive = False # Disable keep alive
+        access = s.post(accessurl, 
         json = {
             "password": "sp",
             "userId": "SPNICHOLAS",
             "apiAppId": "SP_F",
             "mode": 0
-        })
+        }, verify=False, timeout=(5, 10))
         dataDict = json.loads(access.text) 
         token2 = dataDict['data']['sessionToken'] # Session token to access other requests
         # To transfer dictionary object to below
@@ -64,10 +75,11 @@ class SMACrossOver(strategy.BacktestingStrategy):
         global recordval1
         execInfo = position.getEntryOrder().getExecutionInfo()
         DataInfo(self.__instrument, token2).getInfo()
-        recordsize = DataInfo(self.__instrument, token2).recordSize()
-        ccyhkd = DataInfo(self.__instrument, token2).ccyRate()
-        recordval1 = recordsize * execInfo.getPrice() * ccyhkd # Contract size multipled by number of points in HKD
-        
+        # recordsize = DataInfo(self.__instrument, token2).recordSize()
+        # ccyhkd = DataInfo(self.__instrument, token2).ccyRate()
+        # recordval1 = recordsize * execInfo.getPrice() * ccyhkd # Contract size multipled by number of points in HKD
+        recordval1 = execInfo.getPrice() # Number of points # TESTING CODE
+
         self.info("BUY at $%.2f" % (recordval1)) # Actual price
         # self.info("BUY at $%.2f" % (execInfo.getPrice())) # In terms of points
         currenttime = self.getCurrentDateTime()
@@ -88,12 +100,12 @@ class SMACrossOver(strategy.BacktestingStrategy):
     def on_exit_ok(self, position):
         execInfo = position.getExitOrder().getExecutionInfo()
         DataInfo(self.__instrument, token2).getInfo()
-        recordsize = DataInfo(self.__instrument, token2).recordSize()
-        ccyhkd = DataInfo(self.__instrument, token2).ccyRate()
-        recordval2 = recordsize * execInfo.getPrice() * ccyhkd # Contract size multipled by number of points
-        # self.info("SELL at $%.2f" % (execInfo.getPrice())) # In terms of points
-        self.info("SELL at $%.2f" % (recordval2)) # Actual price
+        # recordsize = DataInfo(self.__instrument, token2).recordSize()
+        # ccyhkd = DataInfo(self.__instrument, token2).ccyRate()
+        # recordval2 = recordsize * execInfo.getPrice() * ccyhkd # Contract size multipled by number of points
+        recordval2 = execInfo.getPrice() # Number of points # TESTING CODE
 
+        self.info("SELL at $%.2f" % (recordval2)) # Actual price
         currenttime = self.getCurrentDateTime()
         newinfo = {
                 "Date": currenttime.date().strftime('%Y-%m-%d'), 
@@ -115,10 +127,10 @@ class SMACrossOver(strategy.BacktestingStrategy):
     def onBars(self, bars):
         execInfo = bars[self.__instrument]
         DataInfo(self.__instrument, token2).getInfo()
-        recordsize = DataInfo(self.__instrument, token2).recordSize()
-        ccyhkd = DataInfo(self.__instrument, token2).ccyRate()
-        recordval3 = recordsize * execInfo.getPrice() * ccyhkd # Contract size multipled by number of points
-        
+        # recordsize = DataInfo(self.__instrument, token2).recordSize()
+        # ccyhkd = DataInfo(self.__instrument, token2).ccyRate()
+        # recordval3 = recordsize * execInfo.getPrice() * ccyhkd # Contract size multipled by number of points in HKD
+        recordval3 = execInfo.getPrice() # Number of points # TESTING CODE
         
         # Reach end of self.__sma list or skip over if self.getBroker().getCash() will drop below given value
         # if self.__sma[-1] is None:

@@ -2,8 +2,9 @@
 
 import requests
 import json
+from schemas.backtesting_schemas import BacktestingModel
 
-from core.endpoints import PRODINFO, CCYRATES
+from core.endpoints import PRODINFO, CCYRATES, USERLOGIN, ACCOUNTINFO
 
 from os import environ
 from dotenv import load_dotenv
@@ -37,7 +38,8 @@ class DataInfo:
         print("")
         print("Final portfolio value: $%.2f" % strat.getResult())
         print("Cumulative returns: %.4f %%" % (retAnalyzer.getCumulativeReturns()[-1] * 100))
-        print("Sharpe ratio: %.2f" % (sharpeRatioAnalyzer.getSharpeRatio(0.05)))
+        print("Sharpe ratio: %.2f" % (sharpeRatioAnalyzer.getSharpeRatio(0.05))) 
+        # Error in lines 265, 257: C:\Users\sp\Desktop\project\fastapi-algo-trading\.venv\Lib\site-packages\numpy\core\_methods.py
         print("Max. drawdown: %.4f %%" % (drawDownAnalyzer.getMaxDrawDown() * 100))
         print("Longest drawdown duration: %s" % (drawDownAnalyzer.getLongestDrawDownDuration()))
 

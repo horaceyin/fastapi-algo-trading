@@ -7,7 +7,7 @@ from pyalgotrade.stratanalyzer import returns
 from pyalgotrade.stratanalyzer import sharpe
 from pyalgotrade.stratanalyzer import drawdown
 from pyalgotrade.stratanalyzer import trades
-from pyalgotrade.broker import backtesting
+from pyalgotrade.broker import backtesting # Module to inherit Market_Order, Limit_Order and Stop_Order
 import pandas as pd
 from datetime import datetime
 import time
@@ -63,13 +63,13 @@ class sma_backtest:
         # Download the bars.
         myFeed = csvfeed.GenericBarFeed(Frequency.SECOND * self.__barsum) # 
         data = CommonHelper.post_url(URL, request)
-        print(data)
+        # print(data)
 
         newData = sma_backtest.formatting_data(data)
 
         # print("0000000000000000000000000000000000000000000000000000000") # Testing data
-        print(newData) # None
-
+        print("")
+        print(newData) 
         dateCol, openCol, highCol, lowCol, closeCol, volumeCol = DataInfo.construct_data(newData)
 
         pdData = {
@@ -84,6 +84,7 @@ class sma_backtest:
         df = pd.DataFrame(pdData).set_index('Date Time')
         df.to_csv(csvName)
         print(len(dateCol))
+        print("")
 
         myFeed.addBarsFromCSV(self.__instrument, csvName)
         strat = SMACrossOver(myFeed, self.__instrument, self.__smaPeriod, self.__boundaryValue) 
