@@ -139,12 +139,9 @@ class PnLService:
         #create separated dataframe
         dataframeList = self.__create_separated_df()
 
-<<<<<<< HEAD
         for product in dataframeList:
             product.reset_index(level=['Position', 'Balance', 'InstCode'], inplace=True)
 
-=======
->>>>>>> master
         for dataframe in dataframeList:
             dataframe.reset_index(level=['Position', 'Balance'], inplace=True)
             indexList = dataframe.index.to_list()
@@ -162,11 +159,8 @@ class PnLService:
                     'prodCode': prodCode,
                     "pnl": pnlQueue,
                     'num': pnlNum,
-<<<<<<< HEAD
-=======
                     'positivePnl': positivePnl,
                     'negativePnl': negativePnl
->>>>>>> master
                 }
             )
             self.totalDoneContract = self.totalDoneContract + pnlNum
