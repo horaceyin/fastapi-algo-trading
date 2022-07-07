@@ -3,12 +3,12 @@ import traceback
 from fastapi.encoders import jsonable_encoder
 from fastapi import HTTPException, status, Request
 from requests import get, post
-from dotenv import load_dotenv
-from os import environ
+from core.config import ENV_FILE, SP_HOST_AND_PORT
 
-load_dotenv()
-ENDPOINT = environ['SP_HOST_AND_PORT']
-LOG_PATH = environ["LOG_PATH"]
+ENDPOINT = SP_HOST_AND_PORT
+LOG_PATH = ENV_FILE["LOG_PATH"]
+
+# doing common requests.post() method
 
 class CommonHelper:
         logging.basicConfig(filename=LOG_PATH, filemode='a', level=logging.WARN, encoding='utf-8', format='%(asctime)s - %(levelname)s - %(message)s')

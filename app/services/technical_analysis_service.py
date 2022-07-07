@@ -1,5 +1,4 @@
-from os import environ
-from dotenv import load_dotenv
+from core.config import SP_HOST_AND_PORT
 from collections import deque
 from datetime import datetime
 import pandas as pd
@@ -10,8 +9,7 @@ from common.common_helper import CommonHelper
 # ADMINACC = 'SPANSONLI'
 # CLIENTACC = 'ANSONLI01'
 
-load_dotenv
-ENDPOINT = environ['SP_HOST_AND_PORT']
+ENDPOINT = SP_HOST_AND_PORT
 
 class PnLService:
     __url = ENDPOINT + DONETRADE

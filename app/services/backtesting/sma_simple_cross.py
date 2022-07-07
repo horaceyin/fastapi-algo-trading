@@ -9,14 +9,12 @@ import requests
 import json
 import datetime
 
-from os import environ
-from dotenv import load_dotenv
+from core.config import SP_HOST_AND_PORT
 
 from core.endpoints import ADMININFO, PRODINFO, CCYRATES
 
 # Access info from .env
-load_dotenv()
-ENDPOINT = environ['SP_HOST_AND_PORT']
+ENDPOINT = SP_HOST_AND_PORT
 
 class SMACrossOver(strategy.BacktestingStrategy):
     def __init__(self, feed, instrument, smaPeriod, boundaryValue):
