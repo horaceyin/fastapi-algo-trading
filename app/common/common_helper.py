@@ -3,15 +3,15 @@ import traceback
 from fastapi.encoders import jsonable_encoder
 from fastapi import HTTPException, status, Request
 from requests import get, post
-from dotenv import load_dotenv
-from os import environ
+from core.config import ENV_FILE, SP_HOST_AND_PORT
 
-load_dotenv()
-ENDPOINT = environ['SP_HOST_AND_PORT']
-LOG_FILENAME = environ["LOG_FILENAME"]
+ENDPOINT = SP_HOST_AND_PORT
+LOG_PATH = ENV_FILE["LOG_PATH"]
+
+# doing common requests.post() method
 
 class CommonHelper:
-        logging.basicConfig(filename=LOG_FILENAME, filemode='a', level=logging.WARN, encoding='utf-8', format='%(asctime)s - %(levelname)s - %(message)s')
+        logging.basicConfig(filename=LOG_PATH, filemode='a', level=logging.WARN, encoding='utf-8', format='%(asctime)s - %(levelname)s - %(message)s')
         def __init__(self):
                 pass
         
@@ -28,5 +28,5 @@ class CommonHelper:
                         else:
                                HTTPException(status_code=res.status_code, detail=res.reason)
                 except: 
-                        traceback.print_exc(file=LOG_FILENAME) # May fall apart if file does not exist (AttributeError: 'str' object has no attribute 'write')
+                        logging.error(traceback.print_exc())
                         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="INTERNAL SERVER ERROR")
