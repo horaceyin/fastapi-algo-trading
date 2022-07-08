@@ -15,7 +15,7 @@ class PnLService:
     __url = ENDPOINT + DONETRADE
     __df: pd.DataFrame
     accName: str
-    col = ['date', 'TradePrice', 'Position', 'ProductCode', 'Balance']
+    col = ['date', 'TradePrice', 'Position', 'ProductCode', 'Balance', 'InstCode', 'ContractSize']
 
     def __init__(self, accName):
         self.accName = accName
@@ -24,10 +24,12 @@ class PnLService:
         self._pnl = []
         self.__tradeRecords = []
 
+    # get done trade record from SP API
     @classmethod
     def __get_done_trade(cls, request: GetDoneTradeModel):
         return CommonHelper.post_url(cls.__url, request)
 
+    # prepare data for calculating PNL
     @staticmethod
     def __data_for_pnl(posList, priceList):
         buyRecordQueue = deque([{abs(record): priceList[i]} for i, record in enumerate(posList) if record < 0])
@@ -54,6 +56,7 @@ class PnLService:
 
         return result
 
+    # calculate PNL for a product
     @staticmethod
     def __cal_pnl(tradeRecordObj):
         pnlQueue = deque()
@@ -65,16 +68,23 @@ class PnLService:
         pnlNum = min(buyTradeNum, sellTradeNum)
 
         for _ in range(pnlNum): 
-            pnlQueue.append(sellRecordQueue.popleft() - buyRecordQueue.popleft())
+            sell_price = sellRecordQueue.popleft()
+            buy_price = buyRecordQueue.popleft()
+            pnl = sell_price - buy_price
+            pnlQueue.append(
+                tuple(pnl, sell_price)
+            )
 
         return (pnlQueue, pnlNum)
 
+    # create two separated list for positive and negative PNL
     @staticmethod
     def __pnl_separation(pnlQueue: deque):
-        positivePnl = deque([pnl for pnl in pnlQueue if pnl > 0])
-        negativePnl = deque([pnl for pnl in pnlQueue if pnl < 0])
+        positivePnl = deque([(pnl, sell_price) for pnl, sell_price in pnlQueue if pnl > 0])
+        negativePnl = deque([(pnl, sell_price) for pnl, sell_price in pnlQueue if pnl < 0])
         return (positivePnl, negativePnl)
 
+    # data for pandas dataframe feeding
     def __create_data_for_feed(self, sortedDoneTradeRecords):
 
         for trade in sortedDoneTradeRecords:
@@ -90,11 +100,13 @@ class PnLService:
                 [date, tradePrice, ordTotalQty, prodCode, ordTotalQty]
             )
 
+    # pandas dataframe feed
     def __data_feed(self):
         df = pd.DataFrame(data=self.__tradeRecords, columns=PnLService.col)
         df.date = pd.to_datetime(df.date)
         self.__df = df.groupby(['ProductCode', 'date', 'Position', 'Balance'])[['TradePrice']].mean()
 
+    # create dataframe list by product code
     def __create_separated_df(self):
         l=[]
         index_count=1
@@ -113,17 +125,11 @@ class PnLService:
 
         return dataframeList
 
+    # get profit and loss for each done-traded product
     def get_pnl(self, request: GetDoneTradeModel):
-
-        # write performance analysis code below
-
+        pnl = []
         res = self.__get_done_trade(request)
         allTradeData = res['data']['recordData']
-
-        # sortedDoneTradeRecords = sorted(
-        #     res['data']['recordData'], 
-        #     key=lambda trade: (trade['prodCode'], trade['timeStamp'])
-        # )
 
         # create csv file for data feed
         self.__create_data_for_feed(allTradeData)
@@ -134,8 +140,9 @@ class PnLService:
         #create separated dataframe
         dataframeList = self.__create_separated_df()
 
+        # apply for different products
         for dataframe in dataframeList:
-            dataframe.reset_index(level=['Position', 'Balance'], inplace=True)
+            dataframe.reset_index(level=['Position', 'Balance', 'InstCode', 'ContractSize'], inplace=True)
             indexList = dataframe.index.to_list()
             prodCode = indexList[0][0]
             posList = dataframe['Position'].values.tolist()
@@ -144,16 +151,32 @@ class PnLService:
             tradeRecordObj = self.__data_for_pnl(posList, priceList)
             pnlQueue, pnlNum= self.__cal_pnl(tradeRecordObj)
             positivePnl, negativePnl = self.__pnl_separation(pnlQueue)
-            self._pnl.append(
+
+            for code in dataframe['InstCode']: #get one instcode and one contractsize instead of all
+                InstCode = code
+                break 
+            for size in dataframe['ContractSize']:
+                contractSize = size
+                break
+
+            pnl.append(
                 {
-                    'prodCode': prodCode,
-                    "pnl": pnlQueue,
-                    'num': pnlNum,
-                    'positivePnl': positivePnl,
-                    'negativePnl': negativePnl
+                    InstCode:
+                    {
+                        'prodCode': prodCode,
+                        "pnl": pnlQueue,
+                        'contractSize': contractSize,
+                        'num': pnlNum,
+                        'positivePnl': positivePnl,
+                        'negativePnl': negativePnl
+                    }
                 }
             )
             self.totalDoneContract = self.totalDoneContract + pnlNum
+        self._pnl = {   #combine the values in one list if the instcode is the same
+            k: [d.get(k) for d in pnl if k in d]
+            for k in set().union(*pnl)
+        }
         return self._pnl
         #return json.dumps({'msg': 'from done trade analysis.'})
         
