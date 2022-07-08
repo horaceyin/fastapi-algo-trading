@@ -11,11 +11,13 @@ class Report(PnLService):
         self.date = date
         # super class attr: accName, col, tradeNum, totalDoneContract, _pnl
 
-    def __get_totaltrade(self):
-        count=0
-        for _ in self:
-            count=count+1
+    def __totaltrade(self,list):
+        count: int
+        for _ in list:
+            count = count+1
         return count
+    def __get_cost(self):
+        data = self.__data_for_pnl
     
     def __get_totalpnl(self, pnlList):
         totalpnl: int
@@ -26,26 +28,12 @@ class Report(PnLService):
     def __get_sd(self):
         return (statistics.stdev(self))
 
-    @staticmethod
-    def __max(pnl):
-        max = pnl.index(max(pnl))
-        return max
-
-    def __min(pnl):
-        min = pnl.index(min(pnl))
-        return min
-
-    @staticmethod
-    def __cost(self, request):
-        self.__cal_pnl(self)
-        self.taHelper.get_pnl(request)
-        return self.buyRecordQueue*self.buyTradeNum
 
 
     @classmethod
-    def __avg_return(cls, listofpnl):
-        avg_return = ((cls.__get_totalpnl(listofpnl) / cls.__cost())*100)
-        return avg_return
+    # def __avg_return(cls, listofpnl):
+    #     avg_return = ((cls.__get_totalpnl(listofpnl) / cls.)*100)
+    #     return avg_return
 
     def __return_std_dev(self):
         pass
@@ -55,11 +43,6 @@ class Report(PnLService):
         avg_return_sd = statistics.stdev(cls.__avg_return(listofpnl))
         return avg_return_sd
     
-    def __max_return():
-        pass
-
-    def __min_return():
-        pass
 
 
     def get_report(self, request: reportModel):
@@ -69,41 +52,41 @@ class Report(PnLService):
         negativePnl = list(map(lambda x : x['negativePnl'],data))
         contractSize = list(map(lambda x : x['contractSize'],data))
         tradeNumber = list(map(lambda x : x['num'],data))
-        # report = {{
-        # "Total trades": self.__get_totaltrade(),
-        # "Avg. profit": (self.__get_totalpnl()/self.__get_totaltrade()),
-        # "Profits. std. dev.": self.__avg_return_sd,
-        # "Max. profit": self.__min(),
-        # "Max. profit": self.__max(),
+        report = {{
+        "Total trades": tradeNumber,
+        "Avg. profit": (self.__get_totalpnl (positivePnl+negativePnl) / tradeNumber),
+        "Profits. std. dev.": self.__avg_return_sd (self.__get_totalpnl(positivePnl+negativePnl)),
+        "Min. profit": min(pnl),
+        "Max. profit": max(pnl),
         # "Avg. return": self.__avg_return,
         # "Return std. dev.": self.__return_std_dev,
         # "Max. Return": self.__max_return,
         # "Min. Return": self.__min_return
-        # },
-        # {
-        # "Profitable trades": self.__get_totaltrade(),
-        # "Avg. profit": (self.__get_totalpnl()/self.__get_totaltrade()),
-        # "Profits. std. dev.": self.__avg_return_sd,
-        # "Max. profit": self.__min(),
-        # "Max. profit": self.__max(),
+        },
+        {
+        "Profitable trades": self.__get_totalpnl(positivePnl),
+        "Avg. profit": (self.__get_totalpnl(positivePnl)/self.__totaltrade(positivePnl)),
+        "Profits. std. dev.": self.__avg_return_sd (self.__get_totalpnl(positivePnl)),
+        "Min. profit": min(positivePnl),
+        "Max. profit": max(positivePnl),
         # "Avg. return": self.__avg_return,
         # "Return std. dev.": self.__return_std_dev,
         # "Max. Return": self.__max_return,
         # "Min. Return": self.__min_return   
-        # },
-        # {
-        # "Unprofitable trades": self.__get_totaltrade(),
-        # "Avg. loss": (self.__get_totalpnl()/self.__get_totaltrade()),
-        # "Losses. std. dev.": self.__avg_return_sd,
-        # "Max. Loss": self.__min(),
-        # "Max. Loss": self.__max(),
+        },
+        {
+        "Unprofitable trades": self.__get_totalpnl(negativePnl),
+        "Avg. loss": (self.__get_totalpnl(negativePnl)/self.__totaltrade(negativePnl)),
+        "Losses. std. dev.": self.__avg_return_sd(self.__get_totalpnl(negativePnl)),
+        "Min. Loss": min(negativePnl),
+        "Max. Loss": max(negativePnl),
         # "Avg. return": self.__avg_return,
         # "Return std. dev.": self.__return_std_dev,
         # "Max. Return": self.__max_return,
         # "Min. Return": self.__min_return
-        # }}
+        }}
         # self.__get_done_trade
-        return pnl
+        return report
         
         #total trade = total count of pnl
         #total pnl / total count of pnl = avg. profit
