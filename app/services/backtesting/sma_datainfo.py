@@ -39,6 +39,7 @@ class DataInfo:
         print("Final portfolio value: $%.2f" % strat.getResult())
         print("Cumulative returns: %.4f %%" % (retAnalyzer.getCumulativeReturns()[-1] * 100))
         print("Sharpe ratio: %.2f" % (sharpeRatioAnalyzer.getSharpeRatio(0.05))) 
+        # Max. 1638 cases for this to be calculated
         # Error in lines 265, 257: C:\Users\sp\Desktop\project\fastapi-algo-trading\.venv\Lib\site-packages\numpy\core\_methods.py
         print("Max. drawdown: %.4f %%" % (drawDownAnalyzer.getMaxDrawDown() * 100))
         print("Longest drawdown duration: %s" % (drawDownAnalyzer.getLongestDrawDownDuration()))

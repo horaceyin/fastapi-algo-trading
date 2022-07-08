@@ -12,7 +12,6 @@ import pandas as pd
 from datetime import datetime
 import time
 from common.common_helper import CommonHelper
-from schemas.backtesting_schemas import BacktestingModel
 from services.backtesting.sma_datainfo import DataInfo
 
 class sma_backtest:
@@ -94,7 +93,7 @@ class sma_backtest:
         retAnalyzer = returns.Returns()
         strat.attachAnalyzer(retAnalyzer)
 
-        sharpeRatioAnalyzer = sharpe.SharpeRatio()
+        sharpeRatioAnalyzer = sharpe.SharpeRatio(useDailyReturns=False)
         strat.attachAnalyzer(sharpeRatioAnalyzer)
 
         drawDownAnalyzer = drawdown.DrawDown()
