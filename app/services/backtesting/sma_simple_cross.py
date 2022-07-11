@@ -54,9 +54,13 @@ class SMACrossOver(strategy.BacktestingStrategy):
             "mode": 0
         }) # , verify=False, timeout=None
         dataDict = json.loads(access.text) 
-        print(dataDict)
-        token2 = dataDict['data']['sessionToken'] # Session token to access other requests
+        try:
+            token2 = dataDict['data']['sessionToken'] # Session token to access other requests
+        except:
+            print("The system currently cannot be accessed. Try testing again later.")
+            print(quit())
         # To transfer dictionary object to below
+        # {'result_code': -1, 'result_msg': 'API REQUEST FAILED', 'timestamp': 1657503243, 'log_message': 'Error Class class com.sharppoint.apiSpadminWeb.controllers.user.AdminLoginContoller : nested exception is org.apache.ibatis.exceptions.PersistenceException: \r\n### Error updating database.  Cause: org.springframework.jdbc.CannotGetJdbcConnectionException: Failed to obtain JDBC Connection; nested exception is java.sql.SQLTransientConnectionException: HikariPool-1 - Connection is not available, request timed out after 30012ms.\r\n### The error may exist in class path resource [com/sharppoint/apiSpadminWeb/dao/mapper/userLog/UserLogMapper.xml]\r\n### The error may involve com.sharppoint.apiSpadminWeb.dao.orm.userLog.UserLogMapper.insertSelective\r\n### The error occurred while executing an update\r\n### Cause: org.springframework.jdbc.CannotGetJdbcConnectionException: Failed to obtain JDBC Connection; nested exception is java.sql.SQLTransientConnectionException: HikariPool-1 - Connection is not available, request timed out after 30012ms.'}
         alltrades = []
 
         # Sort moments below by date, then by time
@@ -93,7 +97,7 @@ class SMACrossOver(strategy.BacktestingStrategy):
                 "Price": recordval1
             }
         buymoments.append(newinfo)
-        self.__time = self.__time + 1
+        self.__time += 1
         print ("New portfolio value: $%.2f" % self.getBroker().getCash())
         print(self.__time)
 
@@ -119,7 +123,7 @@ class SMACrossOver(strategy.BacktestingStrategy):
         sellmoments.append(newinfo)
         self.__position = None
 
-        self.__time = self.__time + 1
+        self.__time += 1
         print("New portfolio value: $%.2f" % self.getBroker().getCash())
         print(self.__time)
         
@@ -170,7 +174,7 @@ class SMACrossOver(strategy.BacktestingStrategy):
                         def meanfunc(lst):
                             sum = 0
                             for m in lst:
-                                sum = sum + m["Price"]
+                                sum += m["Price"]
                             mean = sum/len(lst)
                             return mean
                         pnl = meanfunc(l1)/meanfunc(l2)

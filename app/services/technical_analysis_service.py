@@ -2,6 +2,8 @@ from core.config import SP_HOST_AND_PORT
 from collections import deque
 from datetime import datetime
 import pandas as pd
+from pandas.core.frame import DataFrame
+from requests import request
 from core.endpoints import DONETRADE
 from schemas.technical_analysis_schemas import GetDoneTradeModel
 from common.common_helper import CommonHelper
@@ -15,7 +17,7 @@ class PnLService:
     __url = ENDPOINT + DONETRADE
     __df: pd.DataFrame
     accName: str
-    col = ['date', 'TradePrice', 'Position', 'ProductCode', 'Balance']
+    col = ['date', 'TradePrice', 'Position', 'ProductCode', 'Balance', 'InstCode', 'ContractSize']
 
     def __init__(self, accName):
         self.accName = accName
@@ -30,20 +32,26 @@ class PnLService:
 
     @staticmethod
     def __data_for_pnl(posList, priceList):
+        # Creates double ended queue for buying and selling; converts values accordingly
         buyRecordQueue = deque([{abs(record): priceList[i]} for i, record in enumerate(posList) if record < 0])
         sellRecordQueue = deque([{abs(record): priceList[i]} for i, record in enumerate(posList) if record > 0])
-        
+        # e.g. q = deque({1:2000}, {2:3000})
+
         for _ in range(len(buyRecordQueue)):
-            buyTrade = buyRecordQueue.popleft()
-            num, price = list(buyTrade.items())[0]
+            buyTrade = buyRecordQueue.popleft() # Get earliest buy
+            # buyTrade is a dictionary; buyTrade.items() is a dict_items containing a list containing a tuple
+            # num = list(buyTrade.items())[0] # num becomes a tuple
+            num, price = list(buyTrade.items())[0] # num gets first value in tuple and removes it; price gets first value in new tuple
             for _ in range(num):
-                buyRecordQueue.append(price)
+                buyRecordQueue.append(price) # Modifies list such that only prices remain in order of occurance 
 
         for _ in range(len(sellRecordQueue)):
-            sellTrade = sellRecordQueue.popleft()
-            num, price = list(sellTrade.items())[0]
+            sellTrade = sellRecordQueue.popleft() # Get earliest sell
+            # sellTrade is a dictionary; sellTrade.items() is a dict_items containing a list containing a tuple
+            # num = list(buyTrade.items())[0] # num becomes a tuple
+            num, price = list(sellTrade.items())[0] # num gets first value in tuple and removes it; price gets first value in new tuple
             for _ in range(num):
-                sellRecordQueue.append(price)
+                sellRecordQueue.append(price) # Modifies list such that only prices remain in order of occurance 
 
         result = {
             'buyRecordQueue': buyRecordQueue,
@@ -68,6 +76,24 @@ class PnLService:
             pnlQueue.append(sellRecordQueue.popleft() - buyRecordQueue.popleft())
 
         return (pnlQueue, pnlNum)
+    
+    @staticmethod
+    def __returns(prodCode): # Return of product overall; get list of pnl of specific product, then sum up pnl, then sum/total_cost * 100% 
+        # pnlQueue = deque()
+        # buyRecordQueue: deque = tradeRecordObj['buyRecordQueue']
+        # sellRecordQueue: deque = tradeRecordObj['sellRecordQueue']
+        # buyTradeNum: int = tradeRecordObj['buyTradeNum']
+        # sellTradeNum: int = tradeRecordObj['sellTradeNum']
+        
+        # pnlNum = min(buyTradeNum, sellTradeNum)
+
+        # for _ in range(pnlNum):
+        #     totalCost: int
+        #     for i in buyRecordQueue:
+        #         totalCost += i
+        #     pnlQueue.append((sellRecordQueue.popleft() - buyRecordQueue.popleft())/totalCost)
+
+        return returns # Returns for each product
 
     @staticmethod
     def __pnl_separation(pnlQueue: deque):
@@ -77,23 +103,25 @@ class PnLService:
 
     def __create_data_for_feed(self, sortedDoneTradeRecords):
 
-        for trade in sortedDoneTradeRecords:
+        for trade in sortedDoneTradeRecords: # For each trade in the trading records
             date = datetime.fromtimestamp(trade['timeStamp']).strftime('%Y-%m-%d %H:%M:%S')
             ordTotalQty: int
             tradePrice = trade['tradePrice']
             prodCode = trade['prodCode']
+            instCode = trade['instCode']
+            contractSize = trade['tsContractSize']
             if trade["buySell"]=="B": ordTotalQty = -trade['ordTotalQty']
             elif trade["buySell"]=="S": ordTotalQty = trade['ordTotalQty']
             self.tradeNum = self.tradeNum + 1
 
             self.__tradeRecords.append(
-                [date, tradePrice, ordTotalQty, prodCode, ordTotalQty]
+                [date, tradePrice, ordTotalQty, prodCode, ordTotalQty, instCode, contractSize]
             )
 
     def __data_feed(self):
         df = pd.DataFrame(data=self.__tradeRecords, columns=PnLService.col)
         df.date = pd.to_datetime(df.date)
-        self.__df = df.groupby(['ProductCode', 'date', 'Position', 'Balance'])[['TradePrice']].mean()
+        self.__df = df.groupby(['ProductCode', 'date', 'Position', 'Balance', 'InstCode', 'ContractSize'])[['TradePrice']].mean()
 
     def __create_separated_df(self):
         l=[]
@@ -135,26 +163,45 @@ class PnLService:
         dataframeList = self.__create_separated_df()
 
         for dataframe in dataframeList:
-            dataframe.reset_index(level=['Position', 'Balance'], inplace=True)
+            dataframe.reset_index(level=['Position', 'Balance','InstCode','ContractSize'], inplace=True)
             indexList = dataframe.index.to_list()
             prodCode = indexList[0][0]
             posList = dataframe['Position'].values.tolist()
             priceList = dataframe['TradePrice'].values.tolist()
-            
             tradeRecordObj = self.__data_for_pnl(posList, priceList)
             pnlQueue, pnlNum= self.__cal_pnl(tradeRecordObj)
+
             positivePnl, negativePnl = self.__pnl_separation(pnlQueue)
+
+            for code in dataframe['InstCode']: #get one instcode and one contractsize instead of all
+                InstCode = code
+                break 
+            for size in dataframe['ContractSize']:
+                contractSize = size
+                break
             self._pnl.append(
                 {
+                    InstCode:
+                    {
                     'prodCode': prodCode,
                     "pnl": pnlQueue,
+                    'contractSize': contractSize,
                     'num': pnlNum,
                     'positivePnl': positivePnl,
-                    'negativePnl': negativePnl
+                    'negativePnl': negativePnl,
+                    'buy price': self.__buy_price, 
+                    'returns': ,
+                    'posreturns': ,
+                    'negreturns': 
+                    }
                 }
             )
             self.totalDoneContract = self.totalDoneContract + pnlNum
-        return self._pnl
+        pnl = {   #combine the values in one list if the instcode is the same
+            k: [d.get(k) for d in self._pnl if k in d]
+            for k in set().union(*self._pnl)
+        }
+        return pnl
         #return json.dumps({'msg': 'from done trade analysis.'})
         
         # if exception rasied,
