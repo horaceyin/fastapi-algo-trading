@@ -17,6 +17,8 @@ from services.backtesting.sma_datainfo import DataInfo
 # Access info from .env
 ENDPOINT = SP_HOST_AND_PORT
 
+### 
+
 class SMACrossOver(strategy.BacktestingStrategy): 
     def __init__(self, feed, instrument, smaPeriod, boundaryValue):
         super(SMACrossOver, self).__init__(feed)
@@ -33,9 +35,10 @@ class SMACrossOver(strategy.BacktestingStrategy):
     #     return super().onBars(bars)
         
     def get_sma(self):
+        # Required to be able to access system information (e.g. User's portfolio, current currency exchange rates)
         global access, token2, alltrades, buymoments, sellmoments
         accessurl = ENDPOINT + ADMININFO
-        # Only required to be able to access system 
+        
         # May fail due to server being unable to respond; currently testing potential solutions
         # TimeoutError: [WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond
         # (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x00000282A1E07CA0>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
@@ -57,18 +60,17 @@ class SMACrossOver(strategy.BacktestingStrategy):
         try:
             token2 = dataDict['data']['sessionToken'] # Session token to access other requests
         except:
-            print("The system currently cannot be accessed. Try testing again later.")
-            print(quit())
+            raise SystemExit("The system currently cannot be accessed. Try testing again later.")
         # To transfer dictionary object to below
         # {'result_code': -1, 'result_msg': 'API REQUEST FAILED', 'timestamp': 1657503243, 'log_message': 'Error Class class com.sharppoint.apiSpadminWeb.controllers.user.AdminLoginContoller : nested exception is org.apache.ibatis.exceptions.PersistenceException: \r\n### Error updating database.  Cause: org.springframework.jdbc.CannotGetJdbcConnectionException: Failed to obtain JDBC Connection; nested exception is java.sql.SQLTransientConnectionException: HikariPool-1 - Connection is not available, request timed out after 30012ms.\r\n### The error may exist in class path resource [com/sharppoint/apiSpadminWeb/dao/mapper/userLog/UserLogMapper.xml]\r\n### The error may involve com.sharppoint.apiSpadminWeb.dao.orm.userLog.UserLogMapper.insertSelective\r\n### The error occurred while executing an update\r\n### Cause: org.springframework.jdbc.CannotGetJdbcConnectionException: Failed to obtain JDBC Connection; nested exception is java.sql.SQLTransientConnectionException: HikariPool-1 - Connection is not available, request timed out after 30012ms.'}
         alltrades = []
 
-        # Sort moments below by date, then by time
-        buymoments = [] # Make list of dictionaries for buying moments # Need to find way to get date and time
+        # Sort moments below by date, then by time (Only used to display data below)
+        buymoments = [] # Make list of dictionaries for buying moments 
         buymoments.sort(key = lambda x: datetime.strptime(x['Date'], '%Y-%m-%d'))
         buymoments.sort(key = lambda x: datetime.strptime(x['Time'], '%H-%M-%S'))
         
-        sellmoments =[] # Make list of dictionaries for selling moments # Need to find way to get date and time
+        sellmoments =[] # Make list of dictionaries for selling moments 
         sellmoments.sort(key = lambda x: datetime.strptime(x['Date'], '%Y-%m-%d'))
         sellmoments.sort(key = lambda x: datetime.strptime(x['Time'], '%H-%M-%S'))
         return self.__sma # <pyalgotrade.technical.ma.SMA object at 0x11c0644c0>
@@ -77,18 +79,22 @@ class SMACrossOver(strategy.BacktestingStrategy):
         print ("Initial portfolio value: $%.2f" % self.getBroker().getCash()) # Gives initial portfolio value
 
     def on_enter_ok(self, position): # self is current pyalgotrade.bar.Bars
-        execInfo = position.getEntryOrder().getExecutionInfo()
-        DataInfo(self.__instrument, token2).getInfo()
+        # Getting order information
+        execInfo = position.getEntryOrder().getExecutionInfo() 
+
+        # Login for recordsize and ccyhkd
+        DataInfo(self.__instrument, token2).getInfo() 
         recordsize = DataInfo(self.__instrument, token2).recordSize()
         ccyhkd = DataInfo(self.__instrument, token2).ccyRate()
-        recordval1 = recordsize * execInfo.getPrice() * ccyhkd # Contract size multipled by number of points in HKD
-        # recordval1 = execInfo.getPrice() # Number of points # TESTING CODE
 
+        # Contract size multipled by number of points in HKD
+        recordval1 = recordsize * execInfo.getPrice() * ccyhkd 
+        # recordval1 = execInfo.getPrice() # Number of points # TESTING CODE
         self.info("BUY at $%.2f" % (recordval1)) # Actual price # Trying to find quantity 
         # Error message is from https://github.com/gbeced/pyalgotrade/blob/master/pyalgotrade/broker/fillstrategy.py, line 323
         # order.getId() to get id of current trade
 
-        # self.info("BUY at $%.2f" % (execInfo.getPrice())) # In terms of points
+        # Collecting date and time information to add new trade and add to buymoments (Only used to display data below)
         currenttime = self.getCurrentDateTime()
         newinfo = {
                 "Date": currenttime.date().strftime('%Y-%m-%d'), 
@@ -97,6 +103,8 @@ class SMACrossOver(strategy.BacktestingStrategy):
                 "Price": recordval1
             }
         buymoments.append(newinfo)
+
+        # Display new portfolio value
         self.__time += 1
         print ("New portfolio value: $%.2f" % self.getBroker().getCash())
         print(self.__time)
@@ -105,14 +113,20 @@ class SMACrossOver(strategy.BacktestingStrategy):
         self.__position = None
     
     def on_exit_ok(self, position): # self is current pyalgotrade.bar.Bars
+        # Getting order information
         execInfo = position.getExitOrder().getExecutionInfo()
+        
+        # Login for recordsize and ccyhkd
         DataInfo(self.__instrument, token2).getInfo()
         recordsize = DataInfo(self.__instrument, token2).recordSize()
         ccyhkd = DataInfo(self.__instrument, token2).ccyRate()
+        
+        # Contract size multipled by number of points in HKD
         recordval2 = recordsize * execInfo.getPrice() * ccyhkd # Contract size multipled by number of points
         # recordval2 = execInfo.getPrice() # Number of points # TESTING CODE
-
         self.info("SELL at $%.2f" % (recordval2)) # Actual price
+
+        # Collecting date and time information to add new trade and add to sellmoments (Only used to display data below)
         currenttime = self.getCurrentDateTime()
         newinfo = {
                 "Date": currenttime.date().strftime('%Y-%m-%d'), 
@@ -121,8 +135,9 @@ class SMACrossOver(strategy.BacktestingStrategy):
                 "Price": recordval2
             }
         sellmoments.append(newinfo)
-        self.__position = None
 
+        # Display new portfolio value
+        self.__position = None
         self.__time += 1
         print("New portfolio value: $%.2f" % self.getBroker().getCash())
         print(self.__time)
@@ -131,9 +146,12 @@ class SMACrossOver(strategy.BacktestingStrategy):
         # If the exit was canceled, re-submit it.
         self.__position.exitMarket()
 
+    # Called when bar is created
     def onBars(self, bars): # self is current pyalgotrade.bar.Bars
-        # Called when bar is created
+        # Getting order information
         execInfo = bars[self.__instrument]
+
+        # Login for recordsize and ccyhkd
         DataInfo(self.__instrument, token2).getInfo()
         recordsize = DataInfo(self.__instrument, token2).recordSize()
         ccyhkd = DataInfo(self.__instrument, token2).ccyRate()
@@ -142,20 +160,20 @@ class SMACrossOver(strategy.BacktestingStrategy):
         
         # Reach end of self.__sma list or skip over if self.getBroker().getCash() will drop below given value
         # if self.__sma[-1] is None:
-        if (self.__sma[-1] is None or self.getBroker().getCash() < self.__boundaryValue): # Need to find way to limit number of positions
+        if (self.__sma[-1] is None or self.getBroker().getCash() < self.__boundaryValue): # Need to find way to increase and limit number of positions
             return
         
         # If a position was not opened, check if we should enter a long position. # Heavily simplified version of SMA
         if self.__position is None:
             if cross.cross_above(self.__prices, self.__sma) > 0 and recordval3 != 0: # Line crosses over and recordval3 is not 0
-                def duplremov(l, m): # Remove duplicates
+                # Remove duplicates
+                def duplremov(l, m): 
                     seen = set()
                     for d in l:
                         t = tuple(sorted(d.items()))
                         if t not in seen:
                             seen.add(t)
                             m.append(d)
-
                 alltrading = []
                 duplremov(alltrades, alltrading)
 

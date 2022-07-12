@@ -8,8 +8,8 @@ class GetDoneTradeModel(BaseModel):
     targetAccNo: str = 'ANSONLI01'
     fromTime: Optional[str] = None
     toTime: Optional[str] = None
-    sortBy: Optional[str] = "prod_code,time_stamp"
-    sort: Optional[str] = "ASC,ASC"
+    sortBy: Optional[str] = "prod_code, time_stamp"
+    sort: Optional[str] = "ASC, ASC"
 
 # class reportModel(GetDoneTradeModel):
 #     pass
