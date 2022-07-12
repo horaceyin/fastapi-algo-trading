@@ -8,7 +8,7 @@ class BacktestingService:
 
     @staticmethod
     def run_backtesting(request: BacktestingModel): # Make request that follows the BacktestingModel format
-
+        
         return request
 
         # # return json.dumps({'msg': 'from backtesting.'}) # Result given

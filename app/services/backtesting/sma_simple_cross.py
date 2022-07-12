@@ -1,7 +1,6 @@
 from pyalgotrade import strategy
 from pyalgotrade.technical import ma
 from pyalgotrade.technical import cross
-from services.backtesting import trading_strategy
 # from pyalgotrade.stratanalyzer import returns
 # retAnalyzer = returns.Returns()
 

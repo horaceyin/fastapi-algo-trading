@@ -1,8 +1,6 @@
 from enum import Enum
-from typing import List, Optional, Tuple
-
+from typing import List, Optional
 from pydantic import BaseModel, root_validator, validator
-
 
 class TimeConverter(Enum):
     DAY = 86400
@@ -78,9 +76,9 @@ class BacktestingModel(BaseModel):
         return day
 
     @validator('portfolioValue')
-    def portfolio_check(cls, portfol_val):
-        if portfol_val <= 0: raise ValueError('Portfolio value should not be equal to or less than 0.')
-        return portfol_val
+    def portfolio_check(cls, portfolio_val):
+        if portfolio_val <= 0: raise ValueError('Portfolio value should not be equal to or less than 0.')
+        return portfolio_val
 
     @validator('boundaryValue')
     def boundary_check(cls, boundary, values):
