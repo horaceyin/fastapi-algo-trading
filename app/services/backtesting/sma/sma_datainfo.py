@@ -90,7 +90,7 @@ class DataInfo:
             print("Min. return: %2.3f %%" % (returns.min() * 100))
 
     def getInfo(self):
-        global recordDiction
+        # global recordDiction
         produrl = ENDPOINT + PRODINFO
         productinfo = requests.post(produrl, 
         json = {
@@ -100,9 +100,9 @@ class DataInfo:
             "dataStartFromRecord": 0
         })
         recordDiction = json.loads(productinfo.text) 
-        # return recordDiction
+        return recordDiction
 
-    def recordSize(self):
+    def recordSize(self, productInfo):
         # produrl = ENDPOINT + PRODINFO
         # productinfo = requests.post(produrl, 
         # json = {
@@ -111,14 +111,18 @@ class DataInfo:
         #     "dataRecordTotal": 100,
         #     "dataStartFromRecord": 0
         # })
-        # recordDiction = json.loads(productinfo.text) 
-        if recordDiction['result_code'] == 40011:
+        recordDiction = productInfo 
+        try:
+            recordsize = recordDiction['data']['jsonData']['contractSize']
+        except:
             recordsize = 0
-        else:
-            recordsize = recordDiction['data']['jsonData']['contractSize'] # Size of product
+        # if recordDiction['result_code'] == 40011 or recordDiction['result_code'] == -52020004:
+        #     recordsize = 0
+        # else:
+        #     recordsize = recordDiction['data']['jsonData']['contractSize'] # Size of product
         return recordsize
 
-    def ccyRate(self):
+    def ccyRate(self, productInfo):
         # produrl = ENDPOINT + PRODINFO
         # productinfo = requests.post(produrl, 
         # json = {
@@ -127,11 +131,15 @@ class DataInfo:
         #     "dataRecordTotal": 100,
         #     "dataStartFromRecord": 0
         # })
-        # recordDiction = json.loads(productinfo.text) 
-        if recordDiction['result_code'] == 40011:
-            recordccy = "HKD"
-        else:
+        recordDiction = productInfo 
+        try:
             recordccy = recordDiction['data']['jsonData']['ccy'] # Currency of product
+        except:
+            recordccy = "HKD"
+        # if recordDiction['result_code'] == 40011 or recordDiction['result_code'] == -52020004:
+        #     recordccy = "HKD"
+        # else:
+        #     recordccy = recordDiction['data']['jsonData']['ccy'] 
     #     return recordccy
 
     # def ccyRate(self):
@@ -142,19 +150,27 @@ class DataInfo:
             "sessionToken": self.__token2
         })
         ccyrateintext = json.loads(ccyratein.text) 
-        if ccyrateintext['result_code'] == 40011:
-            ccyrateinval = 1 
-        else: 
+        # if ccyrateintext['result_code'] == 40011 or recordDiction['result_code'] == -52020004:
+        #     ccyrateinval = 1 
+        # else: 
+        #     ccyrateinval = ccyrateintext['data']['recordData'][0]['rate'] # USD to recordccy
+        try:
             ccyrateinval = ccyrateintext['data']['recordData'][0]['rate'] # USD to recordccy
+        except:
+            ccyrateinval = 1
         ccyrateout = requests.post(ccyrate, 
         json = {
             "ccy": "HKD", 
             "sessionToken": self.__token2
         })
         ccyrateouttext = json.loads(ccyrateout.text) 
-        if ccyrateouttext['result_code'] == 40011:
-            ccyrateoutval = 1 
-        else: 
-            ccyrateoutval = ccyrateouttext['data']['recordData'][0]['rate'] # USD to HKD
+        # if ccyrateouttext['result_code'] == 40011 or recordDiction['result_code'] == -52020004:
+        #     ccyrateoutval = 1 
+        # else: 
+        #     ccyrateoutval = ccyrateouttext['data']['recordData'][0]['rate'] # USD to HKD
+        try:
+            ccyrateoutval = ccyrateouttext['data']['recordData'][0]['rate'] # USD to recordccy
+        except:
+            ccyrateoutval = 1
         ccyhkd = ccyrateoutval/ccyrateinval
         return ccyhkd

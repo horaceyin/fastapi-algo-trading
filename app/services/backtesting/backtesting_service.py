@@ -1,8 +1,8 @@
 from os import environ
 import json
 from schemas.backtesting_schemas import BacktestingModel
-from services.backtesting.sma_backtest_service import sma_backtest
-from services.backtesting.sma_login_details import portSize
+from services.backtesting.sma.sma_backtest_service import sma_backtest
+from services.backtesting.sma.sma_login_details import portSize
 
 class BacktestingService:
     def __init__(self):

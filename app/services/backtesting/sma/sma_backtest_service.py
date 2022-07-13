@@ -1,4 +1,4 @@
-from services.backtesting.sma_simple_cross import SMACrossOver
+from services.backtesting.sma.sma_simple_cross import SMACrossOver
 from pyalgotrade import plotter
 from pyalgotrade import broker
 from pyalgotrade.barfeed import csvfeed
@@ -12,7 +12,7 @@ import pandas as pd
 from datetime import datetime
 import time
 from common.common_helper import CommonHelper
-from services.backtesting.sma_datainfo import DataInfo
+from services.backtesting.sma.sma_datainfo import DataInfo
 
 class sma_backtest:
     def __init__(self, instrument, day, second, smaPeriod, plot, startcash, barsum, boundaryValue):
@@ -86,7 +86,7 @@ class sma_backtest:
         print("")
 
         myFeed.addBarsFromCSV(self.__instrument, csvName)
-        strat = SMACrossOver(myFeed, self.__instrument, self.__smaPeriod, self.__boundaryValue) 
+        strat = SMACrossOver(myFeed, self.__instrument, self.__smaPeriod, self.__boundaryValue) # When testing, user needs to use SP feed (similar to pyalgotrade barfeed) to create feed object; trying to pass in own feed; SMACrossover
 
         strat.getBroker().setCash(self.__startcash) # Set new value of portfolio
 

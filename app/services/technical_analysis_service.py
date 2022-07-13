@@ -139,9 +139,13 @@ class PnLService:
 
         # write performance analysis code below
 
-        res = self.__get_done_trade(request)
+        res = self.__get_done_trade(request) # Admin access right required, cannot target own admin account
+        print(res)
         try:
-            allTradeData = res['data']['recordData'] # Currently cannot be accessed
+            allTradeData = res['data']['recordData'] 
+            # {'result_code': -52020004, 'result_msg': 'API USER NO ACCESS RIGHT', 'timestamp': 1657697876}
+            # {'result_code': 40011, 'result_msg': 'ACCESS UNAUTHORIZED', 'timestamp': 1657701648}
+            # None
         except:
             raise SystemExit("The system currently cannot be accessed. Try testing again later.")
         # sortedDoneTradeRecords = sorted(

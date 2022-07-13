@@ -12,7 +12,7 @@ import datetime
 from core.config import SP_HOST_AND_PORT
 
 from core.endpoints import ADMININFO
-from services.backtesting.sma_datainfo import DataInfo
+from services.backtesting.sma.sma_datainfo import DataInfo
 
 # Access info from .env
 ENDPOINT = SP_HOST_AND_PORT
@@ -36,28 +36,30 @@ class SMACrossOver(strategy.BacktestingStrategy):
         
     def get_sma(self):
         # Required to be able to access system information (e.g. User's portfolio, current currency exchange rates)
-        global access, token2, alltrades, buymoments, sellmoments
+        global access, token2, alltrades, buymoments, sellmoments, productInfo
         accessurl = ENDPOINT + ADMININFO
-        
-        # May fail due to server being unable to respond; currently testing potential solutions
-        # TimeoutError: [WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond
-        # (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x00000282A1E07CA0>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
-        # Currently system is down entirely
-        # requests.exceptions.ConnectTimeout: HTTPConnectionPool(host='192.168.123.221', port=9030): Max retries exceeded with url: /apiTraderAdmin/accessRight/userLogin (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x000002B0B3F65BA0>, 'Connection to 192.168.123.221 timed out. (connect timeout=None)'))
 
-
+        # CURRENTLY TAKING FAR TOO LONG TO LOAD AND END UP WITH NO CHANGES
         # requests.adapters.DEFAULT_RETRIES = 5 # Increase retries number
         # s = requests.session()
         # s.keep_alive = False # Disable keep alive
-        access = requests.post(accessurl, 
-        json = {
-            "password": "sp",
-            "userId": "SPNICHOLAS",
-            "apiAppId": "SP_F",
-            "mode": 0
-        }) # , verify=False, timeout=None
-        dataDict = json.loads(access.text) 
+        # access = requests.post(accessurl, 
+        # json = {
+        #     "password": "sp",
+        #     "userId": "SPNICHOLAS",
+        #     "apiAppId": "SP_F",
+        #     "mode": 0
+        # }, timeout=10)
+        # dataDict = json.loads(access.text) 
         try:
+            access = requests.post(accessurl, 
+            json = {
+                "password": "sp",
+                "userId": "SPNICHOLAS",
+                "apiAppId": "SP_F",
+                "mode": 0
+            }, timeout=(10, 10))
+            dataDict = json.loads(access.text) 
             token2 = dataDict['data']['sessionToken'] # Session token to access other requests
         except:
             raise SystemExit("The system currently cannot be accessed. Try testing again later.")
@@ -73,6 +75,9 @@ class SMACrossOver(strategy.BacktestingStrategy):
         sellmoments =[] # Make list of dictionaries for selling moments 
         sellmoments.sort(key = lambda x: datetime.strptime(x['Date'], '%Y-%m-%d'))
         sellmoments.sort(key = lambda x: datetime.strptime(x['Time'], '%H-%M-%S'))
+        
+        # Login for recordsize and ccyhkd
+        productInfo = DataInfo(self.__instrument, token2).getInfo() 
         return self.__sma # <pyalgotrade.technical.ma.SMA object at 0x11c0644c0>
 
     def on_start(self):
@@ -82,10 +87,8 @@ class SMACrossOver(strategy.BacktestingStrategy):
         # Getting order information
         execInfo = position.getEntryOrder().getExecutionInfo() 
 
-        # Login for recordsize and ccyhkd
-        DataInfo(self.__instrument, token2).getInfo() 
-        recordsize = DataInfo(self.__instrument, token2).recordSize()
-        ccyhkd = DataInfo(self.__instrument, token2).ccyRate()
+        recordsize = DataInfo(self.__instrument, token2).recordSize(productInfo)
+        ccyhkd = DataInfo(self.__instrument, token2).ccyRate(productInfo)
 
         # Contract size multipled by number of points in HKD
         recordval1 = recordsize * execInfo.getPrice() * ccyhkd 
@@ -116,10 +119,8 @@ class SMACrossOver(strategy.BacktestingStrategy):
         # Getting order information
         execInfo = position.getExitOrder().getExecutionInfo()
         
-        # Login for recordsize and ccyhkd
-        DataInfo(self.__instrument, token2).getInfo()
-        recordsize = DataInfo(self.__instrument, token2).recordSize()
-        ccyhkd = DataInfo(self.__instrument, token2).ccyRate()
+        recordsize = DataInfo(self.__instrument, token2).recordSize(productInfo)
+        ccyhkd = DataInfo(self.__instrument, token2).ccyRate(productInfo)
         
         # Contract size multipled by number of points in HKD
         recordval2 = recordsize * execInfo.getPrice() * ccyhkd # Contract size multipled by number of points
@@ -151,11 +152,11 @@ class SMACrossOver(strategy.BacktestingStrategy):
         # Getting order information
         execInfo = bars[self.__instrument]
 
-        # Login for recordsize and ccyhkd
-        DataInfo(self.__instrument, token2).getInfo()
-        recordsize = DataInfo(self.__instrument, token2).recordSize()
-        ccyhkd = DataInfo(self.__instrument, token2).ccyRate()
-        recordval3 = recordsize * execInfo.getPrice() * ccyhkd # Contract size multipled by number of points in HKD
+        recordsize = DataInfo(self.__instrument, token2).recordSize(productInfo)
+        ccyhkd = DataInfo(self.__instrument, token2).ccyRate(productInfo)
+
+        # Contract size multipled by number of points in HKD
+        recordval3 = recordsize * execInfo.getPrice() * ccyhkd 
         # recordval3 = execInfo.getPrice() # Number of points # TESTING CODE
         
         # Reach end of self.__sma list or skip over if self.getBroker().getCash() will drop below given value
