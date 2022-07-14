@@ -112,3 +112,4 @@ class sma_backtest:
         if self.__plot:
             pass
             # plt.plot()
+            # plt.savePlot("app/services/backtesting/sma/image.png", format="png") 
