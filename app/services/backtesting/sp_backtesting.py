@@ -9,6 +9,10 @@ class SPBacktesting(BacktestingStrategy):
     def __init__(self, barFeed, cash_or_brk=1000000):
         super(SPBacktesting, self).__init__(barFeed, cash_or_brk)
 
+    # @abc.abstractmethod
+    # def get_historical_data(self):
+    #     return NotImplementedError
+
     @abc.abstractmethod
     def onBars(self, bars):
         return NotImplementedError

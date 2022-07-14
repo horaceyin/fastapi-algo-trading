@@ -27,23 +27,24 @@ class sma_backtest:
 
     # Formats text data for each trade
     @staticmethod
-    def formatting_data(data):
-        myData = data
-        print(myData)
-    # def formatting_data(status_code, text): # text of data; modify formatting from browser format
-    #     if status_code < 400:
-        # myData = text
-        # tempData1 = myData.split(':')
-        # tempData2 = tempData1[4].split(',0\r\n') # Remove 0 at end of each line
-        # tempData3 = map(lambda bar: bar.split(','), tempData2) # Format data for processing in the future
-        # newData = list(tempData3)
-        # newData.pop()
-        # for i, bar in enumerate(newData):
-        #     oriDate = bar.pop()
-        #     dateTime = datetime.fromtimestamp(int(oriDate))
-        #     strDate = dateTime.strftime('%Y-%m-%d %H:%M:%S')
-        #     bar.insert(0, strDate)
-        # return newData
+    # def formatting_data(data):
+    #     myData = data
+    #     print(myData)
+    def formatting_data(status_code, text): # text of data; modify formatting from browser format
+        if status_code < 400:
+            myData = text
+            tempData1 = myData.split(':')
+            tempData2 = tempData1[4].split('\r\n') # Remove 0 at end of each line
+            tempData3 = tempData2.pop()
+            tempData3 = map(lambda bar: bar.split(','), tempData2) # Format data for processing in the future
+            newData = list(tempData3)
+            newData.pop()
+            for i, bar in enumerate(newData):
+                oriDate = bar.pop()
+                dateTime = datetime.fromtimestamp(int(oriDate))
+                strDate = dateTime.strftime('%Y-%m-%d %H:%M:%S')
+                bar.insert(0, strDate)
+        return newData
 
 
 
