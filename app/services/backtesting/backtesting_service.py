@@ -8,8 +8,31 @@ class BacktestingService:
 
     @staticmethod
     def run_backtesting(request: BacktestingModel): # Make request that follows the BacktestingModel format
-        
+        """
+        {
+            "prodCode": [
+                "string"
+            ],
+            "indicator": [
+                {
+                "indicatorName": "sma",
+                "param": 0
+                }
+            ],
+            "portfolioValue": 1000000,
+            "boundaryValue": 0,
+            "days": 2,
+            "barSummary": {
+                "day": false,
+                "hour": false,
+                "minute": false,
+                "second": true,
+                "input_time": 5
+            }
+        }
+        """
         return request
+
 
         # # return json.dumps({'msg': 'from backtesting.'}) # Result given
         # # write backtesting code here
