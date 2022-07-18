@@ -28,6 +28,7 @@ class SPIndicators:
 
         return data
 
+    #n is self defining (trade days)
     def ROC(data, n):
         M = data['Close'].diff(n-1)
         N = data['Close'].shift(n-1)
