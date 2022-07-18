@@ -1,21 +1,38 @@
 from enum import Enum
 from typing import List, Optional
-from pydantic import BaseModel, root_validator, validator
-
+from pydantic import BaseModel, root_validator, validator, StrictInt
+        
 class TimeConverter(Enum):
-    DAY = 86400
-    HOUR = 3600
-    MINUTE = 60
-    SECOND = 1
+    day = 86400
+    hour = 3600
+    minute = 60
+    second = 1
 
-
-class IndicatorName(str, Enum):
+class IndicatorName(Enum):
     SMA = 'sma'
     WMA = 'wma'
     MACD = 'macd'
     ROC = 'roc'
     RSI = 'rsi'
     BOLLINGER = 'bollinger bands'
+
+def range_checking_and_convertion(input_time, bar_type):
+    if input_time < 1 or input_time > 60:
+        raise ValueError(f'Please enter an integer of 1 to 60.')
+
+    ret = input_time * TimeConverter[bar_type].value
+
+    if bar_type == 'second':
+        if input_time % 5 != 0:
+            raise ValueError(f'Please enter a multiple of 5.')
+    elif bar_type == 'hour':
+        if input_time < 1 or input_time > 24:
+            raise ValueError(f'Please enter a integer of 1 to 24.')
+    elif bar_type == 'day':
+        if input_time != 1:
+            raise ValueError(f'Bar summary for {bar_type} only allow 1 day.')
+            
+    return ret
     
 class Indicator(BaseModel):
     indicatorName: IndicatorName
@@ -26,45 +43,38 @@ class BarSummary(BaseModel):
     hour: Optional[bool] = False
     minute: Optional[bool] = False
     second: Optional[bool] = True
-    input_time: int = 5
+    input_time: StrictInt = 5
 
     @root_validator
     def check_exclusive(cls, values):
-        day, hour, mins, sec = values.get('day'), values.get('hour'), values.get('minute'), values.get('second')
-        true_count = 0
-        bar_summary = [day, hour, mins, sec]
-        if True not in bar_summary: raise ValueError('Please select ones of the bar summary.')
+        input_time = values.get('input_time')
 
-        for choice in bar_summary:
-            if choice is True: true_count = true_count + 1
+        true_count = 0
+        bar_type = None
+        bar_is_not_selected = True
+
+        for key, val in list(values.items()):
+            if key in TimeConverter.__members__ and val == True:
+                bar_is_not_selected = False
+                true_count += 1
+                bar_type = key
+
+        if bar_is_not_selected: raise ValueError('Please select ones of the bar summary.')
 
         if true_count > 1: raise ValueError('Only one bar summary should be selected.')
 
-        input_time = values.get('input_time')
-        bar_type = 'second'
-        time_in_sec = [input_time]
-
-        if day: 
-            time_in_sec[0] = input_time * TimeConverter.DAY
-            bar_type = 'day'
-        elif hour:
-            time_in_sec[0] = input_time * TimeConverter.HOUR
-            bar_type = 'hour'
-        elif mins: 
-            time_in_sec[0] = input_time * TimeConverter.MINUTE
-            bar_type = 'minute'
-
-        field = cls.__fields__[bar_type]
-        if time_in_sec[0] % 5 != 0: raise ValueError(f'{input_time} ({field.name}) is not supported.')
+        time_in_sec = range_checking_and_convertion(input_time, bar_type)
+        
+        values['input_time'] = time_in_sec
 
         return values
 
 class BacktestingModel(BaseModel):
     prodCode: List[str]
     indicator: List[Indicator]
+    portfolioValue: float = 1000000 # avFund # Default value should be the user's portfolio size
+    boundaryValue: Optional[float] = 0
     days: Optional[int] = 2
-    portfolioValue: int = 1000000 # avFund # Default value should be the user's portfolio size
-    boundaryValue: Optional[int] = 0
     barSummary: BarSummary # Bar summarizes the trading activity during barSummary seconds
     # userid: Optional[str]
     # password: Optional[str]
@@ -77,7 +87,8 @@ class BacktestingModel(BaseModel):
 
     @validator('portfolioValue')
     def portfolio_check(cls, portfolio_val):
-        if portfolio_val <= 0: raise ValueError('Portfolio value should not be equal to or less than 0.')
+        if portfolio_val <= 0: 
+            raise ValueError('Portfolio value should not be equal to or less than 0.')
         return portfolio_val
 
     @validator('boundaryValue')
