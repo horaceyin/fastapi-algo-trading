@@ -15,10 +15,6 @@ class SpFeed(csvfeed.GenericBarFeed):
 
     def addBarsFromJson(self, instrument, data):
             # Load the json-formated data
-            if self.__loadedBars is not None:
-                self.__loadedBars.append(None, data) #update the latest data instead of the whole data
-                return self.addBarsFromSequence(instrument, self.__loadedBars)
-            
             self.__loadedBars = []
             myData = pd.read_json(data, orient = 'index')
             newData = myData.to_csv(index = False)
