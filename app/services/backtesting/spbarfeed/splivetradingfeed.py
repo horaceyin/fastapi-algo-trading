@@ -1,25 +1,23 @@
 from pyalgotrade.barfeed import csvfeed
 import pandas as pd
-import spbar
+from app.services.backtesting.sp_backtesting import SPBacktesting
 
-
-class SpFeed(csvfeed.GenericBarFeed):
-    def __init__(self, frequency=spbar.Frequency.SECOND, timezone=None, maxLen=None, loadedBars=[]):
+class SpFeed(SPBacktesting,csvfeed.BarFeed):
+    def __init__(self, timezone = None, maxLen = None, loadedBars=[]):
+        data = SPBacktesting()
         self.__loadedBars = loadedBars
-
-        if frequency not in [spbar.Frequency.SECOND, spbar.Frequency.MINUTE, spbar.Frequency.HOUR, spbar.Frequency.DAILY]:
-            raise Exception("Invalid frequency")
-
-        super(SpFeed, self).__init__(frequency, timezone, maxLen)
+        self.__barSummary = data.get_barSummary
+        self.__getProList = data.get_prod_list
+        super(SpFeed, self).__init__(timezone, maxLen)
 
 
-    def addBarsFromJson(self, instrument, data):
-            # Load the json-formated data
-            self.__loadedBars = []
-            myData = pd.read_json(data, orient = 'index')
-            newData = myData.to_csv(index = False)
-            for bar_ in newData:
-                self.__loadedBars.append(bar_)
+    def addBarsFromJson(self):
+        # Load the json-formated data
+        self.__loadedBars = []
+        myData = pd.read_json(self.__barSummary, orient = 'index')
+        newData = myData.to_csv(index = False)
+        for bar_ in newData:
+            self.__loadedBars.append(bar_)
 
-            
-            return self.addBarsFromSequence(instrument, self.__loadedBars)
+        
+        return self.addBarsFromSequence(self.__getProList, self.__loadedBars)
