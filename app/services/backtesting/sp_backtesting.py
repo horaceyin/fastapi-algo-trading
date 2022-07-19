@@ -5,7 +5,7 @@ from pyalgotrade.strategy import BacktestingStrategy
 from pyalgotrade.barfeed import csvfeed
 from pyalgotrade.technical import ma
 from pyalgotrade.technical import cross
-from schemas.backtesting_schemas import BacktestingModel
+from schemas.backtesting.backtesting_schemas import BacktestingModel
 from sp_indicators import SPIndicators
 
 from pyalgotrade.broker import backtesting
