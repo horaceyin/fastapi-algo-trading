@@ -1,11 +1,12 @@
 import six, abc, pyalgotrade
 from pyalgotrade import broker as pbroker
 from pyalgotrade.broker import backtesting
+from app.services.auth_service import AuthService
 from services.sp_api_handler import SPAPIHandler
 import logging
 import traceback
 from fastapi import HTTPException, status, Request
-from schemas.order_api_schemas import AddOrder, DeleteOrder
+from schemas.order_api_schemas import AddOrder
 
 # To be accessed during either backtesting or actual trading
 
@@ -25,6 +26,8 @@ class SPBroker(backtesting.Broker): # Inherit all properties and functions from 
         self.__live_trade = live_trade # Either live trading (Order for program and for SPTrader) or non-live trading (Order for program only) 
         if live_trade == True:
             self.__sp_api_handler = SPAPIHandler()
+        else:
+            self.__sp_api_handler = None
         super(SPBroker, self).__init__(portfolio_value, sp_bar_feed, commission=None) # Used to call __init__ method of parent class backtesting.Broker; add additional variables below
 
     @property
@@ -48,96 +51,64 @@ class SPBroker(backtesting.Broker): # Inherit all properties and functions from 
         self.__live_trade = live_trade
     
     # Variables from backtesting.Broker
-    def createMarketOrder(self, request: AddOrder, onClose=False):
+    def createOrder(self, request: AddOrder, onClose=False):
     # def createMarketOrder(self, action, instrument, quantity, onClose=False):
         instrument = request.prodCode
         quantity = request.qty
         # action = [BUY, BUY_TO_COVER, SELL, SELL_SHORT]
         if request.buySell == "B":
             action = pbroker.Order.Action.BUY
-        else:
+        elif request.buySell == "S":
             action = pbroker.Order.Action.SELL
-        if onClose is True and self.__barFeed.isIntraday():
-            raise Exception("Market-on-close not supported with intraday feeds")
-        backtesting.MarketOrder(action, instrument, quantity, onClose, self.getInstrumentTraits(instrument)) 
+        else:
+            raise SystemExit("Order given is not buy or sell")
+
+        # # Get session token
+        # if self.__live_trade == True:
+        #     AuthService.user_login()
+
+        # Market order
+        if request.orderType == 6:
+            # onClose if order should be filled as close to the closing price as possible
+            if onClose is True and self.__barFeed.isIntraday():
+                raise Exception("Market-on-close not supported with intraday feeds")
+            backtesting.MarketOrder(action, instrument, quantity, onClose, self.getInstrumentTraits(instrument)) 
+            try:
+                self.__sp_api_handler.createMarketOrder(request)
+            except:
+                pass
+
+        # Stop-limit order
+        elif request.orderType == 0 and (request.condType == 1 or request.condType == 4 or request.condType == 6):
+            stopPrice = request.stopPriceInDec
+            limitPrice = request.priceInDec
+            backtesting.StopLimitOrder(action, instrument, stopPrice, limitPrice, quantity, self.getInstrumentTraits(instrument))
+            try:
+                self.__sp_api_handler.createStopLimitOrder(request)
+            except:
+                pass
+
+        # Limit order
+        elif request.orderType == 0:
+            limitPrice = request.priceInDec
+            backtesting.LimitOrder(action, instrument, limitPrice, quantity, self.getInstrumentTraits(instrument))
+            try:
+                self.__sp_api_handler.createLimitOrder(request)
+            except:
+                pass
         
-        try:
-            self.__sp_api_handler.createMarketOrder()
-        except:
-            pass
-        # if self.__liveTrade is False:
-        #     return backtesting.MarketOrder(action, instrument, quantity, onClose, self.getInstrumentTraits(instrument))
-        # else:
-        #     SPAPIHandler().createMarketOrder()
-            # pass # Replace with code to access SP backtesting 
-    
-    def createLimitOrder(self, request: AddOrder):
-    # def createLimitOrder(self, action, instrument, limitPrice, quantity):
-        instrument = request.prodCode
-        quantity = request.qty
-        # action = [BUY, BUY_TO_COVER, SELL, SELL_SHORT]
-        if request.buySell == "B":
-            action = pbroker.Order.Action.BUY
-        else:
-            action = pbroker.Order.Action.SELL
-        limitPrice = request.priceInDec
-        backtesting.LimitOrder(action, instrument, limitPrice, quantity, self.getInstrumentTraits(instrument))
-        try:
-            self.__sp_api_handler.createLimitOrder()
-        except:
-            pass
-        # if self.__liveTrade is False:
-        #     return backtesting.LimitOrder(action, instrument, limitPrice, quantity, self.getInstrumentTraits(instrument))
-        # else:
-        #     SPAPIHandler().createLimitOrder()
-            # pass # Replace with code to access SP backtesting
-    
-    def createStopOrder(self, request: AddOrder):
-    # def createStopOrder(self, action, instrument, stopPrice, quantity):
-        instrument = request.prodCode
-        quantity = request.qty
-        # action = [BUY, BUY_TO_COVER, SELL, SELL_SHORT]
-        if request.buySell == "B":
-            action = pbroker.Order.Action.BUY
-        else:
-            action = pbroker.Order.Action.SELL
-        stopPrice = request.stopPriceInDec
-        backtesting.StopOrder(action, instrument, stopPrice, quantity, self.getInstrumentTraits(instrument))
-        try:
-            self.__sp_api_handler.createStopOrder()
-        except:
-            pass
-        # if self.__liveTrade is False:
-        #     return backtesting.StopOrder(action, instrument, stopPrice, quantity, self.getInstrumentTraits(instrument))
-        # else:
-        #     SPAPIHandler().createStopOrder()
-            # pass # Replace with code to access SP backtesting
-    
-    def createStopLimitOrder(self, request: AddOrder):
-    # def createStopLimitOrder(self, action, instrument, stopPrice, limitPrice, quantity):
-        instrument = request.prodCode
-        quantity = request.qty
-        # action = [BUY, BUY_TO_COVER, SELL, SELL_SHORT]
-        if request.buySell == "B":
-            action = pbroker.Order.Action.BUY
-        else:
-            action = pbroker.Order.Action.SELL
-        stopPrice = request.stopPriceInDec
-        limitPrice = request.priceInDec
-        backtesting.StopLimitOrder(action, instrument, stopPrice, limitPrice, quantity, self.getInstrumentTraits(instrument))
-        try:
-            self.__sp_api_handler.createStopLimitOrder()
-        except:
-            pass
-        # if self.__liveTrade is False:
-        #     return backtesting.StopLimitOrder(action, instrument, stopPrice, limitPrice, quantity, self.getInstrumentTraits(instrument))
-        # else:
-        #     SPAPIHandler().createStopLimitOrder()
-        #     # pass # Replace with code to access SP backtesting
+        # Stop order
+        elif (request.condType == 1 or request.condType == 4 or request.condType == 6):
+            stopPrice = request.stopPriceInDec
+            backtesting.StopOrder(action, instrument, stopPrice, quantity, self.getInstrumentTraits(instrument))
+            try:
+                self.__sp_api_handler.createStopOrder(request)
+            except:
+                pass
 
     def cancelOrder(self, order):
         super().cancelOrder(order)
         try:
-            self.__sp_api_handler.createStopLimitOrder()
+            self.__sp_api_handler.cancelOrder()
         except:
             pass

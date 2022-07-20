@@ -74,8 +74,10 @@ class PnLService:
         pnlNum = min(buyTradeNum, sellTradeNum)
 
         for _ in range(pnlNum): # To ensure that there are corresponding pairs for pnlQueue values
-            pnlQueue.append(sellRecordQueue.popleft() - buyRecordQueue.popleft()) 
-            returnQueue.append((sellRecordQueue.popleft() - buyRecordQueue.popleft())/buyRecordQueue.popleft()) # Return = Profit/(Initial investment)
+            buyRecord = buyRecordQueue.popleft()
+            sellRecord = sellRecordQueue.popleft()
+            pnlQueue.append(sellRecord - buyRecord) 
+            returnQueue.append((sellRecord - buyRecord)/buyRecord) # Return = Profit/(Initial investment)
         return (pnlQueue, pnlNum, returnQueue)
         # return (pnlQueue, pnlNum)
     
