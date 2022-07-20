@@ -15,7 +15,6 @@ class AuthService:
         res = CommonHelper.post_url(requestUrl=myUrl, params=request)
         return res
         
-
     @staticmethod
     def get_acc_info(request: AccountSumModel): # Get client information for this session
         accUrl = ENDPOINT + ACCOUNTINFO

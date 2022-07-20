@@ -22,7 +22,6 @@ async def user_login(request: UserLogin):
 
 # @loginRouter.post('/info', status_code=status.HTTP_200_OK)
 # async def infomation(requset: UserInfo):
-
 #     client = AuthService.user_login(request) # Output of userLogin # Will hold until data is retrived # Need await to do rest of code
 #     print(client)
 #     token = client['data']['sessionToken'] # Session token

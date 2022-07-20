@@ -11,5 +11,5 @@ INACTIVEORDER = '/apiCustomer/order/inactive'
 
 ADMININFO = '/apiTraderAdmin/accessRight/userLogin'
 PRODINFO = '/apiTraderAdmin/product/productInfo'
-
 CCYRATES = '/systemMaintance/systemOperation/getCcyRate'
+CONTRACTSIZE = '/jLogin/product/downloadProductList'

@@ -1,3 +1,4 @@
+from matplotlib.font_manager import json_load
 from services.technical_analysis_service import PnLService
 from schemas.report_schemas import ReportModel
 import statistics
@@ -10,7 +11,7 @@ class Report(PnLService):
         self.date = date
         # super class attr: accName, col, tradeNum, totalDoneContract, _pnl
 
-    # Get the number of trades
+    #get the number of trade
     def __totaltrade(self,list):
         count: int
         for _ in list:
@@ -43,7 +44,7 @@ class Report(PnLService):
     @classmethod
     # Average of returns
     def __avg_return(cls, listofpnl):
-        avg_return = ((cls.__get_totalpnl(listofpnl) / cls.__cost())*100)
+        avg_return = ((cls.__get_totalpnl(listofpnl) / cls.__get_cost)*100)
         return avg_return
     # def __avg_return(cls, listofpnl, tradeRecordObj):
     #     buyprice = cls.__buy_price(tradeRecordObj)
