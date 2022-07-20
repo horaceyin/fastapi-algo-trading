@@ -12,7 +12,7 @@ import pandas as pd
 from datetime import datetime
 import time
 from common.common_helper import CommonHelper
-from schemas.backtesting_schemas import BacktestingModel
+from schemas.backtesting.backtesting_schemas import BacktestingModel
 from services.backtesting.sma_datainfo import DataInfo
 
 class sma_backtest:

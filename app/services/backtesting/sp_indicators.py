@@ -1,10 +1,3 @@
-from distutils.log import debug
-import numpy as np
-import pandas as pd
-import math as m
-import datetime
-import quantopian.optimize as opt
-
 class SPIndicators:
     def __init__(self, indicators):
         self.__indicators_list = None

@@ -1,5 +1,5 @@
 import json
-from schemas.backtesting_schemas import BacktestingModel
+from schemas.backtesting.backtesting_schemas import BacktestingModel
 from services.backtesting.sma_backtest_service import sma_backtest
 
 class BacktestingService:
