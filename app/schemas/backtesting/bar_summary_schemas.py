@@ -1,7 +1,6 @@
 from enum import Enum
 from typing import Optional
-from pydantic import BaseModel, root_validator ,validator, StrictInt
-from schemas.backtesting.indicator_schemas import Indicator
+from pydantic import BaseModel, root_validator, StrictInt
 
 class TimeConverter(Enum):
     day = 86400

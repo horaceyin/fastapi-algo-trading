@@ -1,6 +1,6 @@
 import abc
 from enum import Enum
-from typing import List, Literal, Union
+from typing import List, Union
 from pydantic import BaseModel, StrictFloat, root_validator, validator, StrictInt
 from pyalgotrade.dataseries import DEFAULT_MAX_LEN
 

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, status
 from services.auth_service import AuthService
-from schemas.auth_schemas import UserLogin
+from schemas.auth_schemas import UserLogin, AccountSumModel
 
 # testing msg when this router is called
 @staticmethod
@@ -35,3 +35,6 @@ async def user_login(request: UserLogin):
 #     # info = await AuthService.acc_login(request= json.dumps(secReq)) # Turn secReq into json object, then pass as request
 #     info = "Hello" # Testing code # Currently: Code 200, "string"
 #     return info
+@loginRouter.post('/info', status_code=status.HTTP_200_OK)
+async def infomation(requset: AccountSumModel):
+    return AuthService.get_acc_info(requset)

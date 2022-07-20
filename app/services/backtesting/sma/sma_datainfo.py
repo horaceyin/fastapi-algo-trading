@@ -2,7 +2,6 @@
 
 import requests
 import json
-from schemas.backtesting_schemas import BacktestingModel
 
 from core.endpoints import PRODINFO, CCYRATES
 

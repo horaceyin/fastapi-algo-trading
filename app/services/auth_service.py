@@ -1,7 +1,6 @@
 from core.config import SP_HOST_AND_PORT
-from schemas.auth_schemas import UserLogin, AccountSumModel
 from core.endpoints import USERLOGIN, ACCOUNTINFO
-from schemas.auth_schemas import UserLogin
+from schemas.auth_schemas import UserLogin, AccountSumModel
 from common.common_helper import CommonHelper
 
 ENDPOINT = SP_HOST_AND_PORT
@@ -22,4 +21,3 @@ class AuthService:
         accUrl = ENDPOINT + ACCOUNTINFO
         accres = CommonHelper.post_url(requestUrl=accUrl, params=request)
         return accres
-

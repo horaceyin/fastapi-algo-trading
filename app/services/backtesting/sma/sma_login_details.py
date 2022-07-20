@@ -1,6 +1,5 @@
 import requests
 import json
-from schemas.backtesting_schemas import BacktestingModel
 from core.endpoints import PRODINFO, CCYRATES, USERLOGIN, ACCOUNTINFO
 from os import environ
 from dotenv import load_dotenv

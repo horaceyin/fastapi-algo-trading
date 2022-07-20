@@ -1,10 +1,8 @@
 from core.config import SP_HOST_AND_PORT
+from core.endpoints import DONETRADE
 from collections import deque
 from datetime import datetime
 import pandas as pd
-from pandas.core.frame import DataFrame
-from requests import request
-from core.endpoints import DONETRADE
 from schemas.technical_analysis_schemas import GetDoneTradeModel
 from common.common_helper import CommonHelper
 

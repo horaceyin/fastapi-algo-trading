@@ -9,7 +9,7 @@ class UserLogin(BaseModel):
 
 class AccountSumModel(BaseModel):
     sessionToken: str
-    targetAccNo: str
+    targetAccNo: str = 'NICHOLAS01'
     dataSource: Optional[int] = 4
     password: str = 'sp'
-    userId: str = 'ANSONLI01'
+    userId: str = 'NICHOLAS01'
