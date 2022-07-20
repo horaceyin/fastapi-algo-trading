@@ -30,7 +30,7 @@ class Indicator(BaseModel, abc.ABC):
 
 class SMA(Indicator):
     indicatorName: str = 'sma'
-    period: StrictInt
+    period: StrictInt = 10
     _period = validator('period', allow_reuse=True)(period_checking)
 
     @validator('indicatorName')
@@ -40,7 +40,7 @@ class SMA(Indicator):
     
 class EMA(Indicator):
     indicatorName: str = 'ema'
-    period: StrictInt
+    period: StrictInt = 10
     _period = validator('period', allow_reuse=True)(period_checking)
 
     @validator('indicatorName')
@@ -50,7 +50,7 @@ class EMA(Indicator):
 
 class WMA(Indicator):
     indicatorName: str = 'wma'
-    weight: List[Union[StrictInt, StrictFloat]]
+    weight: List[Union[StrictInt, StrictFloat]] = [5, 4, 3, 2, 1]
 
     @validator('indicatorName')
     def name_validation(cls, indicatorName):
@@ -59,9 +59,9 @@ class WMA(Indicator):
 
 class MACD(Indicator):
     indicatorName: str = 'macd'
-    fastEMA: StrictInt
-    slowEMA: StrictInt
-    signalEMA: StrictInt
+    fastEMA: StrictInt = 12
+    slowEMA: StrictInt = 26
+    signalEMA: StrictInt = 9
 
     @validator('indicatorName')
     def name_validation(cls, indicatorName):
@@ -82,7 +82,7 @@ class MACD(Indicator):
 
 class ROC(Indicator):
     indicatorName: str = 'roc'
-    valuesAge: StrictInt
+    valuesAge: StrictInt = 12
     @validator('valuesAge')
     def validation(cls, valuesAge):
         assert valuesAge > 0, ValueError(f'valuesAge must be larger than 0.')
@@ -95,7 +95,7 @@ class ROC(Indicator):
 
 class RSI(Indicator):
     indicatorName: str = 'rsi'
-    period: StrictInt
+    period: StrictInt = 14
     _period = validator('period', allow_reuse=True)(period_checking)
 
     @validator('indicatorName')
@@ -105,8 +105,8 @@ class RSI(Indicator):
 
 class BollingerBands(Indicator):
     indicatorName: str = 'bollinger bands'
-    period: StrictInt
-    numStdDev: Union[int, float]
+    period: StrictInt = 20
+    numStdDev: Union[int, float] = 2
     _period = validator('period', allow_reuse=True)(period_checking)
     
     @validator('indicatorName')
@@ -121,7 +121,7 @@ class BollingerBands(Indicator):
     
 class StochasticOscillator(Indicator):
     indicatorName: str = 'stochastic oscillator'
-    period: StrictInt
+    period: StrictInt = 14
     dSMAPeriod: StrictInt = 3
     _period = validator('period', allow_reuse=True)(period_checking)
 
