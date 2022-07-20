@@ -1,4 +1,3 @@
-import json
 from schemas.backtesting.backtesting_schemas import BacktestingModel
 from services.backtesting.sma.sma_backtest_service import sma_backtest
 from services.backtesting.sma.sma_login_details import portSize
@@ -12,29 +11,34 @@ class BacktestingService:
         """
         {
             "prodCode": [
-                "string"
-            ],
-            "indicator": [
                 {
-                "indicatorName": "sma",
-                "param": 0
+                    "name": "string",
+                    "indicator": [
+                        {
+                        "maxLen": 0,
+                        "indicatorName": "sma",
+                        "period": 10
+                        },
+                        {
+                        "maxLen": 0,
+                        "indicatorName": "ema",
+                        "period": 10
+                        }
+                    ],
+                    "days": 2,
+                    "barSummary": {
+                        "day": false,
+                        "hour": false,
+                        "minute": false,
+                        "second": true,
+                        "input_time": 5
+                    }
                 }
             ],
             "portfolioValue": 1000000,
-            "boundaryValue": 0,
-            "days": 2,
-            "barSummary": {
-                "day": false,
-                "hour": false,
-                "minute": false,
-                "second": true,
-                "input_time": 5
-            }
+            "boundaryValue": 0
         }
         """
-        
-        print(request)
-        errMsg = ''
         # return json.dumps({'msg': 'from backtesting.'}) # Result given
         # write backtesting code here
         prodCode = request.prodCode

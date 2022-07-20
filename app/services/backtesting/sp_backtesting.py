@@ -1,12 +1,9 @@
-from typing import List
-import xxlimited
 import six, abc, pyalgotrade
 from pyalgotrade.strategy import BacktestingStrategy
 from pyalgotrade.barfeed import csvfeed
 from pyalgotrade.technical import ma
 from pyalgotrade.technical import cross
 from schemas.backtesting.backtesting_schemas import BacktestingModel
-from sp_indicators import SPIndicators
 
 from pyalgotrade.broker import backtesting
 from pyalgotrade.barfeed.csvfeed import BarFeed
@@ -22,13 +19,13 @@ class SPBarFeed(BarFeed):
 # @six.add_metaclass(metaclass=abc.ABCMeta)
 class SPBacktesting(BacktestingStrategy, abc.ABC):
     
-    def __init__(self, request: BacktestingModel):
-        self.__prod_list = request.prodCode
-        self.__indicator_list = request.indicator
+    def __init__(self, request: BacktestingModel, live_trade=False):
+        self.__prod_and_indicator_list = request.prodCode
         self.__portfolio_value = request.portfolioValue
         self.__boundary_value = request.boundaryValue
-        self.__the_days_after = request.days
-        self.__barSummary = request.barSummary
+        # self.__indicator_list = request.indicator
+        # self.__the_days_after = request.days
+        # self.__barSummary = request.barSummary
         
         self.__sp_bar_feed = SPBarFeed()
         self.__sp_broker = SPBroker()
