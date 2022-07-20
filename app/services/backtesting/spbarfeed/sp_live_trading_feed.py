@@ -40,7 +40,10 @@ class SpGetData(SpBarFeed):
             request = requests.get(URL)
             data = request.text
             parse_json = json.loads(data)
-            if parse_json == ('19:-1:EMPTY RESULT!'):
-                new_data +=('The result of '+code+' is empty!')
+            while parse_json == ('19:-1:EMPTY RESULT!'):
+                try:
+                    continue
+                except ValueError:
+                    print('The result of' +code+' is empty!\r\n')
             new_data +=parse_json
         return new_data
