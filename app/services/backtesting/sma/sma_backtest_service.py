@@ -42,8 +42,6 @@ class sma_backtest:
         print(newData)
         return newData
 
-
-
     def start_backtesting(self, request):
         date_time = datetime.fromtimestamp(int(time.time()))
         todayStrDate = date_time.strftime('%Y%m%d')

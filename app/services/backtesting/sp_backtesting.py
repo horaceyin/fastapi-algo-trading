@@ -11,27 +11,34 @@ from sp_indicators import SPIndicators
 from pyalgotrade.broker import backtesting
 from pyalgotrade.barfeed.csvfeed import BarFeed
 
-class SPBroker(backtesting.Broker):
-    def __init__(self, portfolio_value, live_trade=True) -> None:
-        super().__init__(portfolio_value)
+from app.services.backtesting.spbarfeed.sp_live_trading_feed import SpBarFeed
+from app.services.sp_broker import SPBroker
 
-class SPBarFeed(BarFeed):
-    def __init__(self, frequency, maxLen=None):
-        super().__init__(frequency, maxLen)
+# class SPBroker(backtesting.Broker):
+#     def __init__(self, portfolio_value, live_trade=True) -> None:
+#         super().__init__(portfolio_value)
+
+# class SpBarFeed(BarFeed):
+#     def __init__(self, frequency, maxLen=None):
+#         super().__init__(frequency, maxLen)
 
 # @six.add_metaclass(metaclass=abc.ABCMeta)
 class SPBacktesting(BacktestingStrategy, abc.ABC):
     
     def __init__(self, request: BacktestingModel):
-        self.__prod_list = request.prodCode
-        self.__indicator_list = request.indicator
+        self.__prod_indicator_list = request.prodCode
         self.__portfolio_value = request.portfolioValue
         self.__boundary_value = request.boundaryValue
-        self.__the_days_after = request.days
-        self.__barSummary = request.barSummary
+        self.__indicator_list = request.indicator
+        self.__days = request.days
+        self.__bar_summary = request.barSummary
+        self.__live_trade = request.liveTrade
         
-        self.__sp_bar_feed = SPBarFeed()
-        self.__sp_broker = SPBroker()
+        self.__position = None
+        self.product_list = self.__get_product(self.__prod_indicator_list) # create list: ['HSIM2', 'HSIZ4']
+        self.__sp_bar_feed = SpBarFeed(self.__bar_summary, self.__days) # SpBarFeed(barSummary, loadedBars=[], timezone = None, maxLen = None)
+        self.__sp_broker = SPBroker(self.__portfolio_value, self.__boundary_value, self.__sp_bar_feed, self.__live_trade)
+            # 
         super(SPBacktesting, self).__init__(self.__sp_bar_feed, self.__sp_broker)
 
     @property
@@ -81,9 +88,21 @@ class SPBacktesting(BacktestingStrategy, abc.ABC):
     @get_barSummary.setter
     def get_barSummary(self, bar_summary):
         self.__barSummary = bar_summary
+
+    @property
+    def get_live_trade(self):
+        return self.__live_trade
+
+    @get_live_trade.setter
+    def get_live_trade(self, live_trade):
+        self.__live_trade = live_trade
     
     @abc.abstractmethod
     def onBars(self, bars):
+        if self.__position is None:
+            pass
+        else:
+            pass
         return NotImplementedError
 
     def get_sp_data(self):

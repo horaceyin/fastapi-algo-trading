@@ -29,13 +29,13 @@ class AddOrder(BaseModel):
 
 class ChangeOrder(BaseModel):
     accNo: str
-    accOrderNo: int
+    accOrderNo: int # Collect from the order number within Get Account Order API or using the one displayed in Add Order
     buySell: Literal["B", "S"]
     prodCode: str
     sessionToken: str
     # downLevelInDec: Optional[float]
     # downPriceInDec: Optional[float]
-    extOrderId: str
+    extOrderId: str # Need to use Get Account Order API to obtain before usage; now works every time without error (?)
     priceInDec: Optional[float]
     qty: Optional[int]
     schedTime: Optional[float] # In the form YYYYMMDD.hhmmss

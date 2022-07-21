@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, status
 from schemas.technical_analysis_schemas import GetDoneTradeModel
 from services.report_service import Report
 from services.technical_analysis_service import PnLService
+from services.contract_size_service import ContractSize
 from datetime import datetime
 
 # testing msg when this router is called

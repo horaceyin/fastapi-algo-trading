@@ -8,6 +8,7 @@ CHANGEORDER = '/apiCustomer/order/change'
 DELETEORDER = '/apiCustomer/order/delete'
 ACTIVEORDER = '/apiCustomer/order/active'
 INACTIVEORDER = '/apiCustomer/order/inactive'
+ACCOUNTORDER = '/apiCustomer/account/accountOrder'
 
 ADMININFO = '/apiTraderAdmin/accessRight/userLogin'
 PRODINFO = '/apiTraderAdmin/product/productInfo'

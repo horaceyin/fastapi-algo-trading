@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, status
-from schemas.backtesting_schemas import BacktestingModel
+from schemas.backtesting.backtesting_schemas import BacktestingModel
 from services.backtesting.backtesting_service import BacktestingService
 
 # testing msg when this router is called

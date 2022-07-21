@@ -6,6 +6,7 @@ class BacktestingModel(BaseModel):
     prodCode: List[Product]
     portfolioValue: float = 1000000 # avFund # Default value should be the user's portfolio size
     boundaryValue: Optional[float] = 0
+    liveTrade: Optional[bool] = False
     # userid: Optional[str]
     # password: Optional[str]
     # targetAcc: Optional[str] = "SPTEST"

@@ -1,10 +1,8 @@
 from core.config import SP_HOST_AND_PORT
+from core.endpoints import DONETRADE
 from collections import deque
 from datetime import datetime
 import pandas as pd
-from pandas.core.frame import DataFrame
-from requests import request
-from core.endpoints import DONETRADE
 from schemas.technical_analysis_schemas import GetDoneTradeModel
 from common.common_helper import CommonHelper
 
@@ -26,10 +24,13 @@ class PnLService:
         self._pnl = []
         self.__tradeRecords = []
 
+    # get done trade record from SP API
     @classmethod
     def __get_done_trade(cls, request: GetDoneTradeModel):
+        print(cls.__url, request)
         return CommonHelper.post_url(cls.__url, request)
 
+    # prepare data for calculating PNL
     @staticmethod
     def __data_for_pnl(posList, priceList):
         # Creates double ended queue for buying and selling; converts poslist values accordingly
@@ -62,24 +63,35 @@ class PnLService:
 
         return result
 
+    # calculate PNL for a product
     @staticmethod
     def __cal_pnl(tradeRecordObj): # tradeRecordObj from __dat_for_pnl function; buyRecordQueue and sellRecordQueue are deque
         pnlQueue = deque()
+        returnQueue = deque()
         buyRecordQueue: deque = tradeRecordObj['buyRecordQueue'] 
         sellRecordQueue: deque = tradeRecordObj['sellRecordQueue'] 
         buyTradeNum: int = tradeRecordObj['buyTradeNum']
         sellTradeNum: int = tradeRecordObj['sellTradeNum']
-        returnQueue = deque()
         
         pnlNum = min(buyTradeNum, sellTradeNum)
 
-        for _ in range(pnlNum): # To ensure that there are corresponding pairs for pnlQueue values
-            buyRecord = buyRecordQueue.popleft()
-            sellRecord = sellRecordQueue.popleft()
-            pnlQueue.append(sellRecord - buyRecord) 
-            returnQueue.append((sellRecord - buyRecord)/buyRecord) # Return = Profit/(Initial investment)
-        return (pnlQueue, pnlNum, returnQueue)
+        # for _ in range(pnlNum): 
+        #     sell_price = sellRecordQueue.popleft()
+        #     buy_price = buyRecordQueue.popleft()
+        #     pnl = sell_price - buy_price
+        #     pnlQueue.append(
+        #         tuple(pnl, sell_price)
+        #     )
+
         # return (pnlQueue, pnlNum)
+        for _ in range(pnlNum): # To ensure that there are corresponding pairs for pnlQueue values
+            sell_price = sellRecordQueue.popleft()
+            buy_price = buyRecordQueue.popleft()
+            pnl = sell_price - buy_price
+
+            pnlQueue.append(pnl) 
+            returnQueue.append(pnl / buy_price) # Return = Profit/(Initial investment)
+        return (pnlQueue, pnlNum, returnQueue)
     
     @staticmethod
     def __returns(prodCode): # Return of product overall; Profit = Return * Initial investment value 
@@ -87,17 +99,19 @@ class PnLService:
         # return returns # Returns for each product
         pass
 
+    # create two separated deque for positive and negative value
     @staticmethod
-    def __pnl_separation(pnlQueue: deque):
-        positivePnl = deque([pnl for pnl in pnlQueue if pnl > 0])
-        negativePnl = deque([pnl for pnl in pnlQueue if pnl < 0])
-        return (positivePnl, negativePnl)
+    def __separation(queue: deque):
+        positive = deque([val for val in queue if val > 0])
+        negative = deque([val for val in queue if val < 0])
+        return (positive, negative)
 
-    @staticmethod
-    def __ret_separation(pnlQueue: deque):
-        positiveRet = deque([ret for ret in pnlQueue if ret > 0])
-        negativeRet = deque([ret for ret in pnlQueue if ret < 0])
-        return (positiveRet, negativeRet)
+    # # data for pandas dataframe feeding
+    # @staticmethod
+    # def __ret_separation(pnlQueue: deque):
+    #     positiveRet = deque([ret for ret in pnlQueue if ret > 0])
+    #     negativeRet = deque([ret for ret in pnlQueue if ret < 0])
+    #     return (positiveRet, negativeRet)
 
     def __create_data_for_feed(self, sortedDoneTradeRecords):
 
@@ -114,6 +128,7 @@ class PnLService:
 
             self.__tradeRecords.append([date, tradePrice, ordTotalQty, prodCode, ordTotalQty, instCode, contractSize])
 
+    # pandas dataframe feed
     def __data_feed(self):
         df = pd.DataFrame(data=self.__tradeRecords, columns=PnLService.col)
         df.date = pd.to_datetime(df.date)
@@ -137,12 +152,12 @@ class PnLService:
 
         return dataframeList
 
+    # get profit and loss for each done-traded product
     def get_pnl(self, request: GetDoneTradeModel):
 
         # write performance analysis code below
-
+        pnl = []
         res = self.__get_done_trade(request) # Admin access right required, cannot target own admin account
-        print(res)
         try:
             allTradeData = res['data']['recordData'] 
             # {'result_code': -52020004, 'result_msg': 'API USER NO ACCESS RIGHT', 'timestamp': 1657697876}
@@ -157,25 +172,25 @@ class PnLService:
 
         # create csv file for data feed
         self.__create_data_for_feed(allTradeData)
-        
         # data feed
         self.__data_feed()
-        
         #create separated dataframe
         dataframeList = self.__create_separated_df()
 
         for dataframe in dataframeList: # For product in dataframe for specific product code
             dataframe.reset_index(level=['Position', 'Balance','InstCode','ContractSize'], inplace=True)
+
             indexList = dataframe.index.to_list()
             prodCode = indexList[0][0]
+            
             posList = dataframe['Position'].values.tolist()
             priceList = dataframe['TradePrice'].values.tolist()
+
             tradeRecordObj = self.__data_for_pnl(posList, priceList)
             # pnlQueue, pnlNum = self.__cal_pnl(tradeRecordObj) # A tuple of a deque containing pnls and the length of the deque
             pnlQueue, pnlNum, returnQueue = self.__cal_pnl(tradeRecordObj)
-
-            positivePnl, negativePnl = self.__pnl_separation(pnlQueue) # deque for positive and negative pnl respectively
-            positiveRet, negativeRet = self.__ret_separation(returnQueue)
+            positivePnl, negativePnl = self.__separation(pnlQueue) # deque for positive and negative pnl respectively
+            positiveRet, negativeRet = self.__separation(returnQueue)
 
             for code in dataframe['InstCode']: #get one instcode and one contractsize instead of all
                 InstCode = code
@@ -183,7 +198,7 @@ class PnLService:
             for size in dataframe['ContractSize']:
                 contractSize = size
                 break
-            self._pnl.append(
+            pnl.append(
                 {
                     InstCode: # e.g. HSI
                     {
@@ -203,9 +218,10 @@ class PnLService:
                 }
             )
             self.totalDoneContract = self.totalDoneContract + pnlNum
-        pnl = {   #combine the market code values in one list if the instcode is the same
-            k: [d.get(k) for d in self._pnl if k in d]
-            for k in set().union(*self._pnl)
+            
+        self._pnl = {   #combine the market code values in one list if the instcode is the same
+            k: [d.get(k) for d in pnl if k in d]
+            for k in set().union(*pnl)
         }
         # e.g.
         # pnl = {
@@ -215,7 +231,7 @@ class PnLService:
         #     ],
         #     'YMU': [...]
         # }
-        return pnl
+        return self._pnl
         #return json.dumps({'msg': 'from done trade analysis.'})
         
         # if exception rasied,
