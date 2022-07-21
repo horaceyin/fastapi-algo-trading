@@ -8,8 +8,7 @@ from schemas.backtesting.indicator_schemas import (
     ROC,
     RSI,
     BollingerBands,
-    StochasticOscillator,
-    Indicator
+    StochasticOscillator
 )
 from schemas.backtesting.bar_summary_schemas import BarSummary
 

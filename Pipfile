@@ -7,6 +7,8 @@ name = "pypi"
 fastapi = {extras = ["all"], version = "*"}
 pyalgotrade = "*"
 pandas = "*"
+ta = "*"
+statsmodels = "*"
 
 [dev-packages]
 

@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, status
-from schemas.technical_analysis_schemas import GetDoneTradeModel, GetContractSize
+from schemas.technical_analysis_schemas import GetDoneTradeModel
 from services.report_service import Report
 from services.technical_analysis_service import PnLService
 from services.contract_size_service import ContractSize
@@ -33,9 +33,4 @@ async def done_trade_report_analysis(request: GetDoneTradeModel):
     date = datetime.now()
     date = date.strftime('%Y-%m-%d')
     pnlReport = Report(accName, date)
-    return pnlReport.get_report(request)
-
-@taRouter.post('/contract-size',status_code=status.HTTP_200_OK)
-async def get_contract_size(request: GetContractSize):
-    contractSize = ContractSize()
-    return contractSize.get_contract_size(request)
+    return pnlReport.get_pnl(request)
