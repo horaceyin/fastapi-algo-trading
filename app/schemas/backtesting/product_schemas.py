@@ -10,7 +10,6 @@ from schemas.backtesting.indicator_schemas import (
     BollingerBands,
     StochasticOscillator
 )
-from schemas.backtesting.bar_summary_schemas import BarSummary
 
 class Product(BaseModel):
     name: str
@@ -24,10 +23,8 @@ class Product(BaseModel):
         BollingerBands,
         StochasticOscillator
     ]]
-    days: Optional[StrictInt] = 2
-    barSummary: BarSummary # Bar summarizes the trading activity during barSummary seconds
 
-    @validator('days')
-    def day_check(cls, day):
-        if day < 0: raise ValueError('Days should be an integer and larger than 0.')
-        return day
+    # @validator('days')
+    # def day_check(cls, day):
+    #     if day < 0: raise ValueError('Days should be an integer and larger than 0.')
+    #     return day

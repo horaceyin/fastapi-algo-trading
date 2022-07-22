@@ -1,3 +1,4 @@
+from dataclasses import field
 import six, abc, pyalgotrade
 from pyalgotrade.strategy import BacktestingStrategy
 from pyalgotrade.barfeed import csvfeed
@@ -7,29 +8,30 @@ from schemas.backtesting.backtesting_schemas import BacktestingModel
 
 from pyalgotrade.broker import backtesting
 from pyalgotrade.barfeed.csvfeed import BarFeed
+from services.backtesting.spbarfeed.sp_live_trading_feed import SpBarFeed
 
-class SPBroker(backtesting.Broker):
-    def __init__(self, portfolio_value, live_trade=True) -> None:
-        super().__init__(portfolio_value)
-
-class SPBarFeed(BarFeed):
-    def __init__(self, frequency, maxLen=None):
-        super().__init__(frequency, maxLen)
+# class SPBroker(backtesting.Broker):
+#     def __init__(self, portfolio_value, live_trade=True) -> None:
+#         super().__init__(portfolio_value)
 
 # @six.add_metaclass(metaclass=abc.ABCMeta)
 class SPBacktesting(BacktestingStrategy, abc.ABC):
     
     def __init__(self, request: BacktestingModel, live_trade=False):
-        self.__prod_and_indicator_list = request.prodCode
+        self.__prod_indicator_list = request.prodCode
         self.__portfolio_value = request.portfolioValue
         self.__boundary_value = request.boundaryValue
+        self.__days = request.days
+        self.__bar_summary = request.barSummary
+
+        self.product_list = self.__get_product(self.__prod_indicator_list) # create list: ['HSIM2', 'HSIZ4']
         # self.__indicator_list = request.indicator
         # self.__the_days_after = request.days
         # self.__barSummary = request.barSummary
         
-        self.__sp_bar_feed = SPBarFeed()
-        self.__sp_broker = SPBroker()
-        super(SPBacktesting, self).__init__(self.__sp_bar_feed, self.__sp_broker)
+        self.sp_bar_feed = SpBarFeed(self.__prod_indicator_list, self.__days, self.__bar_summary)
+        #self.__sp_broker = SPBroker()
+        super(SPBacktesting, self).__init__(self.sp_bar_feed)
 
     @property
     def get_prod_list(self):
@@ -78,7 +80,14 @@ class SPBacktesting(BacktestingStrategy, abc.ABC):
     @get_barSummary.setter
     def get_barSummary(self, bar_summary):
         self.__barSummary = bar_summary
-    
+
+    def __get_product(self, prod_indicator_list):
+        if len(prod_indicator_list) == 0: return None
+
+        product_list = [product.name for product in prod_indicator_list]
+
+        return product_list
+
     @abc.abstractmethod
     def onBars(self, bars):
         return NotImplementedError
