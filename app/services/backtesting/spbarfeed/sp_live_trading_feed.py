@@ -1,6 +1,6 @@
 from distutils.log import error
 from pyalgotrade.barfeed import csvfeed
-from app.schemas.backtesting_schemas import BacktestingModel
+from app.schemas.backtesting.backtesting_schemas import BacktestingModel
 import pandas as pd
 import requests
 import json
