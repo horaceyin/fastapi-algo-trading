@@ -30,3 +30,16 @@ class CommonHelper:
                 except: 
                         logging.error(traceback.print_exc())
                         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="INTERNAL SERVER ERROR")
+
+        @staticmethod
+        def get_url(request_url):
+                try:
+                        res = get(url=request_url)
+                        if res.ok:
+                                try: return res.json()
+                                except: return res.text
+                        else:
+                                HTTPException(status_code=res.status_code, detail=res.reason)
+                except:
+                        logging.error(traceback.print_exc())
+                        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="INTERNAL SERVER ERROR")

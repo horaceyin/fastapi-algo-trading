@@ -1,5 +1,5 @@
 from typing import List, Optional
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, validator, StrictInt
 from app.schemas.backtesting.bar_summary_schemas import BarSummary
 from schemas.backtesting.product_schemas import Product
 
@@ -8,8 +8,8 @@ class BacktestingModel(BaseModel):
     portfolioValue: float = 1000000 # avFund # Default value should be the user's portfolio size
     boundaryValue: Optional[float] = 0
     liveTrade: Optional[bool] = False
-    days: Product.days # Consistent between products in list
-    barSummary: BarSummary # Consistent between products in list
+    days: Optional[StrictInt] = 2 # Consistent between products in list
+    barSummary: BarSummary # Bar summarizes the trading activity during barSummary seconds # Consistent between products in list
     # userid: Optional[str]
     # password: Optional[str]
     # targetAcc: Optional[str] = "SPTEST"
@@ -27,3 +27,8 @@ class BacktestingModel(BaseModel):
         elif boundary < 0:
             raise ValueError('Boundary value should not be less than 0.')
         return boundary
+
+    @validator('days')
+    def day_check(cls, day):
+        if day < 0: raise ValueError('Days should be an integer and larger than 0.')
+        return day

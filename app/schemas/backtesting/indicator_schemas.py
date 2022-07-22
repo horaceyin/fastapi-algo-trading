@@ -5,7 +5,7 @@ from pydantic import BaseModel, StrictFloat, root_validator, validator, StrictIn
 from pyalgotrade.dataseries import DEFAULT_MAX_LEN
 
 def period_checking(period):
-    if period < 1:
+    if period < 2:
         raise ValueError('Period should not be less than 1')
     return period
 

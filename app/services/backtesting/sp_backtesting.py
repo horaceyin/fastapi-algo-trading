@@ -1,5 +1,6 @@
 from typing import List
 import xxlimited
+from dataclasses import field
 import six, abc, pyalgotrade
 from pyalgotrade.strategy import BacktestingStrategy
 from pyalgotrade.barfeed import csvfeed
@@ -96,6 +97,13 @@ class SPBacktesting(BacktestingStrategy, abc.ABC):
     def get_live_trade(self, live_trade):
         self.__live_trade = live_trade
     
+    def __get_product(self, prod_indicator_list):
+        if len(prod_indicator_list) == 0: return None
+
+        product_list = [product.name for product in prod_indicator_list]
+
+        return product_list
+
     @abc.abstractmethod
     def onBars(self, bars):
         bar = bars[self.__instrument] # bars = current pyalgotrade.bar.Bars
