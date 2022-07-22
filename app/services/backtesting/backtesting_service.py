@@ -1,5 +1,3 @@
-from os import environ
-import json
 from schemas.backtesting.backtesting_schemas import BacktestingModel
 from services.backtesting.sma.sma_backtest_service import sma_backtest
 from services.backtesting.sma.sma_login_details import portSize
@@ -10,8 +8,37 @@ class BacktestingService:
 
     @staticmethod
     def run_backtesting(request: BacktestingModel): # Make request that follows the BacktestingModel format
-        print(request)
-        errMsg = ''
+        """
+        {
+            "prodCode": [
+                {
+                    "name": "string",
+                    "indicator": [
+                        {
+                        "maxLen": 0,
+                        "indicatorName": "sma",
+                        "period": 10
+                        },
+                        {
+                        "maxLen": 0,
+                        "indicatorName": "ema",
+                        "period": 10
+                        }
+                    ]
+                }
+            ],
+            "portfolioValue": 1000000,
+            "boundaryValue": 0,
+            "days": 2,
+            "barSummary": {
+                "day": false,
+                "hour": false,
+                "minute": false,
+                "second": true,
+                "input_time": 5
+            }
+        }
+        """
         # return json.dumps({'msg': 'from backtesting.'}) # Result given
         # write backtesting code here
         prodCode = request.prodCode
@@ -19,6 +46,8 @@ class BacktestingService:
         password = request.password
         targetAcc = request.targetAcc
         portfolioValue = request.portfolioValue
+        boundaryValue = request.boundaryValue
+        barSummary = request.barSummary
         try: # Default value should be the user's portfolio size, if it exists
             testportfolio = portSize(userid, password, targetAcc).loginData()
         except: 
@@ -28,9 +57,9 @@ class BacktestingService:
             backtestValue = portfolioValue
         else:
             backtestValue = testportfolio 
-        barSummary = request.barSummary
-        boundaryValue = request.boundaryValue
+        
         return sma_backtest(prodCode, 1, 5, 160, True, backtestValue, barSummary, boundaryValue).start_backtesting(request) 
+        # sma_backtest(instrument, day, second, smaPeriod, plot, startcash, barsum, boundaryValue)
         # May need to add timeframe and method for data collection
         # Cannot test code due to errors
         # Build such that type of backtest can be changed

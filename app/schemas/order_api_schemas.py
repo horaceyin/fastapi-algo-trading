@@ -18,14 +18,14 @@ class AddOrder(BaseModel):
     # options: Optional[int] # Unsure of purpose
     # ref: Optional[str]
     # ref2: Optional[str]
-    schedTime: Optional[float] # In the form YYYYMMDD.hhmmss
+    # schedTime: Optional[float] # In the form YYYYMMDD.hhmmss # Unsure of formatting
     status: Optional[int] # Only required in inactive orders (2 = Inactive)
     stopPriceInDec: Optional[int]
     stopType: Optional[Literal["L", "U", "D"]] # L (Stop loss), U (Up trigger), D (Down trigger), or blank
     subCondType: Optional[Literal[0, 1, 3, 4, 6, 11, 14, 16]] # 0 (None), 1 (Stop), 3, 4 (OCO stop), 6 (Trail stop), 11 (Stop loss by price), 14 (OCO by price), 16 (Trailing stop by price)
     # upLevelInDec: Optional[float]
     # upPriceInDec: Optional[float]
-    # validDate: Optional[int] # YYYYMMDD
+    # validDate: Optional[int] # YYYYMMDD # Unsure of formatting
 
 class ChangeOrder(BaseModel):
     accNo: str
@@ -38,11 +38,11 @@ class ChangeOrder(BaseModel):
     extOrderId: str # Need to use Get Account Order API to obtain before usage; now works every time without error (?)
     priceInDec: Optional[float]
     qty: Optional[int]
-    schedTime: Optional[float] # In the form YYYYMMDD.hhmmss
+    # schedTime: Optional[float] # In the form YYYYMMDD.hhmmss # Unsure of formatting
     stopPriceInDec: Optional[int]
     # upLevelInDec: Optional[float]
     # upPriceInDec: Optional[float]
-    # validDate: Optional[int] # YYYYMMDD
+    # validDate: Optional[int] # YYYYMMDD # Unsure of formatting
 
 # For activate, deactivate and delete orders
 class AccessOrder(BaseModel):

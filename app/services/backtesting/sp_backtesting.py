@@ -29,17 +29,16 @@ class SPBacktesting(BacktestingStrategy, abc.ABC):
         self.__prod_indicator_list = request.prodCode
         self.__portfolio_value = request.portfolioValue
         self.__boundary_value = request.boundaryValue
-        self.__indicator_list = request.indicator
+        self.__live_trade = request.liveTrade
         self.__days = request.days
         self.__bar_summary = request.barSummary
-        self.__live_trade = request.liveTrade
         
         self.__position = None
         self.product_list = self.__get_product(self.__prod_indicator_list) # create list: ['HSIM2', 'HSIZ4']
         self.__sp_bar_feed = SpBarFeed(self.__bar_summary, self.__days) # SpBarFeed(barSummary, loadedBars=[], timezone = None, maxLen = None)
         self.__sp_broker = SPBroker(self.__portfolio_value, self.__boundary_value, self.__sp_bar_feed, self.__live_trade)
             # 
-        super(SPBacktesting, self).__init__(self.__sp_bar_feed, self.__sp_broker)
+        super(SPBacktesting, self).__init__(self.__sp_bar_feed, self.__sp_broker) # BacktestingStrategy(barFeed, cash_or_brk=1000000)
 
     @property
     def get_prod_list(self):
@@ -99,11 +98,8 @@ class SPBacktesting(BacktestingStrategy, abc.ABC):
     
     @abc.abstractmethod
     def onBars(self, bars):
-        if self.__position is None:
-            pass
-        else:
-            pass
-        return NotImplementedError
+        bar = bars[self.__instrument] # bars = current pyalgotrade.bar.Bars
+        # return NotImplementedError
 
     def get_sp_data(self):
         pass

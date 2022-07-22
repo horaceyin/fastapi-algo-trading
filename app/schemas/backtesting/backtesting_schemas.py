@@ -1,12 +1,15 @@
 from typing import List, Optional
 from pydantic import BaseModel, validator
+from app.schemas.backtesting.bar_summary_schemas import BarSummary
 from schemas.backtesting.product_schemas import Product
 
 class BacktestingModel(BaseModel):
-    prodCode: List[Product]
+    prodCode: List[Product] # Collect list of product indicators here
     portfolioValue: float = 1000000 # avFund # Default value should be the user's portfolio size
     boundaryValue: Optional[float] = 0
     liveTrade: Optional[bool] = False
+    days: Product.days # Consistent between products in list
+    barSummary: BarSummary # Consistent between products in list
     # userid: Optional[str]
     # password: Optional[str]
     # targetAcc: Optional[str] = "SPTEST"
