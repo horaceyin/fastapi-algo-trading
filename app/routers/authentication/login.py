@@ -35,5 +35,5 @@ async def user_login(request: UserLogin):
 #     info = "Hello" # Testing code # Currently: Code 200, "string"
 #     return info
 @loginRouter.post('/info', status_code=status.HTTP_200_OK)
-async def infomation(requset: AccountSumModel):
-    return AuthService.get_acc_info(requset)
+async def infomation(request: AccountSumModel):
+    return AuthService.get_acc_info(request)

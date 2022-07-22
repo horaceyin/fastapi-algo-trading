@@ -40,15 +40,16 @@ class BacktestingService:
             }
         }
         """
-        my_strat = MyStrategy(request=request)
-        return {'report': "data"}
-        # # return json.dumps({'msg': 'from backtesting.'}) # Result given
-        # # write backtesting code here
+        # return json.dumps({'msg': 'from backtesting.'}) # Result given
+        # write backtesting code here
+
         # prodCode = request.prodCode
         # userid = request.userid
         # password = request.password
         # targetAcc = request.targetAcc
         # portfolioValue = request.portfolioValue
+        # boundaryValue = request.boundaryValue
+        # barSummary = request.barSummary
         # try: # Default value should be the user's portfolio size, if it exists
         #     testportfolio = portSize(userid, password, targetAcc).loginData()
         # except: 
@@ -58,12 +59,16 @@ class BacktestingService:
         #     backtestValue = portfolioValue
         # else:
         #     backtestValue = testportfolio 
-        # barSummary = request.barSummary
-        # boundaryValue = request.boundaryValue
+        
         # return sma_backtest(prodCode, 1, 5, 160, True, backtestValue, barSummary, boundaryValue).start_backtesting(request) 
-        # # May need to add timeframe and method for data collection
-        # # Cannot test code due to errors
-        # # Build such that type of backtest can be changed
+
+        # sma_backtest(instrument, day, second, smaPeriod, plot, startcash, barsum, boundaryValue)
+        # May need to add timeframe and method for data collection
+        # Cannot test code due to errors
+        # Build such that type of backtest can be changed
+
+        my_strat = MyStrategy(request=request)
+        return {'report': "data"}
 
         # #if exception rasied,
         # raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=errMsg)

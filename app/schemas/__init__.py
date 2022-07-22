@@ -1,5 +1,3 @@
-
-# from pyalgotrade import strategy
 # from pyalgotrade.barfeed import quandlfeed
 
 # class MyStrategy(strategy.BacktestingStrategy):
