@@ -30,7 +30,7 @@ class SPBacktesting(BacktestingStrategy, abc.ABC):
         # self.__barSummary = request.barSummary
         
         self.sp_bar_feed = SpBarFeed(self.__prod_indicator_list, self.__days, self.__bar_summary)
-        #self.__sp_broker = SPBroker()
+        # self.__sp_broker = SPBroker()
         super(SPBacktesting, self).__init__(self.sp_bar_feed)
 
     @property
