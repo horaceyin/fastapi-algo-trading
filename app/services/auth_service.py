@@ -1,4 +1,4 @@
-from app.core.endpoints import ACCOUNTORDER
+from core.endpoints import ACCOUNTORDER
 from core.config import SP_HOST_AND_PORT
 from core.endpoints import USERLOGIN, ACCOUNTINFO
 from schemas.auth_schemas import UserLogin, AccountSumModel, AccountOrder

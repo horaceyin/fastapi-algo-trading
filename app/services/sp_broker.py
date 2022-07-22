@@ -1,7 +1,7 @@
 import six, abc, pyalgotrade
 from pyalgotrade import broker as pbroker
 from pyalgotrade.broker import backtesting
-from app.services.auth_service import AuthService
+from services.auth_service import AuthService
 from services.sp_api_handler import SPAPIHandler
 import logging
 import traceback
@@ -100,7 +100,7 @@ class SPBroker(backtesting.Broker): # Inherit all properties and functions from 
                 pass
 
         # Stop-limit order
-        elif request.orderType == 0 and (request.condType == 1 or request.condType == 4 or request.condType == 6):
+        elif request.orderType == 0 and ((request.condType == 1 or request.condType == 4 or request.condType == 6) or (request.subCondType != 0 and request.subCondType != 3)):
             stopPrice = request.stopPriceInDec
             limitPrice = request.priceInDec
             backtesting.StopLimitOrder(action, instrument, stopPrice, limitPrice, quantity, self.getInstrumentTraits(instrument))
@@ -119,7 +119,7 @@ class SPBroker(backtesting.Broker): # Inherit all properties and functions from 
                 pass
         
         # Stop order
-        elif (request.condType == 1 or request.condType == 4 or request.condType == 6):
+        elif ((request.condType == 1 or request.condType == 4 or request.condType == 6) or (request.subCondType != 0 and request.subCondType != 3)):
             stopPrice = request.stopPriceInDec
             backtesting.StopOrder(action, instrument, stopPrice, quantity, self.getInstrumentTraits(instrument))
             try:

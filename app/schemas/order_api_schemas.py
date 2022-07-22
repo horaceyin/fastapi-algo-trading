@@ -4,7 +4,7 @@ from pydantic import BaseModel
 class AddOrder(BaseModel):
     accNo: str
     buySell: Literal["B", "S"] # B, S
-    condType: Literal[0, 1, 3, 4, 6, 8, 9] # 0, 1 (Stop), 3, 4 (OCO stop), 6 (Trail stop), 8, 9
+    condType: Literal[0, 1, 3, 4, 6, 8, 9] # 0 (None), 1 (Stop), 3, 4 (OCO stop), 6 (Trail stop), 8, 9
     orderType: Literal[0, 2, 5, 6] # 0 (Limit), 2, 5, 6 (Market order)
     priceInDec: float
     prodCode: str

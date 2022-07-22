@@ -43,6 +43,7 @@ class BacktestingService:
         # return json.dumps({'msg': 'from backtesting.'}) # Result given
         # write backtesting code here
 
+        # Reference this to make broker class; may not be neccessary
         # prodCode = request.prodCode
         # userid = request.userid
         # password = request.password
@@ -67,7 +68,7 @@ class BacktestingService:
         # Cannot test code due to errors
         # Build such that type of backtest can be changed
 
-        my_strat = MyStrategy(request=request)
+        my_strat = MyStrategy(request)
         return {'report': "data"}
 
         # #if exception rasied,

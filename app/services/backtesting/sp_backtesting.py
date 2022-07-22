@@ -12,8 +12,8 @@ from sp_indicators import SPIndicators
 from pyalgotrade.broker import backtesting
 from pyalgotrade.barfeed.csvfeed import BarFeed
 
-from app.services.backtesting.spbarfeed.sp_live_trading_feed import SpBarFeed
-from app.services.sp_broker import SPBroker
+from services.backtesting.spbarfeed.sp_live_trading_feed import SpBarFeed
+from services.sp_broker import SPBroker
 
 # class SPBroker(backtesting.Broker):
 #     def __init__(self, portfolio_value, live_trade=True) -> None:
@@ -33,7 +33,8 @@ class SPBacktesting(BacktestingStrategy, abc.ABC):
         self.__live_trade = request.liveTrade
         self.__days = request.days
         self.__bar_summary = request.barSummary
-        
+        # May need userId, password, and targetAcc
+
         self.__position = None
         self.product_list = self.__get_product(self.__prod_indicator_list) # create list: ['HSIM2', 'HSIZ4']
         self.__sp_bar_feed = SpBarFeed(self.__bar_summary, self.__days) # SpBarFeed(barSummary, loadedBars=[], timezone = None, maxLen = None)
@@ -98,10 +99,9 @@ class SPBacktesting(BacktestingStrategy, abc.ABC):
         self.__live_trade = live_trade
     
     def __get_product(self, prod_indicator_list):
-        if len(prod_indicator_list) == 0: return None
-
+        if len(prod_indicator_list) == 0: 
+            return None
         product_list = [product.name for product in prod_indicator_list]
-
         return product_list
 
     @abc.abstractmethod
