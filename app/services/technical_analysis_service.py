@@ -210,7 +210,9 @@ class PnLService:
                     'negativePnl': negativePnl,
                     'returns': returnQueue,
                     'positiveRet': positiveRet,
-                    'negativeRet': negativeRet
+                    'negativeRet': negativeRet,
+                    'posList': posList,
+                    'priceList': priceList
                     }
                     # e.g.
                     # 'HSI': {prodCode: 'HSIM2', ...},

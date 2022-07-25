@@ -1,6 +1,6 @@
 from typing import List, Optional
 from pydantic import BaseModel, validator, StrictInt
-from app.schemas.backtesting.bar_summary_schemas import BarSummary
+from schemas.backtesting.bar_summary_schemas import BarSummary
 from schemas.backtesting.product_schemas import Product
 
 class BacktestingModel(BaseModel):

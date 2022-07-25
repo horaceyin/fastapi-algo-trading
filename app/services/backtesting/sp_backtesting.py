@@ -1,19 +1,9 @@
-from typing import List
-import xxlimited
 from dataclasses import field
-import six, abc, pyalgotrade
+import abc
 from pyalgotrade.strategy import BacktestingStrategy
-from pyalgotrade.barfeed import csvfeed
-from pyalgotrade.technical import ma
-from pyalgotrade.technical import cross
 from schemas.backtesting.backtesting_schemas import BacktestingModel
-from sp_indicators import SPIndicators
-
-from pyalgotrade.broker import backtesting
-from pyalgotrade.barfeed.csvfeed import BarFeed
-
-from app.services.backtesting.spbarfeed.sp_live_trading_feed import SpBarFeed
-from app.services.sp_broker import SPBroker
+from services.backtesting.spbarfeed.sp_live_trading_feed import SpBarFeed
+from services.sp_broker import SPBroker
 
 # class SPBroker(backtesting.Broker):
 #     def __init__(self, portfolio_value, live_trade=True) -> None:
