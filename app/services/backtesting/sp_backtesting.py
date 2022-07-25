@@ -105,9 +105,15 @@ class SPBacktesting(BacktestingStrategy, abc.ABC):
         return product_list
 
     @abc.abstractmethod
-    def onBars(self, bars):
+    # def onBars(self, bars):
+    def onBars(self, bars, product_list, instrument): # ASK HORACE ON HOW THIS WORKS
+        def __get_instrument(self, product_list, instrument):
+            for i in range(len(product_list)):
+                if product_list[i] == instrument:
+                    return instrument
+        self.__instrument = __get_instrument(product_list, instrument)
         bar = bars[self.__instrument] # bars = current pyalgotrade.bar.Bars
-        # return NotImplementedError
+        return NotImplementedError
 
     def get_sp_data(self):
         pass

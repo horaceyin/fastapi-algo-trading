@@ -1,7 +1,7 @@
 from core.endpoints import ACTIVEORDER
-from schemas.order_api_schemas import AddOrder, ChangeOrder, AccessOrder
+from schemas.order_api_schemas import AddOrder, ChangeOrder, AccessOrder, MakeFuture
 from core.config import SP_HOST_AND_PORT
-from core.endpoints import ADDORDER, CHANGEORDER, DELETEORDER, ACTIVEORDER, INACTIVEORDER
+from core.endpoints import ADDORDER, CHANGEORDER, DELETEORDER, ACTIVEORDER, INACTIVEORDER, MAKEPOSITION
 import requests
 import json
 from schemas.technical_analysis_schemas import GetDoneTradeModel
@@ -125,3 +125,16 @@ class SPAPIHandler(): # Object to handle actions # e.g. create market order insi
                 print("Order cannot be deleted from SP")
         except:
             raise SystemExit("Order cannot be deleted from SP")
+     
+    # def makeFuture(self, request: MakeFuture):
+    #     makeTargUrl = ENDPOINT + MAKEPOSITION
+    #     print("Future position is being processed to SP")
+    #     try:
+    #         makeTarget = CommonHelper.post_url(makeTargUrl, request) # Access SP
+    #         # assert deleteOrder["result_msg"] == "No Error"
+    #         if makeTarget["result_msg"] == "No Error":
+    #             print("Future position is made in SP")
+    #         else:
+    #             print("Future position cannot be made in SP")
+    #     except:
+    #         raise SystemExit("Future position cannot be made in SP")
