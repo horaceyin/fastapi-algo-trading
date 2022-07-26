@@ -3,51 +3,62 @@ from pydantic import BaseModel
 
 class AddOrder(BaseModel):
     accNo: str
-    buySell: Literal["B", "S"] # B or S
-    condType: Literal[0, 1, 3, 4, 6, 8, 9] # 0, 1 (Stop), 3, 4, 6, 8, 9
+    buySell: Literal["B", "S"] # B, S
+    condType: Literal[0, 1, 3, 4, 6, 8, 9] # 0 (None), 1 (Stop), 3, 4 (OCO stop), 6 (Trail stop), 8, 9
     orderType: Literal[0, 2, 5, 6] # 0 (Limit), 2, 5, 6 (Market order)
     priceInDec: float
     prodCode: str
     qty: int
     sessionToken: str
-    validType: Literal[0, 1, 2, 3, 4] = 0 # 0 - 4
+    # sessionToken: Optional[str] # Set so it will be filled by system
+    validType: Literal[0, 1, 2, 3, 4] = 0 # 0 - 4 # Unsure of purpose
     clOrderId: Optional[str] 
     # downLevelInDec: Optional[float]
     # downPriceInDec: Optional[float]
-    openClose: Optional[Literal["M", "O", "C"]] # M, O, C
+    openClose: Optional[Literal["M", "O", "C"]] # M (Mandatory close), O (Open), C (Close)
     # options: Optional[int] # Unsure of purpose
     # ref: Optional[str]
     # ref2: Optional[str]
-    schedTime: Optional[float] # In the form YYYYMMDD.hhmmss
-    status: Optional[int] # Only reauired in inactive orders (2 = Inactive)
+    # schedTime: Optional[float] # In the form YYYYMMDD.hhmmss # Unsure of formatting
+    status: Optional[int] # Only required in inactive orders (2 = Inactive)
     stopPriceInDec: Optional[int]
-    stopType: Optional[Literal["L", "U", "D"]] # L, U, D, or blank
-    subCondType: Optional[Literal[0, 1, 3, 4, 6, 11, 14, 16]] # 0, 1 (Stop), 3, 4, 6, 11, 14, 16 
+    stopType: Optional[Literal["L", "U", "D"]] # L (Stop loss), U (Up trigger), D (Down trigger), or blank
+    subCondType: Optional[Literal[0, 1, 3, 4, 6, 11, 14, 16]] # 0 (None), 1 (Stop), 3, 4 (OCO stop), 6 (Trail stop), 11 (Stop loss by price), 14 (OCO by price), 16 (Trailing stop by price)
     # upLevelInDec: Optional[float]
     # upPriceInDec: Optional[float]
-    # validDate: Optional[int] # YYYYMMDD
+    # validDate: Optional[int] # YYYYMMDD # Unsure of formatting
 
 class ChangeOrder(BaseModel):
     accNo: str
-    accOrderNo: int
+    accOrderNo: int # Collect from the order number within Get Account Order API or using the one displayed in Add Order
     buySell: Literal["B", "S"]
     prodCode: str
     sessionToken: str
+    # sessionToken: Optional[str] # Set so it will be filled by system
     # downLevelInDec: Optional[float]
     # downPriceInDec: Optional[float]
-    extOrderId: str
+    extOrderId: str # Need to use Get Account Order API to obtain before usage; now works every time without error (?)
     priceInDec: Optional[float]
     qty: Optional[int]
-    schedTime: Optional[float] # In the form YYYYMMDD.hhmmss
+    # schedTime: Optional[float] # In the form YYYYMMDD.hhmmss # Unsure of formatting
     stopPriceInDec: Optional[int]
     # upLevelInDec: Optional[float]
     # upPriceInDec: Optional[float]
-    # validDate: Optional[int] # YYYYMMDD
+    # validDate: Optional[int] # YYYYMMDD # Unsure of formatting
 
-class DeleteOrder(BaseModel):
+# For activate, deactivate and delete orders
+class AccessOrder(BaseModel):
     accNo: str
     accOrderNo: int
     buySell: Literal["B", "S"]
     prodCode: str
     sessionToken: str
+    # sessionToken: Optional[str] # Set so it will be filled by system
     extOrderId: str
+
+# class MakeFuture(BaseModel):
+#     buySell: Literal["B", "S"]
+#     prodCode: str
+#     qty: int
+#     sessionToken: str
+#     targetAccNo: str

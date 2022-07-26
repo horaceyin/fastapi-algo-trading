@@ -90,7 +90,7 @@ class PnLService:
             pnl = sell_price - buy_price
 
             pnlQueue.append(pnl) 
-            returnQueue.append(pnl / buy_price) # Return = Profit/(Initial investment)
+            returnQueue.append(pnl / buy_price*100) # Return = Profit/(Initial investment)
         return (pnlQueue, pnlNum, returnQueue)
     
     @staticmethod
@@ -210,7 +210,9 @@ class PnLService:
                     'negativePnl': negativePnl,
                     'returns': returnQueue,
                     'positiveRet': positiveRet,
-                    'negativeRet': negativeRet
+                    'negativeRet': negativeRet,
+                    'posList': posList,
+                    'priceList': priceList
                     }
                     # e.g.
                     # 'HSI': {prodCode: 'HSIM2', ...},

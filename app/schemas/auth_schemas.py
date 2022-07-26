@@ -12,4 +12,10 @@ class AccountSumModel(BaseModel):
     targetAccNo: str = 'NICHOLAS01'
     dataSource: Optional[int] = 4
     password: str = 'sp'
+    userId: str = 'ANSONLI01'
+
+class AccountOrder(BaseModel):
+    sessionToken: str
+    targetAccNo: str
+    dataSource: Optional[int] = 4
     userId: str = 'NICHOLAS01'
