@@ -37,50 +37,50 @@ class SPBacktesting(BacktestingStrategy, abc.ABC):
 
         self.__position = None
         self.product_list = self.__get_product(self.__prod_indicator_list) # create list: ['HSIM2', 'HSIZ4']
-        self.__sp_bar_feed = SpBarFeed(self.__bar_summary, self.__days) # SpBarFeed(barSummary, loadedBars=[], timezone = None, maxLen = None)
+        self.__sp_bar_feed = SpBarFeed(self.product_list, self.__days, self.__bar_summary) # SpBarFeed(barSummary, loadedBars=[], timezone = None, maxLen = None)
         self.__sp_broker = SPBroker(self.__portfolio_value, self.__boundary_value, self.__sp_bar_feed, self.__live_trade)
             # 
         super(SPBacktesting, self).__init__(self.__sp_bar_feed, self.__sp_broker) # BacktestingStrategy(barFeed, cash_or_brk=1000000)
 
     @property
-    def get_prod_list(self):
-        return self.__prod_list
+    def get_prod_indicator_list(self):
+        return self.__prod_indicator_list
 
-    @get_prod_list.setter
-    def get_prod_list(self, prod_code):
-        self.__prod_list = prod_code
-
-    @property
-    def get_indicator_list(self):
-        return self.__indicator_list
-
-    @get_indicator_list.setter
-    def get_indicator_list(self, indicator):
-        self.__indicator_list = indicator
+    @get_prod_indicator_list.setter
+    def get_prod_indicator_list(self, prod_code):
+        self.__prod_indicator_list = prod_code
 
     @property
     def get_portfolio_value(self):
         return self.__portfolio_value
 
     @get_portfolio_value.setter
-    def get_portfolio_value(self, val):
-        self.__portfolio_value = val
+    def get_portfolio_value(self, port_val):
+        self.__portfolio_value = port_val
 
     @property
     def get_boundary_value(self):
         return self.__boundary_value
 
     @get_boundary_value.setter
-    def get_boundary_value(self, val):
-        self.__boundary_value = val
+    def get_boundary_value(self, bound_val):
+        self.__boundary_value = bound_val
 
     @property
-    def get_the_days_after(self):
-        return self.__the_days_after
+    def get_days(self):
+        return self.__days
 
-    @get_the_days_after.setter
-    def get_the_days_after(self, days):
-        self.__the_days_after = days
+    @get_days.setter
+    def get_days(self, days):
+        self.__days = days
+
+    # @property
+    # def get_the_days_after(self):
+    #     return self.__the_days_after
+
+    # @get_the_days_after.setter
+    # def get_the_days_after(self, days):
+    #     self.__the_days_after = days
 
     @property
     def get_barSummary(self):
@@ -91,12 +91,44 @@ class SPBacktesting(BacktestingStrategy, abc.ABC):
         self.__barSummary = bar_summary
 
     @property
+    def get_position(self):
+        return self.__position
+
+    @get_position.setter
+    def get_position(self, position):
+        self.__position = position
+
+    @property
     def get_live_trade(self):
         return self.__live_trade
 
     @get_live_trade.setter
     def get_live_trade(self, live_trade):
         self.__live_trade = live_trade
+
+    @property
+    def get_product_list(self):
+        return self.product_list
+
+    @get_product_list.setter
+    def get_product_list(self, prod_list):
+        self.product_list = prod_list
+
+    @property
+    def get_sp_bar_feed(self):
+        return self.__sp_bar_feed
+
+    @get_sp_bar_feed.setter
+    def get_sp_bar_feed(self, sp_bar_feed):
+        self.__sp_bar_feed = sp_bar_feed
+
+    @property
+    def get_sp_broker(self):
+        return self.__sp_broker
+
+    @get_sp_broker.setter
+    def get_sp_broker(self, sp_broker):
+        self.__sp_broker = sp_broker
     
     def __get_product(self, prod_indicator_list):
         if len(prod_indicator_list) == 0: 
@@ -106,13 +138,7 @@ class SPBacktesting(BacktestingStrategy, abc.ABC):
 
     @abc.abstractmethod
     # def onBars(self, bars):
-    def onBars(self, bars, product_list, instrument): # ASK HORACE ON HOW THIS WORKS
-        def __get_instrument(self, product_list, instrument):
-            for i in range(len(product_list)):
-                if product_list[i] == instrument:
-                    return instrument
-        self.__instrument = __get_instrument(product_list, instrument)
-        bar = bars[self.__instrument] # bars = current pyalgotrade.bar.Bars
+    def onBars(self, bars, product_list, instrument): # SHOULD BE IMPLEMENTED BY FUTURE USERS
         return NotImplementedError
 
     def get_sp_data(self):
