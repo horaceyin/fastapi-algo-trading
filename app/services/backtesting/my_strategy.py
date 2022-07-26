@@ -5,8 +5,9 @@ class MyStrategy(SPBacktesting):
     def __init__(self, request: BacktestingModel):
         super(MyStrategy, self).__init__(request)
         
-        print(self.sp_bar_feed)
-        # print sp broker here.
+        print(self.__sp_bar_feed)
+        # print(self.__sp_broker)
 
     def onBars(self, bars):
         print("!!!!!!!")
+        # bar = bars[self.__instrument] # Requires 1 product from product_list # self.__instrument is a string
