@@ -24,7 +24,7 @@ class SPBroker(backtesting.Broker): # Inherit all properties and functions from 
             self.__sp_api_handler = None
         # login = AuthService.user_login(request) # UNSURE OF HOW TO ACCESS LOGIN SESSION TOKEN WITHOUT LOGGING IN AGAIN
         # self.__session_token = login['data']['sessionToken']
-        super(SPBroker, self).__init__(self.__portfolio_value, self.__sp_bar_feed, commission=None) # Used to call __init__ method of parent class backtesting.Broker; add additional variables below
+        super(SPBroker, self).__init__(self.__portfolio_value, self.__bound_val, self.__sp_bar_feed, self.__live_trade, commission=None) # Used to call __init__ method of parent class backtesting.Broker; add additional variables below
 
     @property
     def get_portfolio_value(self):
