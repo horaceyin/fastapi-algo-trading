@@ -1,9 +1,8 @@
-from matplotlib.font_manager import json_load
-from numpy import double, empty, negative
+from __future__ import division
+from unittest import result
 from services.technical_analysis_service import PnLService
 from schemas.report_schemas import ReportModel
 import statistics
-import math
 
 class Report(PnLService):
 
@@ -54,17 +53,6 @@ class Report(PnLService):
         else:
             return (statistics.stdev(list))
 
-    @classmethod
-    # Average of returns
-    def __avg_return(cls, pnlList):
-        avg_return = ((cls.__get_totalpnl(cls,pnlList) / cls.__get_cost(cls))*100)
-        return avg_return
-    # def __avg_return(cls, listofpnl, tradeRecordObj):
-    #     buyprice = cls.__buy_price(tradeRecordObj)
-    #     avg_return = ((cls.__get_totalpnl(listofpnl)/tradenum) * 100)
-    #     # ((sell price - buy price)/ buy price)/total trade) = (Net return/Cost)/total trade * 100%
-    #     return avg_return
-
     @staticmethod
     def convtoperc(x):
         r = round(x, 3) * 100
@@ -82,19 +70,13 @@ class Report(PnLService):
         for i in data:
             pnl +=data[i][0]['pnl']
             negativePnl += data[i][0]['negativePnl']
-            if negativePnl is empty:
-                return negativePnl[0] #error when list is empty
             positivePnl += data[i][0]['positivePnl']
-            if positivePnl is empty:
-                return positivePnl[0]
             tradeNumber += data[i][0]['num']
             returns += data[i][0]['returns']
+            print(returns)
             positiveRet += data[i][0]['positiveRet']
-            if positiveRet is empty:
-                return positiveRet[0]
             negativeRet += data[i][0]['negativeRet']
-            if negativeRet is empty:
-                return negativeRet[0]
+            
         def get_cost():
             buyPrice = []
             buyNum = []
@@ -107,56 +89,69 @@ class Report(PnLService):
             for i in res_list:
                 result +=i
             return result  
-        def avg_return(pnlList):
-            avg_return = (self.__get_totalpnl(pnlList) / get_cost())
+        def avg_return_for_total(pnlList):
+            try:
+                avg_return = (self.__get_totalpnl(pnlList) / get_cost())
+            except ZeroDivisionError:
+                avg_return = 0
             return avg_return
+        def avg_return_for_pnl(pnl, cost):
+            try:
+                result = self.convtoperc(self.__get_totalreturns(pnl)/self.__totaltrade(cost))
+            except ZeroDivisionError:
+                result = 0
+            return result
         def profit():
             result = self.__get_totalpnl(positivePnl)/self.__totaltrade(positivePnl)
             return result
         def loss():
-            if self.__totaltrade(negativePnl) ==0:
-                return 1
-            else:
-                return(self.__get_totalpnl(negativePnl)/self.__totaltrade(negativePnl))
+            try:
+                result = self.__get_totalpnl(negativePnl)/self.__totaltrade(negativePnl)
+            except ZeroDivisionError:
+                result = 0
+            return result
+        #for overall P/L ratio if the list is empty
+        def checkanswer():
+            try:
+                result = profit()/loss()
+            except ZeroDivisionError:
+                return profit()
+            return result
         report = {
-            # 'report':{
-            #     "report_data":"messages
-            #     "
-            # }
             'total': {
                 "Total trades": tradeNumber, # Including all trades 
                 "Avg. Profit": (self.__get_totalpnl(pnl) / tradeNumber),
-                "Profits. std. dev.": self.__get_sd(pnl)*100,
-                "Min. Profit": min(pnl),
-                "Max. Profit": max(pnl),
-                "Avg. Return": avg_return(pnl),
-                "Return std. dev.": self.__get_sd(returns)*100, # self.__return_std_dev(),
-                "Max. Return": max(returns),
-                "Min. Return": min(returns),
-                "Overall P/L Ratio": profit() / loss(),
+                "Profits. std. dev.": self.__get_sd(pnl),
+                "Min. Profit": min(pnl, default=0),
+                "Max. Profit": max(pnl, default=0),
+                "Avg. Return": avg_return_for_total(pnl),
+                "Return std. dev.": self.__get_sd(returns), # self.__return_std_dev(),
+                "Max. Return": max(returns, default=0)*100,
+                "Min. Return": min(returns, default=0)*100,
+                "Overall P/L Ratio": checkanswer(),
                 "Average Profitability per Trade": (self.__get_totalpnl(positivePnl) - self.__get_totalpnl(negativePnl))/tradeNumber
             },
             'profitable': {
                 "Profitable trades": self.__totaltrade(positivePnl),
                 "Avg. profit": profit(),
-                "Profits. std. dev.": self.__get_sd(positivePnl)*100,
-                "Min. Profit": min(positivePnl),
-                "Max. Profit": max(positivePnl),
-                "Avg. Return": self.convtoperc(self.__get_totalreturns(positiveRet)/tradeNumber), 
-                "Return std. dev.": self.__get_sd(positiveRet)*100, 
-                "Max. Return": max(positiveRet),
-                "Min. Return": min(positiveRet)
+                "Profits. std. dev.": self.__get_sd(positivePnl),
+                "Min. Profit": min(positivePnl, default=0),
+                "Max. Profit": max(positivePnl, default=0),
+                "Avg. Return": avg_return_for_pnl(positiveRet, positivePnl), 
+                "Return std. dev.": self.__get_sd(positiveRet), 
+                "Max. Return": max(positiveRet, default=0)*100,
+                "Min. Return": min(positiveRet, default=0)*100
             },
             'unprofitable': {
                 "Unprofitable trades": self.__totaltrade(negativePnl),
                 "Avg. Loss": loss(),
-                "Losses. std. dev.": self.__get_sd(negativePnl)*100,
-                "Min. Loss": min(negativePnl),
-                "Max. Loss": max(negativePnl),
-                "Avg. Return": self.convtoperc(self.__get_totalreturns(negativeRet)/tradeNumber),
-                "Return std. dev.": self.__get_sd(negativeRet)*100,
-                "Max. Return": max(negativeRet),
-                "Min. Return": min(negativeRet)
+                "Losses. std. dev.": self.__get_sd(negativePnl),
+                "Min. Loss": min(negativePnl, default=0),
+                "Max. Loss": max(negativePnl, default=0),
+                "Avg. Return": avg_return_for_pnl(negativeRet, negativePnl),
+                "Return std. dev.": self.__get_sd(negativeRet),
+                "Max. Return": max(negativeRet, default=0)*100,
+                "Min. Return": min(negativeRet, default=0)*100
             }
         }
         return report
