@@ -1,4 +1,4 @@
-# fastapi-algo-tradingg
+# fastapi-algo-trading
 
 ## <a name="start"></a>Available Scripts
 
