@@ -17,7 +17,7 @@ class SPAPIHandler(): # Object to handle actions # e.g. create market order insi
         addUrl = ENDPOINT + ADDORDER # Need to activate order to allow system to accept it
         print("Market order is being processed to SP")
         try:
-            addOrder = CommonHelper.post_url(addUrl, request)
+            addOrder = CommonHelper.post_url(addUrl, request) # Access SP
             # assert addOrder["result_msg"] == "No Error"
             if addOrder["result_msg"] == "No Error":
                 print("Market order is added to SP")
@@ -31,7 +31,7 @@ class SPAPIHandler(): # Object to handle actions # e.g. create market order insi
         addUrl = ENDPOINT + ADDORDER # Need to activate order to allow system to accept it
         print("Limit order is being processed to SP")
         try:
-            addOrder = CommonHelper.post_url(addUrl, request)
+            addOrder = CommonHelper.post_url(addUrl, request) # Access SP
             # assert addOrder["result_msg"] == "No Error"
             if addOrder["result_msg"] == "No Error":
                 print("Limit order is added to SP")
@@ -39,13 +39,12 @@ class SPAPIHandler(): # Object to handle actions # e.g. create market order insi
                 print("Limit order cannot be added to SP")
         except:
             raise SystemExit("Limit order cannot be added to SP")
-        # pass # Replace with code to access SP backtesting
     
     def createStopOrder(self, request: AddOrder):
         addUrl = ENDPOINT + ADDORDER # Need to activate order to allow system to accept it
         print("Stop order is being processed to SP")
         try:
-            addOrder = CommonHelper.post_url(addUrl, request)
+            addOrder = CommonHelper.post_url(addUrl, request) # Access SP
             # assert addOrder["result_msg"] == "No Error"
             if addOrder["result_msg"] == "No Error":
                 print("Stop order is added to SP")
@@ -59,7 +58,7 @@ class SPAPIHandler(): # Object to handle actions # e.g. create market order insi
         addUrl = ENDPOINT + ADDORDER # Need to activate order to allow system to accept it
         print("Stop limit order is being processed to SP")
         try:
-            addOrder = CommonHelper.post_url(addUrl, request)
+            addOrder = CommonHelper.post_url(addUrl, request) # Access SP
             # assert addOrder["result_msg"] == "No Error"
             if addOrder["result_msg"] == "No Error":
                 print("Stop limit order is added to SP")
@@ -73,7 +72,7 @@ class SPAPIHandler(): # Object to handle actions # e.g. create market order insi
         activeUrl = ENDPOINT + ACTIVEORDER
         print("Activation of order is being processed in SP")
         try:
-            activeOrder = CommonHelper.post_url(activeUrl, request)
+            activeOrder = CommonHelper.post_url(activeUrl, request) # Access SP
             if activeOrder["result_msg"] == "No Error":
                 print("Order is activated in SP")
             elif activeOrder["result_msg"] == "Order Is Already Active":
@@ -87,7 +86,7 @@ class SPAPIHandler(): # Object to handle actions # e.g. create market order insi
         inactiveUrl = ENDPOINT + INACTIVEORDER
         print("Deactivation of order is being processed in SP")
         try:
-            inactiveOrder = CommonHelper.post_url(inactiveUrl, request)
+            inactiveOrder = CommonHelper.post_url(inactiveUrl, request) # Access SP
             if inactiveOrder["result_msg"] == "No Error":
                 print("Order is deactivated in SP")
             elif inactiveOrder["result_msg"] == "Order Is Already Inactive":
@@ -101,7 +100,7 @@ class SPAPIHandler(): # Object to handle actions # e.g. create market order insi
         changeUrl = ENDPOINT + CHANGEORDER
         print("SP is changing order properties")
         try:
-            changeOrder = CommonHelper.post_url(changeUrl, request)
+            changeOrder = CommonHelper.post_url(changeUrl, request) # Access SP
             # assert changeOrder["result_msg"] == "No Error"
             if changeOrder["result_msg"] == "No Error":
                 print("SP has changed order properties")
@@ -114,7 +113,7 @@ class SPAPIHandler(): # Object to handle actions # e.g. create market order insi
         deleteUrl = ENDPOINT + DELETEORDER
         print("Deletion of order is being processed to SP")
         try:
-            deleteOrder = CommonHelper.post_url(deleteUrl, request)
+            deleteOrder = CommonHelper.post_url(deleteUrl, request) # Access SP
             # assert deleteOrder["result_msg"] == "No Error"
             if deleteOrder["result_msg"] == "No Error":
                 print("Order is deleted from SP")
@@ -122,3 +121,16 @@ class SPAPIHandler(): # Object to handle actions # e.g. create market order insi
                 print("Order cannot be deleted from SP")
         except:
             raise SystemExit("Order cannot be deleted from SP")
+     
+    # def makeFuture(self, request: MakeFuture):
+    #     makeTargUrl = ENDPOINT + MAKEPOSITION
+    #     print("Future position is being processed to SP")
+    #     try:
+    #         makeTarget = CommonHelper.post_url(makeTargUrl, request) # Access SP
+    #         # assert deleteOrder["result_msg"] == "No Error"
+    #         if makeTarget["result_msg"] == "No Error":
+    #             print("Future position is made in SP")
+    #         else:
+    #             print("Future position cannot be made in SP")
+    #     except:
+    #         raise SystemExit("Future position cannot be made in SP")

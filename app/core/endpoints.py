@@ -12,5 +12,8 @@ ACCOUNTORDER = '/apiCustomer/account/accountOrder'
 
 ADMININFO = '/apiTraderAdmin/accessRight/userLogin'
 PRODINFO = '/apiTraderAdmin/product/productInfo'
+MAKEPOSITION = '/apiTraderAdmin/trading/makeTargetPosition'
+
 CCYRATES = '/systemMaintance/systemOperation/getCcyRate'
+
 CONTRACTSIZE = '/jLogin/product/downloadProductList'

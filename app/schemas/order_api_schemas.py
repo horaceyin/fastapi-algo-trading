@@ -4,12 +4,13 @@ from pydantic import BaseModel
 class AddOrder(BaseModel):
     accNo: str
     buySell: Literal["B", "S"] # B, S
-    condType: Literal[0, 1, 3, 4, 6, 8, 9] # 0, 1 (Stop), 3, 4 (OCO stop), 6 (Trail stop), 8, 9
+    condType: Literal[0, 1, 3, 4, 6, 8, 9] # 0 (None), 1 (Stop), 3, 4 (OCO stop), 6 (Trail stop), 8, 9
     orderType: Literal[0, 2, 5, 6] # 0 (Limit), 2, 5, 6 (Market order)
     priceInDec: float
     prodCode: str
     qty: int
     sessionToken: str
+    # sessionToken: Optional[str] # Set so it will be filled by system
     validType: Literal[0, 1, 2, 3, 4] = 0 # 0 - 4 # Unsure of purpose
     clOrderId: Optional[str] 
     # downLevelInDec: Optional[float]
@@ -33,6 +34,7 @@ class ChangeOrder(BaseModel):
     buySell: Literal["B", "S"]
     prodCode: str
     sessionToken: str
+    # sessionToken: Optional[str] # Set so it will be filled by system
     # downLevelInDec: Optional[float]
     # downPriceInDec: Optional[float]
     extOrderId: str # Need to use Get Account Order API to obtain before usage; now works every time without error (?)
@@ -51,4 +53,12 @@ class AccessOrder(BaseModel):
     buySell: Literal["B", "S"]
     prodCode: str
     sessionToken: str
+    # sessionToken: Optional[str] # Set so it will be filled by system
     extOrderId: str
+
+# class MakeFuture(BaseModel):
+#     buySell: Literal["B", "S"]
+#     prodCode: str
+#     qty: int
+#     sessionToken: str
+#     targetAccNo: str

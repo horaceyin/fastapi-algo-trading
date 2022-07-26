@@ -23,7 +23,8 @@ class SPBacktesting(BacktestingStrategy, abc.ABC):
         self.__live_trade = request.liveTrade
         self.__days = request.days
         self.__bar_summary = request.barSummary
-        
+        # May need userId, password, and targetAcc
+
         self.__position = None
         self.product_list = self.__get_product(self.__prod_indicator_list) # create list: ['HSIM2', 'HSIZ4']
         self.__sp_bar_feed = SpBarFeed(self.__bar_summary, self.__days) # SpBarFeed(barSummary, loadedBars=[], timezone = None, maxLen = None)
@@ -88,16 +89,21 @@ class SPBacktesting(BacktestingStrategy, abc.ABC):
         self.__live_trade = live_trade
     
     def __get_product(self, prod_indicator_list):
-        if len(prod_indicator_list) == 0: return None
-
+        if len(prod_indicator_list) == 0: 
+            return None
         product_list = [product.name for product in prod_indicator_list]
-
         return product_list
 
     @abc.abstractmethod
-    def onBars(self, bars):
+    # def onBars(self, bars):
+    def onBars(self, bars, product_list, instrument): # ASK HORACE ON HOW THIS WORKS
+        def __get_instrument(self, product_list, instrument):
+            for i in range(len(product_list)):
+                if product_list[i] == instrument:
+                    return instrument
+        self.__instrument = __get_instrument(product_list, instrument)
         bar = bars[self.__instrument] # bars = current pyalgotrade.bar.Bars
-        # return NotImplementedError
+        return NotImplementedError
 
     def get_sp_data(self):
         pass

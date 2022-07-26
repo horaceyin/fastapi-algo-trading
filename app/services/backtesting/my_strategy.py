@@ -10,3 +10,4 @@ class MyStrategy(SPBacktesting):
 
     def onBars(self, bars):
         print("!!!!!!!")
+        bar = bars[self.__instrument] # Requires 1 product from product_list # self.__instrument is a string
