@@ -1,36 +1,37 @@
 from dataclasses import field
-import abc
+import six, abc, pyalgotrade
 from pyalgotrade.strategy import BacktestingStrategy
+from pyalgotrade.barfeed import csvfeed
+from pyalgotrade.technical import ma
+from pyalgotrade.technical import cross
 from schemas.backtesting.backtesting_schemas import BacktestingModel
+
+from pyalgotrade.broker import backtesting
+from pyalgotrade.barfeed.csvfeed import BarFeed
 from services.backtesting.spbarfeed.sp_live_trading_feed import SpBarFeed
-from services.sp_broker import SPBroker
 
 # class SPBroker(backtesting.Broker):
 #     def __init__(self, portfolio_value, live_trade=True) -> None:
 #         super().__init__(portfolio_value)
 
-# class SpBarFeed(BarFeed):
-#     def __init__(self, frequency, maxLen=None):
-#         super().__init__(frequency, maxLen)
-
 # @six.add_metaclass(metaclass=abc.ABCMeta)
 class SPBacktesting(BacktestingStrategy, abc.ABC):
     
-    def __init__(self, request: BacktestingModel):
+    def __init__(self, request: BacktestingModel, live_trade=False):
         self.__prod_indicator_list = request.prodCode
         self.__portfolio_value = request.portfolioValue
         self.__boundary_value = request.boundaryValue
-        self.__live_trade = request.liveTrade
         self.__days = request.days
         self.__bar_summary = request.barSummary
-        # May need userId, password, and targetAcc
 
-        self.__position = None
         self.product_list = self.__get_product(self.__prod_indicator_list) # create list: ['HSIM2', 'HSIZ4']
-        self.__sp_bar_feed = SpBarFeed(self.__bar_summary, self.__days) # SpBarFeed(barSummary, loadedBars=[], timezone = None, maxLen = None)
-        self.__sp_broker = SPBroker(self.__portfolio_value, self.__boundary_value, self.__sp_bar_feed, self.__live_trade)
-            # 
-        super(SPBacktesting, self).__init__(self.__sp_bar_feed, self.__sp_broker) # BacktestingStrategy(barFeed, cash_or_brk=1000000)
+        # self.__indicator_list = request.indicator
+        # self.__the_days_after = request.days
+        # self.__barSummary = request.barSummary
+        
+        self.sp_bar_feed = SpBarFeed(self.__prod_indicator_list, self.__days, self.__bar_summary)
+        #self.__sp_broker = SPBroker()
+        super(SPBacktesting, self).__init__(self.sp_bar_feed)
 
     @property
     def get_prod_list(self):
@@ -80,29 +81,15 @@ class SPBacktesting(BacktestingStrategy, abc.ABC):
     def get_barSummary(self, bar_summary):
         self.__barSummary = bar_summary
 
-    @property
-    def get_live_trade(self):
-        return self.__live_trade
-
-    @get_live_trade.setter
-    def get_live_trade(self, live_trade):
-        self.__live_trade = live_trade
-    
     def __get_product(self, prod_indicator_list):
-        if len(prod_indicator_list) == 0: 
-            return None
+        if len(prod_indicator_list) == 0: return None
+
         product_list = [product.name for product in prod_indicator_list]
+
         return product_list
 
     @abc.abstractmethod
-    # def onBars(self, bars):
-    def onBars(self, bars, product_list, instrument): # ASK HORACE ON HOW THIS WORKS
-        def __get_instrument(self, product_list, instrument):
-            for i in range(len(product_list)):
-                if product_list[i] == instrument:
-                    return instrument
-        self.__instrument = __get_instrument(product_list, instrument)
-        bar = bars[self.__instrument] # bars = current pyalgotrade.bar.Bars
+    def onBars(self, bars):
         return NotImplementedError
 
     def get_sp_data(self):
