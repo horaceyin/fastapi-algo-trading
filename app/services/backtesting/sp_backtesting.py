@@ -1,5 +1,3 @@
-from typing import List
-# import xxlimited
 from dataclasses import field
 import six, abc, pyalgotrade
 from pyalgotrade.strategy import BacktestingStrategy
@@ -7,11 +5,9 @@ from pyalgotrade.barfeed import csvfeed
 from pyalgotrade.technical import ma
 from pyalgotrade.technical import cross
 from schemas.backtesting.backtesting_schemas import BacktestingModel
-# from services.backtesting.sp_indicators import SPIndicators # NOT USEFUL FOR NOW
 
 from pyalgotrade.broker import backtesting
 from pyalgotrade.barfeed.csvfeed import BarFeed
-
 from services.backtesting.spbarfeed.sp_live_trading_feed import SpBarFeed
 from services.sp_broker import SPBroker
 
@@ -19,23 +15,16 @@ from services.sp_broker import SPBroker
 #     def __init__(self, portfolio_value, live_trade=True) -> None:
 #         super().__init__(portfolio_value)
 
-# class SpBarFeed(BarFeed):
-#     def __init__(self, frequency, maxLen=None):
-#         super().__init__(frequency, maxLen)
-
 # @six.add_metaclass(metaclass=abc.ABCMeta)
 class SPBacktesting(BacktestingStrategy, abc.ABC):
     
-    def __init__(self, request: BacktestingModel):
+    def __init__(self, request: BacktestingModel, live_trade=False):
         self.__prod_indicator_list = request.prodCode
         self.__portfolio_value = request.portfolioValue
         self.__boundary_value = request.boundaryValue
-        self.__live_trade = request.liveTrade
         self.__days = request.days
         self.__bar_summary = request.barSummary
-        # May need userId, password, and targetAcc
 
-        self.__position = None
         self.product_list = self.__get_product(self.__prod_indicator_list) # create list: ['HSIM2', 'HSIZ4']
         self.__sp_bar_feed = SpBarFeed(self.product_list, self.__days, self.__bar_summary) # SpBarFeed(barSummary, loadedBars=[], timezone = None, maxLen = None)
         self.__sp_broker = SPBroker(self.__portfolio_value, self.__boundary_value, self.__sp_bar_feed, self.__live_trade)
@@ -131,9 +120,10 @@ class SPBacktesting(BacktestingStrategy, abc.ABC):
         self.__sp_broker = sp_broker
     
     def __get_product(self, prod_indicator_list):
-        if len(prod_indicator_list) == 0: 
-            return None
+        if len(prod_indicator_list) == 0: return None
+
         product_list = [product.name for product in prod_indicator_list]
+
         return product_list
 
     @abc.abstractmethod

@@ -2,11 +2,7 @@ from core.endpoints import ACTIVEORDER
 from schemas.order_api_schemas import AddOrder, ChangeOrder, AccessOrder
 from core.config import SP_HOST_AND_PORT
 from core.endpoints import ADDORDER, CHANGEORDER, DELETEORDER, ACTIVEORDER, INACTIVEORDER
-import requests
-import json
-from schemas.technical_analysis_schemas import GetDoneTradeModel
 from common.common_helper import CommonHelper
-from services.technical_analysis_service import PnLService
 
 # Access info from .env
 ENDPOINT = SP_HOST_AND_PORT

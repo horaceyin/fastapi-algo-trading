@@ -33,4 +33,4 @@ async def done_trade_report_analysis(request: GetDoneTradeModel):
     date = datetime.now()
     date = date.strftime('%Y-%m-%d')
     pnlReport = Report(accName, date)
-    return pnlReport.get_pnl(request)
+    return pnlReport.get_report(request)

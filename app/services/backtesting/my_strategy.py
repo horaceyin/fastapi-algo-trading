@@ -13,7 +13,7 @@ class MyStrategy(SPBacktesting):
         print(MyStrategy.get_sp_broker())
 
     def onBars(self): # ENTER USER'S OWN CODING HERE
-        print("123")
+        print("!!!!!!!")
         # def __get_instrument(self, product_list, instrument):
         #     for i in range(len(product_list)):
         #         if product_list[i] == instrument:

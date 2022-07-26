@@ -1,12 +1,6 @@
-import six, abc, pyalgotrade
 from pyalgotrade import broker as pbroker
 from pyalgotrade.broker import backtesting
-from services.auth_service import AuthService
 from services.sp_api_handler import SPAPIHandler
-import logging
-import traceback
-from fastapi import HTTPException, status, Request
-from schemas.auth_schemas import UserLogin
 from schemas.order_api_schemas import AddOrder, AccessOrder
 
 # To be accessed during either backtesting or actual trading
