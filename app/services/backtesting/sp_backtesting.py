@@ -1,5 +1,5 @@
 from typing import List
-import xxlimited
+# import xxlimited
 from dataclasses import field
 import six, abc, pyalgotrade
 from pyalgotrade.strategy import BacktestingStrategy
@@ -7,7 +7,7 @@ from pyalgotrade.barfeed import csvfeed
 from pyalgotrade.technical import ma
 from pyalgotrade.technical import cross
 from schemas.backtesting.backtesting_schemas import BacktestingModel
-from sp_indicators import SPIndicators
+# from services.backtesting.sp_indicators import SPIndicators # NOT USEFUL FOR NOW
 
 from pyalgotrade.broker import backtesting
 from pyalgotrade.barfeed.csvfeed import BarFeed
