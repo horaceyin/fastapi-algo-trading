@@ -1,5 +1,4 @@
 from __future__ import division
-from unittest import result
 from services.technical_analysis_service import PnLService
 from schemas.report_schemas import ReportModel
 import statistics
@@ -18,19 +17,7 @@ class Report(PnLService):
         for _ in list:
             count = count+1
         return count
-
-    # Get the buy cost of pnl to call the avg. return
-    def __get_cost(self):
-        buyPrice = []
-        buyNum = []
-        data = self.get_pnl() # From technical_analysis_service # Need posList, priceList
-        buyPrice += data['posList']
-        buyNum += data['priceList']
-        result = 0
-        res_list = [buyPrice[i] * buyNum[i] for i in range(len(buyPrice))]
-        for i in res_list:
-            result +=i
-        return result                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
     
     # Get the sum of all pnl
     def __get_totalpnl(self, pnlList):
@@ -77,24 +64,6 @@ class Report(PnLService):
             positiveRet += data[i][0]['positiveRet']
             negativeRet += data[i][0]['negativeRet']
             
-        def get_cost():
-            buyPrice = []
-            buyNum = []
-            data = self.get_pnl(request) # From technical_analysis_service # Need posList, priceList
-            for i in data:
-                buyPrice += data[i][0]['posList']
-                buyNum += data[i][0]['priceList']
-            result = 0
-            res_list = [buyPrice[i] * buyNum[i] for i in range(len(buyPrice))]
-            for i in res_list:
-                result +=i
-            return result  
-        def avg_return_for_total(pnlList):
-            try:
-                avg_return = (self.__get_totalpnl(pnlList) / get_cost())
-            except ZeroDivisionError:
-                avg_return = 0
-            return avg_return
         def avg_return_for_pnl(pnl, cost):
             try:
                 result = self.convtoperc(self.__get_totalreturns(pnl)/self.__totaltrade(cost))
@@ -124,8 +93,8 @@ class Report(PnLService):
                 "Profits. std. dev.": self.__get_sd(pnl),
                 "Min. Profit": min(pnl, default=0),
                 "Max. Profit": max(pnl, default=0),
-                "Avg. Return": avg_return_for_total(pnl),
-                "Return std. dev.": self.__get_sd(returns), # self.__return_std_dev(),
+                "Avg. Return": avg_return_for_pnl(returns,returns),
+                "Return std. dev.": self.__get_sd(returns), 
                 "Max. Return": max(returns, default=0)*100,
                 "Min. Return": min(returns, default=0)*100,
                 "Overall P/L Ratio": checkanswer(),
