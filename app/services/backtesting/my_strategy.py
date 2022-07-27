@@ -7,10 +7,8 @@ from services.sp_broker import SPBroker
 class MyStrategy(SPBacktesting):
     def __init__(self, request: BacktestingModel):
         super().__init__(request) # Can access self.__sp_bar_feed and self.__sp_broker 
-        # self.__sp_bar_feed = SPBacktesting.get_sp_bar_feed() # TypeError: 'property' object is not callable
-        # self.__sp_broker = SPBacktesting.get_sp_broker()
-        print(MyStrategy.get_sp_bar_feed())
-        print(MyStrategy.get_sp_broker())
+        print(self.sp_bar_feed) # Cannot be self.sp_bar_feed() or TypeError will occur
+        print(self.sp_broker) # Cannot use getter class here 
 
     def onBars(self): # ENTER USER'S OWN CODING HERE
         print("!!!!!!!")

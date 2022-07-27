@@ -26,10 +26,10 @@ class SPBacktesting(BacktestingStrategy, abc.ABC):
         self.__bar_summary = request.barSummary
 
         self.product_list = self.__get_product(self.__prod_indicator_list) # create list: ['HSIM2', 'HSIZ4']
-        self.__sp_bar_feed = SpBarFeed(self.product_list, self.__days, self.__bar_summary) # SpBarFeed(barSummary, loadedBars=[], timezone = None, maxLen = None)
-        self.__sp_broker = SPBroker(self.__portfolio_value, self.__boundary_value, self.__sp_bar_feed, self.__live_trade)
+        self.sp_bar_feed = SpBarFeed(self.product_list, self.__days, self.__bar_summary) # SpBarFeed(barSummary, loadedBars=[], timezone = None, maxLen = None) # No __ in front to allow usage outside
+        self.sp_broker = SPBroker(self.__portfolio_value, self.__boundary_value, self.sp_bar_feed, live_trade)
             # 
-        super(SPBacktesting, self).__init__(self.__sp_bar_feed, self.__sp_broker) # BacktestingStrategy(barFeed, cash_or_brk=1000000)
+        super(SPBacktesting, self).__init__(self.sp_bar_feed, self.sp_broker) # BacktestingStrategy(barFeed, cash_or_brk=1000000)
 
     @property
     def get_prod_indicator_list(self):
@@ -105,19 +105,19 @@ class SPBacktesting(BacktestingStrategy, abc.ABC):
 
     @property
     def get_sp_bar_feed(self):
-        return self.__sp_bar_feed
+        return self.sp_bar_feed
 
     @get_sp_bar_feed.setter
     def get_sp_bar_feed(self, sp_bar_feed):
-        self.__sp_bar_feed = sp_bar_feed
+        self.sp_bar_feed = sp_bar_feed
 
     @property
     def get_sp_broker(self):
-        return self.__sp_broker
+        return self.sp_broker
 
     @get_sp_broker.setter
     def get_sp_broker(self, sp_broker):
-        self.__sp_broker = sp_broker
+        self.sp_broker = sp_broker
     
     def __get_product(self, prod_indicator_list):
         if len(prod_indicator_list) == 0: return None
