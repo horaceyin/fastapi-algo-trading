@@ -22,8 +22,6 @@ class SPBroker(backtesting.Broker): # Inherit all properties and functions from 
             self.__sp_api_handler = SPAPIHandler()
         else:
             self.__sp_api_handler = None
-        # login = AuthService.user_login(request) # UNSURE OF HOW TO ACCESS LOGIN SESSION TOKEN WITHOUT LOGGING IN AGAIN
-        # self.__session_token = login['data']['sessionToken']
         super(SPBroker, self).__init__(self.__portfolio_value, self.__sp_bar_feed, commission=None) # Used to call __init__ method of parent class backtesting.Broker; add additional variables below
 
     @property
@@ -66,6 +64,26 @@ class SPBroker(backtesting.Broker): # Inherit all properties and functions from 
     def get_live_trade(self, live_trade):
         self.__live_trade = live_trade
     
+    def createMarketOrder(self, action, instrument, quantity, onClose):
+        super().createMarketOrder(action, instrument, quantity, onClose)
+        try:
+            request = {
+
+            }
+            self.__sp_api_handler.createMarketOrder(instrument, quantity, onClose) # ASK SPTRADER HOW TO CREATE ORDER
+            self.__sp_api_handler.activeOrder()
+        except:
+            pass
+
+    def createLimitOrder(self, action, instrument, limitPrice, quantity):
+        super().createLimitOrder(action, instrument, limitPrice, quantity)
+
+    def createStopOrder(self, action, instrument, stopPrice, quantity):
+        super().createStopOrder(action, instrument, stopPrice, quantity)
+
+    def createStopLimitOrder(self, action, instrument, stopPrice, limitPrice, quantity):
+        super().createStopLimitOrder(action, instrument, stopPrice, limitPrice, quantity)
+
     # # Client Portal API
     # Variables from backtesting.Broker
     def createOrder(self, request: AddOrder):
@@ -152,12 +170,12 @@ class SPBroker(backtesting.Broker): # Inherit all properties and functions from 
             pass
 
     # Functions below are built such that they can only be done with the SP trading system
-    def activeOrder(self, request: AccessOrder):
-        # request.sessionToken = self.__session_token
-        try:
-            self.__sp_api_handler.activeOrder(request)
-        except:
-            pass
+    # def activeOrder(self, request: AccessOrder):
+    #     # request.sessionToken = self.__session_token
+    #     try:
+    #         self.__sp_api_handler.activeOrder(request)
+    #     except:
+    #         pass
 
     def inactiveOrder(self, request: AccessOrder):
         # request.sessionToken = self.__session_token

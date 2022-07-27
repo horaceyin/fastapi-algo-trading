@@ -8,10 +8,15 @@ class MyStrategy(SPBacktesting):
     def __init__(self, request: BacktestingModel):
         super().__init__(request) # Can access self.__sp_bar_feed and self.__sp_broker 
         print(self.sp_bar_feed) # Cannot be self.sp_bar_feed() or TypeError will occur
-        print(self.sp_broker) # Cannot use getter class here 
+        print(self.sp_broker) # Cannot use getter class here
+        broke = self.getBroker
+        print(broke)
+        print(broke.get_portfolio_value)
+        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 
     def onBars(self): # ENTER USER'S OWN CODING HERE
-        print("!!!!!!!")
+        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+        self.enterLong()
         # def __get_instrument(self, product_list, instrument):
         #     for i in range(len(product_list)):
         #         if product_list[i] == instrument:
