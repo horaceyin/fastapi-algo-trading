@@ -1,5 +1,6 @@
 from common.common_helper import CommonHelper
 
+# if data_mode = 2 (default), def data_formatting in spbarfeed/sp_bar_feed.py need to be changed
 BASE_URL = 'https://chart3.spsystem.info/pserver/chartdata_query.php?data_mode=4&'
 
 class SpData():

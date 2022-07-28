@@ -1,14 +1,7 @@
-from dataclasses import field
-import six, abc, pyalgotrade
+import abc
 from pyalgotrade.strategy import BacktestingStrategy
-from pyalgotrade.barfeed import csvfeed
-from pyalgotrade.technical import ma
-from pyalgotrade.technical import cross
 from schemas.backtesting.backtesting_schemas import BacktestingModel
-
-from pyalgotrade.broker import backtesting
-from pyalgotrade.barfeed.csvfeed import BarFeed
-from services.backtesting.spbarfeed.sp_live_trading_feed import SpBarFeed
+from services.backtesting.spbarfeed.sp_bar_feed import SpBarFeed
 from services.sp_broker import SPBroker
 
 # class SPBroker(backtesting.Broker):
@@ -45,7 +38,14 @@ class SPBacktesting(BacktestingStrategy, abc.ABC):
 
     @get_portfolio_value.setter
     def get_portfolio_value(self, port_val):
-        self.__portfolio_value = port_val
+        if port_val > 0:
+            if hasattr(self, 'sp_broker'):
+                self.__portfolio_value = port_val
+                self.sp_broker.get_portfolio_value(port_val)
+            else:
+                raise AttributeError(f'{type(self).__name__} does not have sp_broker attribute.')
+        else:
+            raise ValueError(f'portfolio should be larger than 0')
 
     @property
     def get_boundary_value(self):
@@ -126,10 +126,9 @@ class SPBacktesting(BacktestingStrategy, abc.ABC):
 
         return product_list
 
-    @abc.abstractmethod
-    # def onBars(self, bars):
-    def onBars(self, bars, product_list, instrument): # SHOULD BE IMPLEMENTED BY FUTURE USERS
-        return NotImplementedError
+    # @abc.abstractmethod
+    # def onBars(self, bars, product_list, instrument): # SHOULD BE IMPLEMENTED BY FUTURE USERS
+    #     return NotImplementedError
 
     def get_sp_data(self):
         pass

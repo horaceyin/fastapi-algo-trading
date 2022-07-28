@@ -1,6 +1,6 @@
 # defines all endpoints the production would access
 
-DONETRADE = '/apiCustomer/reporting/doneTrade'
+DONETRADE = '/ssoApiClient/reporting/doneTrade'
 USERLOGIN = '/apiCustomer/accessRight/userLogin'
 ACCOUNTINFO = '/apiCustomer/account/accountSummary' 
 ADDORDER = '/apiCustomer/order/add'

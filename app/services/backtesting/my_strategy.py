@@ -1,7 +1,7 @@
 from services.backtesting.sp_backtesting import SPBacktesting
 from schemas.backtesting.backtesting_schemas import BacktestingModel
 
-from services.backtesting.spbarfeed.sp_live_trading_feed import SpBarFeed
+from services.backtesting.spbarfeed.sp_bar_feed import SpBarFeed
 from services.sp_broker import SPBroker
 
 class MyStrategy(SPBacktesting):

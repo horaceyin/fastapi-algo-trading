@@ -7,7 +7,7 @@ from schemas.order_api_schemas import AddOrder, AccessOrder
 
 # @six.add_metaclass(metaclass=abc.ABCMeta)
 class SPBroker(backtesting.Broker): # Inherit all properties and functions from broker
-    def __init__(self, portfolio_value, bound_val, sp_bar_feed, live_trade:bool=False):
+    def __init__(self, portfolio_value, bound_val, sp_bar_feed, live_trade: bool):
     # def __init__(self, request: UserLogin, portfolio_value, bound_val, sp_bar_feed, live_trade:bool=False):
         # Values transferred from SPBacktesting for backtesting.Broker
         self.__portfolio_value = portfolio_value 
