@@ -3,21 +3,56 @@ from schemas.order_api_schemas import AddOrder, ChangeOrder, AccessOrder
 from core.config import SP_HOST_AND_PORT
 from core.endpoints import ADDORDER, CHANGEORDER, DELETEORDER, ACTIVEORDER, INACTIVEORDER
 from common.common_helper import CommonHelper
+import requests
 
 # Access info from .env
 ENDPOINT = SP_HOST_AND_PORT
 
 class SPAPIHandler(): # Object to handle actions # e.g. create market order inside SPtrader, broker give parameter to handler object
-    def __init__(self):
+    def __init__(self, instrument, quantity, onClose):
         # Login information
-        pass # Not required, all variables to be used will be placed in below fucntions
+        self.__instrument = instrument
+        self.__quantity = quantity
+        self.__onClose = onClose
+        # pass # Not required, all variables to be used will be placed in below fucntions
 
     # Variables from backtesting.Broker
-    def createMarketOrder(self, request: AddOrder):
+    def createMarketOrder(self):
         addUrl = ENDPOINT + ADDORDER # Need to activate order to allow system to accept it
+        if self.__onClose is False:
+            openClose = "M"
+        else:
+            openClose = "C" # LATER NEEDS TO BE SET SUCH THAT IT CAN CHANGE BETWEEN OPEN AND CLOSE
         print("Market order is being processed to SP")
         try:
-            addOrder = CommonHelper.post_url(addUrl, request) # Access SP
+            addOrder = requests.post(addUrl,
+            json ={
+                "accNo": "", # str
+                "buySell": "", # Literal["B", "S"] # B, S
+                "condType": 0, # Literal[0, 1, 3, 4, 6, 8, 9] # 0 (None), 1 (Stop), 3, 4 (OCO stop), 6 (Trail stop), 8, 9 # Should be 1 if 
+                "orderType": 6, # Literal[0, 2, 5, 6] # 0 (Limit), 2, 5, 6 (Market order)
+                "priceInDec": "", # float
+                "prodCode": self.__instrument,
+                "qty": self.__quantity,
+                "sessionToken": "", # str
+                "validType": 0, # Literal[0, 1, 2, 3, 4] = 0 # 0 - 4 # Unsure of purpose
+                # "clOrderId": Optional[str] 
+                # downLevelInDec: Optional[float]
+                # downPriceInDec: Optional[float]
+                "openClose": openClose, # Optional[Literal["M", "O", "C"]] # M (Mandatory close), O (Open), C (Close)
+                # options: Optional[int] # Unsure of purpose
+                # ref: Optional[str]
+                # ref2: Optional[str]
+                # schedTime: Optional[float] # In the form YYYYMMDD.hhmmss # Unsure of formatting
+                "status": 2, # Optional[Literal[2]] # Only required in inactive orders (2 = Inactive)
+                "stopPriceInDec": 0, # Optional[int]
+                "stopType": "", # Optional[Literal["L", "U", "D"]] # L (Stop loss), U (Up trigger), D (Down trigger), or blank (N/A) # Can ignore U and D
+                "subCondType": 0 # Optional[Literal[0, 1, 3, 4, 6, 11, 14, 16]] # 0 (None), 1 (Stop), 3, 4 (OCO stop), 6 (Trail stop), 11 (Stop loss by price), 14 (OCO by price), 16 (Trailing stop by price)
+                # upLevelInDec: Optional[float]
+                # upPriceInDec: Optional[float]
+                # validDate: Optional[int] # YYYYMMDD
+            })
+            # addOrder = CommonHelper.post_url(addUrl, request) # Access SP
             # assert addOrder["result_msg"] == "No Error"
             if addOrder["result_msg"] == "No Error":
                 print("Market order is added to SP")
@@ -27,11 +62,44 @@ class SPAPIHandler(): # Object to handle actions # e.g. create market order insi
             raise SystemExit("Market order cannot be added to SP")
         # pass # Replace with code to access SP backtesting 
 
+
     def createLimitOrder(self, request: AddOrder):
         addUrl = ENDPOINT + ADDORDER # Need to activate order to allow system to accept it
+        if self.__onClose is False:
+            openClose = "M"
+        else:
+            openClose = "C" # LATER NEEDS TO BE SET SUCH THAT IT CAN CHANGE BETWEEN OPEN AND CLOSE
         print("Limit order is being processed to SP")
         try:
-            addOrder = CommonHelper.post_url(addUrl, request) # Access SP
+            addOrder = requests.post(addUrl,
+            json ={
+                "accNo": "", # str
+                "buySell": "", # Literal["B", "S"] # B, S
+                "condType": 0, # Literal[0, 1, 3, 4, 6, 8, 9] # 0 (None), 1 (Stop), 3, 4 (OCO stop), 6 (Trail stop), 8, 9 # Should be 1 if 
+                "orderType": 6, # Literal[0, 2, 5, 6] # 0 (Limit), 2, 5, 6 (Market order)
+                "priceInDec": "", # float
+                "prodCode": self.__instrument,
+                "qty": self.__quantity,
+                "sessionToken": "", # str
+                "validType": 0, # Literal[0, 1, 2, 3, 4] = 0 # 0 - 4 # Unsure of purpose
+                # "clOrderId": Optional[str] 
+                # downLevelInDec: Optional[float]
+                # downPriceInDec: Optional[float]
+                "openClose": openClose, # Optional[Literal["M", "O", "C"]] # M (Mandatory close), O (Open), C (Close)
+                # options: Optional[int] # Unsure of purpose
+                # ref: Optional[str]
+                # ref2: Optional[str]
+                # schedTime: Optional[float] # In the form YYYYMMDD.hhmmss # Unsure of formatting
+                "status": 2, # Optional[Literal[2]] # Only required in inactive orders (2 = Inactive)
+                "stopPriceInDec": 0, # Optional[int]
+                "stopType": "", # Optional[Literal["L", "U", "D"]] # L (Stop loss), U (Up trigger), D (Down trigger), or blank (N/A) # Can ignore U and D
+                "subCondType": 0 # Optional[Literal[0, 1, 3, 4, 6, 11, 14, 16]] # 0 (None), 1 (Stop), 3, 4 (OCO stop), 6 (Trail stop), 11 (Stop loss by price), 14 (OCO by price), 16 (Trailing stop by price)
+                # upLevelInDec: Optional[float]
+                # upPriceInDec: Optional[float]
+                # validDate: Optional[int] # YYYYMMDD
+            })
+            # addOrder = CommonHelper.post_url(addUrl, request) # Access SP
+            # addOrder = CommonHelper.post_url(addUrl, request) # Access SP
             # assert addOrder["result_msg"] == "No Error"
             if addOrder["result_msg"] == "No Error":
                 print("Limit order is added to SP")

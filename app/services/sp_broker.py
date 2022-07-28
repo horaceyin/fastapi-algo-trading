@@ -22,9 +22,8 @@ class SPBroker(backtesting.Broker): # Inherit all properties and functions from 
             self.__sp_api_handler = SPAPIHandler()
         else:
             self.__sp_api_handler = None
-        # login = AuthService.user_login(request) # UNSURE OF HOW TO ACCESS LOGIN SESSION TOKEN WITHOUT LOGGING IN AGAIN
-        # self.__session_token = login['data']['sessionToken']
-        super(SPBroker, self).__init__(self.__portfolio_value, self.__bound_val, self.__sp_bar_feed, self.__live_trade, commission=None) # Used to call __init__ method of parent class backtesting.Broker; add additional variables below
+        #super(SPBroker, self).__init__(self.__portfolio_value, self.__bound_val, self.__sp_bar_feed, self.__live_trade, commission=None) # Used to call __init__ method of parent class backtesting.Broker; add additional variables below
+        super(SPBroker, self).__init__(self.__portfolio_value, self.__sp_bar_feed, commission=None) # Used to call __init__ method of parent class backtesting.Broker; add additional variables below
 
     @property
     def get_portfolio_value(self):
@@ -66,6 +65,26 @@ class SPBroker(backtesting.Broker): # Inherit all properties and functions from 
     def get_live_trade(self, live_trade):
         self.__live_trade = live_trade
     
+    def createMarketOrder(self, action, instrument, quantity, onClose):
+        super().createMarketOrder(action, instrument, quantity, onClose)
+        try:
+            request = {
+
+            }
+            self.__sp_api_handler.createMarketOrder(instrument, quantity, onClose) # ASK SPTRADER HOW TO CREATE ORDER
+            self.__sp_api_handler.activeOrder()
+        except:
+            pass
+
+    def createLimitOrder(self, action, instrument, limitPrice, quantity):
+        super().createLimitOrder(action, instrument, limitPrice, quantity)
+
+    def createStopOrder(self, action, instrument, stopPrice, quantity):
+        super().createStopOrder(action, instrument, stopPrice, quantity)
+
+    def createStopLimitOrder(self, action, instrument, stopPrice, limitPrice, quantity):
+        super().createStopLimitOrder(action, instrument, stopPrice, limitPrice, quantity)
+
     # # Client Portal API
     # Variables from backtesting.Broker
     def createOrder(self, request: AddOrder):
@@ -82,8 +101,36 @@ class SPBroker(backtesting.Broker): # Inherit all properties and functions from 
         else:
             raise SystemExit("Order given is not buy or sell")
 
+        # Stop-limit order
+        if request.orderType == 0 and ((request.condType == 1 or request.condType == 4 or request.condType == 6) or (request.subCondType != 0 and request.subCondType != 3)):
+            stopPrice = request.stopPriceInDec
+            limitPrice = request.priceInDec
+            backtesting.StopLimitOrder(action, instrument, stopPrice, limitPrice, quantity, self.getInstrumentTraits(instrument))
+            try:
+                self.__sp_api_handler.createStopLimitOrder(request)
+            except:
+                pass
+
+        # Stop order
+        elif ((request.condType == 1 or request.condType == 4 or request.condType == 6) or (request.subCondType != 0 and request.subCondType != 3)):
+            stopPrice = request.stopPriceInDec
+            backtesting.StopOrder(action, instrument, stopPrice, quantity, self.getInstrumentTraits(instrument))
+            try:
+                self.__sp_api_handler.createStopOrder(request)
+            except:
+                pass
+
+        # Limit order
+        elif request.orderType == 0:
+            limitPrice = request.priceInDec
+            backtesting.LimitOrder(action, instrument, limitPrice, quantity, self.getInstrumentTraits(instrument))
+            try:
+                self.__sp_api_handler.createLimitOrder(request)
+            except:
+                pass
+        
         # Market order
-        if request.orderType == 6:
+        elif request.orderType == 6:
             # onClose if order should be filled as close to the closing price as possible
             # if onClose is True and self.__barFeed.isIntraday():
             #     raise Exception("Market-on-close not supported with intraday feeds")
@@ -106,34 +153,6 @@ class SPBroker(backtesting.Broker): # Inherit all properties and functions from 
                 except:
                     pass
 
-        # Stop-limit order
-        elif request.orderType == 0 and ((request.condType == 1 or request.condType == 4 or request.condType == 6) or (request.subCondType != 0 and request.subCondType != 3)):
-            stopPrice = request.stopPriceInDec
-            limitPrice = request.priceInDec
-            backtesting.StopLimitOrder(action, instrument, stopPrice, limitPrice, quantity, self.getInstrumentTraits(instrument))
-            try:
-                self.__sp_api_handler.createStopLimitOrder(request)
-            except:
-                pass
-
-        # Limit order
-        elif request.orderType == 0:
-            limitPrice = request.priceInDec
-            backtesting.LimitOrder(action, instrument, limitPrice, quantity, self.getInstrumentTraits(instrument))
-            try:
-                self.__sp_api_handler.createLimitOrder(request)
-            except:
-                pass
-        
-        # Stop order
-        elif ((request.condType == 1 or request.condType == 4 or request.condType == 6) or (request.subCondType != 0 and request.subCondType != 3)):
-            stopPrice = request.stopPriceInDec
-            backtesting.StopOrder(action, instrument, stopPrice, quantity, self.getInstrumentTraits(instrument))
-            try:
-                self.__sp_api_handler.createStopOrder(request)
-            except:
-                pass
-
     # Need to find way to cancel order with different formatting
     # order examples:
         # backtesting.MarketOrder(action, instrument, quantity, onClose, self.getInstrumentTraits(instrument))
@@ -152,12 +171,12 @@ class SPBroker(backtesting.Broker): # Inherit all properties and functions from 
             pass
 
     # Functions below are built such that they can only be done with the SP trading system
-    def activeOrder(self, request: AccessOrder):
-        # request.sessionToken = self.__session_token
-        try:
-            self.__sp_api_handler.activeOrder(request)
-        except:
-            pass
+    # def activeOrder(self, request: AccessOrder):
+    #     # request.sessionToken = self.__session_token
+    #     try:
+    #         self.__sp_api_handler.activeOrder(request)
+    #     except:
+    #         pass
 
     def inactiveOrder(self, request: AccessOrder):
         # request.sessionToken = self.__session_token

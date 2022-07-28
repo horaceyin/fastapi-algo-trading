@@ -1,5 +1,5 @@
-from typing import Optional, Literal
-from pydantic import BaseModel
+from typing import Optional, Literal, Dict
+from pydantic import BaseModel, validator, root_validator
 
 class AddOrder(BaseModel):
     accNo: str
@@ -20,13 +20,40 @@ class AddOrder(BaseModel):
     # ref: Optional[str]
     # ref2: Optional[str]
     # schedTime: Optional[float] # In the form YYYYMMDD.hhmmss # Unsure of formatting
-    status: Optional[int] # Only required in inactive orders (2 = Inactive)
+    status: Optional[Literal[2]] # Only required in inactive orders (2 = Inactive)
     stopPriceInDec: Optional[int]
-    stopType: Optional[Literal["L", "U", "D"]] # L (Stop loss), U (Up trigger), D (Down trigger), or blank
+    stopType: Optional[Literal["L", "U", "D"]] # L (Stop loss), U (Up trigger), D (Down trigger), or blank (N/A) # Can ignore U and D
     subCondType: Optional[Literal[0, 1, 3, 4, 6, 11, 14, 16]] # 0 (None), 1 (Stop), 3, 4 (OCO stop), 6 (Trail stop), 11 (Stop loss by price), 14 (OCO by price), 16 (Trailing stop by price)
     # upLevelInDec: Optional[float]
     # upPriceInDec: Optional[float]
-    # validDate: Optional[int] # YYYYMMDD # Unsure of formatting
+    # validDate: Optional[int] # YYYYMMDD
+
+    @validator('priceInDec')
+    def price_check(cls, price):
+        if price <= 0: 
+            raise ValueError('Price value should not be equal to or less than 0.')
+        return price
+
+    @validator('qty')
+    def qty_check(cls, qty):
+        if qty < 0: 
+            raise ValueError('Quantity should be an integer and larger than 0.')
+        return qty
+
+    @root_validator()
+    def stop_price_type_check(cls, order: Dict) -> Dict:
+        condType = order.get("condType")
+        subCondType = order.get("subCondType")
+        stopPrice = order.get("stopPriceInDec")
+        if ((condType == 1 or condType == 4 or condType == 6) or (subCondType != 0 and subCondType != 3)) and stopPrice is None:
+            raise ValueError('Stop order should have a stop price.')
+        return order
+
+    # @validator('validDate')
+    # def date_check(cls, date):
+    #     if len(str(date)) != 8: 
+    #         raise ValueError('validDate format is incorrect.')
+    #     return date
 
 class ChangeOrder(BaseModel):
     accNo: str
@@ -44,7 +71,25 @@ class ChangeOrder(BaseModel):
     stopPriceInDec: Optional[int]
     # upLevelInDec: Optional[float]
     # upPriceInDec: Optional[float]
-    # validDate: Optional[int] # YYYYMMDD # Unsure of formatting
+    # validDate: Optional[int] # YYYYMMDD
+
+    @validator('priceInDec')
+    def price_check(cls, price):
+        if price <= 0: 
+            raise ValueError('Price value should not be equal to or less than 0.')
+        return price
+
+    @validator('qty')
+    def qty_check(cls, qty):
+        if qty < 0: 
+            raise ValueError('Quantity should be an integer and larger than 0.')
+        return qty
+
+    # @validator('validDate')
+    # def date_check(cls, date):
+    #     if len(str(date)) != 8: 
+    #         raise ValueError('validDate format is incorrect.')
+    #     return date
 
 # For activate, deactivate and delete orders
 class AccessOrder(BaseModel):

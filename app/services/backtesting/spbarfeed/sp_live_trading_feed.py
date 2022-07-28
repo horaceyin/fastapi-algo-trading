@@ -120,7 +120,7 @@ class SpBarFeed(csvfeed.BarFeed):
 
     def create_bars(self):
         for product in self.__prod_list:
-            prod_code = product.name
+            prod_code = product #.name # AttributeError: 'str' object has no attribute 'name'
             days_before = self.__days
             seconds = self.__bar_summary.input_time
 
