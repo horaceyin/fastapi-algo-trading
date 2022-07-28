@@ -8,8 +8,6 @@ from schemas.backtesting.bar_summary_schemas import BarSummary
 from datetime import datetime
 import six
 
-ERROR_MSG = '19:-1:EMPTY RESULT!'
-
 # Frequency.TRADE: The bar represents a single trade.
 # Frequency.SECOND: The bar summarizes the trading activity during 1 second.
 # Frequency.MINUTE: The bar summarizes the trading activity during 1 minute.
