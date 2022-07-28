@@ -7,25 +7,23 @@ from schemas.backtesting.indicator_schemas import (
     MACD,
     ROC,
     RSI,
-    BollingerBands,
-    StochasticOscillator
+    BollingerBands
 )
 from schemas.backtesting.bar_summary_schemas import BarSummary
 
 class Product(BaseModel):
     name: str
-    indicator: List[Union[
+    indicators: List[Union[
         SMA,
         EMA,
         WMA,
         MACD,
         ROC,
         RSI,
-        BollingerBands,
-        StochasticOscillator
+        BollingerBands
     ]]
-    days: Optional[StrictInt] = 2
-    barSummary: BarSummary # Bar summarizes the trading activity during barSummary seconds
+    # days: Optional[StrictInt] = 2
+    # barSummary: BarSummary # Bar summarizes the trading activity during barSummary seconds
 
     @validator('days')
     def day_check(cls, day):

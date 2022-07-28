@@ -14,7 +14,7 @@ class BacktestingService:
             "prodCode": [
                 {
                     "name": "string",
-                    "indicator": [
+                    "indicators": [
                         {
                         "maxLen": 0,
                         "indicatorName": "sma",

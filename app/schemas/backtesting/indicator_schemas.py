@@ -24,8 +24,10 @@ class Indicator(BaseModel, abc.ABC):
     
     @validator('maxLen')
     def max_len_checking(cls, max_len):
-        if max_len is not None:
-            assert (max_len > 1 or max_len <= DEFAULT_MAX_LEN), f'Max length should be in range of 1 ~ {DEFAULT_MAX_LEN}'
+        if max_len is None or max_len == 0:
+            return None
+            
+        assert (max_len > 1 or max_len <= DEFAULT_MAX_LEN), f'Max length should be in range of 1 ~ {DEFAULT_MAX_LEN}'
         return max_len
 
 class SMA(Indicator):
@@ -119,18 +121,18 @@ class BollingerBands(Indicator):
         assert numStdDev > 0, ValueError(f'numStdDev must be larger than 0')
         return numStdDev
     
-class StochasticOscillator(Indicator):
-    indicatorName: str = 'stochastic oscillator'
-    period: StrictInt = 14
-    dSMAPeriod: StrictInt = 3
-    _period = validator('period', allow_reuse=True)(period_checking)
+# class StochasticOscillator(Indicator):
+#     indicatorName: str = 'stochastic oscillator'
+#     period: StrictInt = 14
+#     dSMAPeriod: StrictInt = 3
+#     _period = validator('period', allow_reuse=True)(period_checking)
 
-    @validator('indicatorName')
-    def name_validation(cls, indicatorName):
-        assert indicatorName == 'stochastic oscillator', ValueError(f'indicatorName must be "stochastic oscillator"')
-        return indicatorName
+#     @validator('indicatorName')
+#     def name_validation(cls, indicatorName):
+#         assert indicatorName == 'stochastic oscillator', ValueError(f'indicatorName must be "stochastic oscillator"')
+#         return indicatorName
 
-    @validator('dSMAPeriod')
-    def validation(cls, dSMAPeriod):
-        assert dSMAPeriod > 1, ValueError(f'valuesAge must be larger than 1.')
-        return dSMAPeriod
+#     @validator('dSMAPeriod')
+#     def validation(cls, dSMAPeriod):
+#         assert dSMAPeriod > 1, ValueError(f'valuesAge must be larger than 1.')
+#         return dSMAPeriod
