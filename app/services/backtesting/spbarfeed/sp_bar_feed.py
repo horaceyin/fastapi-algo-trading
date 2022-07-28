@@ -5,9 +5,7 @@ from pyalgotrade.utils import dt
 from pyalgotrade.utils import csvutils
 from services.backtesting.spbarfeed.sp_data import SpData
 from schemas.backtesting.bar_summary_schemas import BarSummary
-import pandas as pd
 from datetime import datetime
-from enum import Enum
 import six
 
 ERROR_MSG = '19:-1:EMPTY RESULT!'
@@ -120,7 +118,7 @@ class SpBarFeed(csvfeed.BarFeed):
 
     def create_bars(self):
         for product in self.__prod_list:
-            prod_code = product.name
+            prod_code = product #.name # AttributeError: 'str' object has no attribute 'name'
             days_before = self.__days
             seconds = self.__bar_summary.input_time
 
