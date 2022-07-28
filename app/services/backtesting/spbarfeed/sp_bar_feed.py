@@ -5,9 +5,7 @@ from pyalgotrade.utils import dt
 from pyalgotrade.utils import csvutils
 from services.backtesting.spbarfeed.sp_data import SpData
 from schemas.backtesting.bar_summary_schemas import BarSummary
-import pandas as pd
 from datetime import datetime
-from enum import Enum
 import six
 
 ERROR_MSG = '19:-1:EMPTY RESULT!'
