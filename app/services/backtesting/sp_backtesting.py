@@ -1,5 +1,7 @@
 import abc
 from pyalgotrade.strategy import BacktestingStrategy
+from schemas.backtesting.bar_summary_schemas import BarSummary
+from services.backtesting.spbarfeed.sp_bar_feed import SpRowParser
 from schemas.backtesting.backtesting_schemas import BacktestingModel
 from services.backtesting.spbarfeed.sp_bar_feed import SpBarFeed
 from services.sp_broker import SPBroker
@@ -33,8 +35,9 @@ class SPBacktesting(BacktestingStrategy):
         self.sp_indicators.register_indicators(self.__prod_indicator_list)
 
         # for testing, product name: 'HSIZ2', 'HSIN2' 
-        # print(self.sp_indicators.get_indicators(), "@@@@@@@@@@@@@@@@@@@@@@")
-        # print(self.sp_bar_feed.getDataSeries('HSIN2'),"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+        print(self.sp_indicators.get_indicators(), "@@@@@@@@@@@@@@@@@@@@@@")
+        print(len(self.sp_bar_feed.getDataSeries('HSIU2')),"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+        print(self.sp_bar_feed.getCurrentBars())
         
         super(SPBacktesting, self).__init__(self.sp_bar_feed, self.sp_broker) # BacktestingStrategy(barFeed, cash_or_brk=1000000)
 
@@ -156,6 +159,14 @@ class SPBacktesting(BacktestingStrategy):
         self.attachAnalyzer(drawDownAnalyzer)
         tradesAnalyzer = trades.Trades()
         self.attachAnalyzer(tradesAnalyzer)
-        
-    def get_sp_data(self):
+
+    def onBars(self, bars):
+        # data = data
+        # product_list = self.product_list
+        # barSummary = self.__bar_summary
+        # sp_bar_feed = self.sp_bar_feed
+        # row_parser = SpRowParser.parseBar
+        # sp_bar_feed.add_bars_from_json(product_list, barSummary.day, barSummary.input_time, row_parser, skip_malformed_bars=False)     
+        # print('!!!!!!!!!!!!!!!!!!')
+        # print(bars)
         pass
