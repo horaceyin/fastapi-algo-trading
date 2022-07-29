@@ -28,8 +28,8 @@ class SPBacktesting(BacktestingStrategy):
         self.sp_indicators.register_indicators(self.__prod_indicator_list)
 
         # for testing, product name: 'HSIZ2', 'HSIN2' 
-        # print(self.sp_indicators.get_indicators(), "@@@@@@@@@@@@@@@@@@@@@@")
-        # print(self.sp_bar_feed.getDataSeries('HSIN2'),"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+        print(self.sp_indicators.get_indicators(), "@@@@@@@@@@@@@@@@@@@@@@")
+        print(len(self.sp_bar_feed.getDataSeries('HSIU2').getPriceDataSeries()),"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
         
         super(SPBacktesting, self).__init__(self.sp_bar_feed, self.sp_broker) # BacktestingStrategy(barFeed, cash_or_brk=1000000)
 

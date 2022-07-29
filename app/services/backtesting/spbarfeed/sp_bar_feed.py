@@ -99,8 +99,10 @@ class SpBarFeed(csvfeed.BarFeed):
             bar_ = parse_bar(row)
             if bar_ is not None and (self.getBarFilter() is None or self.getBarFilter().includeBar(bar_)):
                 loaded_bars.append(bar_)
-
         self.addBarsFromSequence(prod_code, loaded_bars)
+    
+    def addBarsFromSequence(self, instrument, bars):
+        super().addBarsFromSequence(instrument, bars)
 
     def data_formatting(self, raw_data):
         if isinstance(raw_data, str):
