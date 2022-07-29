@@ -5,6 +5,11 @@ from services.backtesting.spbarfeed.sp_bar_feed import SpBarFeed
 from services.sp_broker import SPBroker
 from services.backtesting.sp_indicators import SPIndicators
 
+from pyalgotrade.stratanalyzer import returns
+from pyalgotrade.stratanalyzer import sharpe
+from pyalgotrade.stratanalyzer import drawdown
+from pyalgotrade.stratanalyzer import trades
+
 # class SPBroker(backtesting.Broker):
 #     def __init__(self, portfolio_value, live_trade=True) -> None:
 #         super().__init__(portfolio_value)
@@ -142,3 +147,15 @@ class SPBacktesting(BacktestingStrategy):
     # def onBars(self, bars, product_list, instrument): # SHOULD BE IMPLEMENTED BY FUTURE USERS
     #     # or implement a default strategy.
     #     return NotImplementedError
+    def analyzer(self):
+        retAnalyzer = returns.Returns()
+        self.attachAnalyzer(retAnalyzer)
+        sharpeRatioAnalyzer = sharpe.SharpeRatio()
+        self.attachAnalyzer(sharpeRatioAnalyzer)
+        drawDownAnalyzer = drawdown.DrawDown()
+        self.attachAnalyzer(drawDownAnalyzer)
+        tradesAnalyzer = trades.Trades()
+        self.attachAnalyzer(tradesAnalyzer)
+        
+    def get_sp_data(self):
+        pass
