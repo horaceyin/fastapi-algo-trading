@@ -4,6 +4,8 @@ from services.report_service import Report
 from services.technical_analysis_service import PnLService
 from services.contract_size_service import ContractSize
 from datetime import datetime
+from fastapi.templating import Jinja2Templates
+from core import TEMPLATES_PATH
 
 # testing msg when this router is called
 @staticmethod
@@ -16,6 +18,8 @@ taRouter = APIRouter(
     prefix='/ta',
     dependencies=[Depends(print_msg)]
 )
+
+templates = Jinja2Templates(directory=str(TEMPLATES_PATH))
 
 # the post method for geting profit and loss of done trades
 # starting with host/get-pnl/
@@ -34,3 +38,7 @@ async def done_trade_report_analysis(request: GetDoneTradeModel):
     date = date.strftime('%Y-%m-%d')
     pnlReport = Report(accName, date)
     return pnlReport.get_report(request)
+
+@taRouter.get('/get-report', status_code=status.HTTP_200_OK())
+async def get_done_trade_report_analysis(request: GetDoneTradeModel):
+    return templates.TemplateResponse('report.html', {'request': request})

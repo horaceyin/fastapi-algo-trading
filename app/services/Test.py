@@ -1,6 +1,7 @@
 import json
 
 from requests import request
+from core.endpoints import ACTIVEORDER
 from schemas.order_api_schemas import AddOrder, ChangeOrder, AccessOrder # Possibly unnecessary
 from core.config import SP_HOST_AND_PORT
 from core.endpoints import ADDORDER, CHANGEORDER, DELETEORDER, ACTIVEORDER, INACTIVEORDER
@@ -44,17 +45,17 @@ class Test: # Object to handle actions # e.g. create market order inside SPtrade
                 "priceInDec": "20700.0", # float
                 "prodCode": instrument,
                 "qty": quantity,
-                "sessionToken": "16d0a53c8b4e132b1749a161bdd18c97", # str # NEED TO FILL
+                "sessionToken": "201ca50220ea12a73d917cbeeecc02cf", # str # NEED TO FILL
                 "validType": 0, # Literal[0, 1, 2, 3, 4] = 0 # 0 - 4 # Unsure of purpose
                 # "clOrderId": Optional[str] 
                 # downLevelInDec: Optional[float]
                 # downPriceInDec: Optional[float]
                 "openClose": openClose, # Optional[Literal["M", "O", "C"]] # M (Mandatory close), O (Open), C (Close)
-                # options: Optional[int] # Unsure of purpose
+                "options": 0, 
                 # ref: Optional[str]
                 # ref2: Optional[str]
                 # schedTime: Optional[float] # In the form YYYYMMDD.hhmmss # Unsure of formatting
-                "status": 2, # Optional[Literal[2]] # Only required in inactive orders (2 = Inactive)
+                "status": 0, # Optional[Literal[2]] # Only required in inactive orders (2 = Inactive)
                 "stopPriceInDec": 0, # Optional[int]
                 "stopType": "", # Optional[Literal["L", "U", "D"]] # L (Stop loss), U (Up trigger), D (Down trigger), or blank (N/A) # Can ignore U and D
                 "subCondType": 0 # Optional[Literal[0, 1, 3, 4, 6, 11, 14, 16]] # 0 (None), 1 (Stop), 3, 4 (OCO stop), 6 (Trail stop), 11 (Stop loss by price), 14 (OCO by price), 16 (Trailing stop by price)
@@ -67,10 +68,10 @@ class Test: # Object to handle actions # e.g. create market order inside SPtrade
             if addOrder["result_msg"] == "No Error":
                 print("Market order is added to SP")
             else:
-                #Message: order not supported
-                print("Order is not supported")
+                print(addOrder)
+                print(addOrder["result_msg"])
         except:
             raise SystemExit("Market order cannot be added to SP")
         # pass # Replace with code to access SP backtesting 
 test = Test()
-test.createMarketOrder(1,'HSIN2',1,False)
+test.createMarketOrder(4,'HSIU2',1,False)

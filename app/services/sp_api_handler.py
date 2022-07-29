@@ -2,7 +2,6 @@ from schemas.order_api_schemas import AddOrder, ChangeOrder, AccessOrder # Possi
 from core.config import SP_HOST_AND_PORT
 from core.endpoints import ADDORDER, CHANGEORDER, DELETEORDER, ACTIVEORDER, INACTIVEORDER
 from common.common_helper import CommonHelper
-import requests
 
 # Access info from .env
 ENDPOINT = SP_HOST_AND_PORT
@@ -20,16 +19,16 @@ class SPAPIHandler(): # Object to handle actions # e.g. create market order insi
         print("Market order is being processed to SP")
         buySell = ""
         openClose = ""
-        if action == 1:
+        if action == 1: # BUY
             buySell = "B"
             openClose = "O"
-        elif action == 2:
+        elif action == 2: # BUY_TO_COVER
             buySell = "B"
             openClose = "C"
-        elif action == 3:
+        elif action == 3: # SELL
             buySell = "S"
             openClose = "C"
-        elif action == 4:
+        elif action == 4: # SELL_SHORT
             buySell = "S"
             openClose = "O"
         if onClose is True and (action == 2 or action == 3):
@@ -54,7 +53,7 @@ class SPAPIHandler(): # Object to handle actions # e.g. create market order insi
                 # ref: Optional[str]
                 # ref2: Optional[str]
                 # schedTime: Optional[float] # In the form YYYYMMDD.hhmmss # Unsure of formatting
-                "status": 2, # Optional[Literal[2]] # Only required in inactive orders (2 = Inactive)
+                "status": 0, # Optional[Literal[2]] # Only required in inactive orders (2 = Inactive)
                 "stopPriceInDec": 0, # Optional[int]
                 "stopType": "", # Optional[Literal["L", "U", "D"]] # L (Stop loss), U (Up trigger), D (Down trigger), or blank (N/A) # Can ignore U and D
                 "subCondType": 0 # Optional[Literal[0, 1, 3, 4, 6, 11, 14, 16]] # 0 (None), 1 (Stop), 3, 4 (OCO stop), 6 (Trail stop), 11 (Stop loss by price), 14 (OCO by price), 16 (Trailing stop by price)
@@ -64,10 +63,12 @@ class SPAPIHandler(): # Object to handle actions # e.g. create market order insi
             })
             # addOrder = CommonHelper.post_url(addUrl, request) # Access SP
             # assert addOrder["result_msg"] == "No Error"
-            if addOrder["result_msg"] == "No Error":
+            message = addOrder["result_msg"]
+            if message == "No Error":
                 print("Market order is added to SP")
             else:
-                print("Market order cannot be added to SP")
+                print(addOrder)
+                print(f"Market order cannot be added to SP with this error: {message}")
         except:
             raise SystemExit("Failed to access SP system")
         # pass # Replace with code to access SP backtesting 
@@ -78,16 +79,16 @@ class SPAPIHandler(): # Object to handle actions # e.g. create market order insi
         print("Limit order is being processed to SP")
         buySell = ""
         openClose = ""
-        if action == 1:
+        if action == 1: # BUY
             buySell = "B"
             openClose = "O"
-        elif action == 2:
+        elif action == 2: # BUY_TO_COVER
             buySell = "B"
             openClose = "C"
-        elif action == 3:
+        elif action == 3: # SELL
             buySell = "S"
             openClose = "C"
-        elif action == 4:
+        elif action == 4: # SELL_SHORT
             buySell = "S"
             openClose = "O"
         try:
@@ -110,7 +111,7 @@ class SPAPIHandler(): # Object to handle actions # e.g. create market order insi
                 # ref: Optional[str]
                 # ref2: Optional[str]
                 # schedTime: Optional[float] # In the form YYYYMMDD.hhmmss # Unsure of formatting
-                "status": 2, # Optional[Literal[2]] # Only required in inactive orders (2 = Inactive)
+                "status": 0, # Optional[Literal[2]] # Only required in inactive orders (2 = Inactive)
                 "stopPriceInDec": 0, # Optional[int]
                 "stopType": "", # Optional[Literal["L", "U", "D"]] # L (Stop loss), U (Up trigger), D (Down trigger), or blank (N/A) # Can ignore U and D
                 "subCondType": 0 # Optional[Literal[0, 1, 3, 4, 6, 11, 14, 16]] # 0 (None), 1 (Stop), 3, 4 (OCO stop), 6 (Trail stop), 11 (Stop loss by price), 14 (OCO by price), 16 (Trailing stop by price)
@@ -120,10 +121,11 @@ class SPAPIHandler(): # Object to handle actions # e.g. create market order insi
             })
             # addOrder = CommonHelper.post_url(addUrl, request) # Access SP
             # assert addOrder["result_msg"] == "No Error"
-            if addOrder["result_msg"] == "No Error":
+            message = addOrder["result_msg"]
+            if message == "No Error":
                 print("Limit order is added to SP")
             else:
-                print("Limit order cannot be added to SP")
+                print(f"Limit order cannot be added to SP with this error: {message}")
         except:
             raise SystemExit("Failed to access SP system")
     
@@ -132,16 +134,16 @@ class SPAPIHandler(): # Object to handle actions # e.g. create market order insi
         print("Stop order is being processed to SP")
         buySell = ""
         openClose = ""
-        if action == 1:
+        if action == 1: # BUY
             buySell = "B"
             openClose = "O"
-        elif action == 2:
+        elif action == 2: # BUY_TO_COVER
             buySell = "B"
             openClose = "C"
-        elif action == 3:
+        elif action == 3: # SELL
             buySell = "S"
             openClose = "C"
-        elif action == 4:
+        elif action == 4: # SELL_SHORT
             buySell = "S"
             openClose = "O"
         try:
@@ -164,7 +166,7 @@ class SPAPIHandler(): # Object to handle actions # e.g. create market order insi
                 # ref: Optional[str]
                 # ref2: Optional[str]
                 # schedTime: Optional[float] # In the form YYYYMMDD.hhmmss # Unsure of formatting
-                "status": 2, # Optional[Literal[2]] # Only required in inactive orders (2 = Inactive)
+                "status": 0, # Optional[Literal[2]] # Only required in inactive orders (2 = Inactive)
                 "stopPriceInDec": stopPrice, # Optional[int]
                 "stopType": "L", # Optional[Literal["L", "U", "D"]] # L (Stop loss), U (Up trigger), D (Down trigger), or blank (N/A) # Can ignore U and D
                 "subCondType": 1 # Optional[Literal[0, 1, 3, 4, 6, 11, 14, 16]] # 0 (None), 1 (Stop), 3, 4 (OCO stop), 6 (Trail stop), 11 (Stop loss by price), 14 (OCO by price), 16 (Trailing stop by price)
@@ -174,10 +176,11 @@ class SPAPIHandler(): # Object to handle actions # e.g. create market order insi
             })
             # addOrder = CommonHelper.post_url(addUrl, request) # Access SP
             # assert addOrder["result_msg"] == "No Error"
-            if addOrder["result_msg"] == "No Error":
+            message = addOrder["result_msg"]
+            if message == "No Error":
                 print("Stop order is added to SP")
             else:
-                print("Stop order cannot be added to SP")
+                print(f"Stop order cannot be added to SP with this error: {message}")
         except:
             raise SystemExit("Failed to access SP system")
         # pass # Replace with code to access SP backtesting
@@ -187,16 +190,16 @@ class SPAPIHandler(): # Object to handle actions # e.g. create market order insi
         print("Stop limit order is being processed to SP")
         buySell = ""
         openClose = ""
-        if action == 1:
+        if action == 1: # BUY
             buySell = "B"
             openClose = "O"
-        elif action == 2:
+        elif action == 2: # BUY_TO_COVER
             buySell = "B"
             openClose = "C"
-        elif action == 3:
+        elif action == 3: # SELL
             buySell = "S"
             openClose = "C"
-        elif action == 4:
+        elif action == 4: # SELL_SHORT
             buySell = "S"
             openClose = "O"
         try:
@@ -219,7 +222,7 @@ class SPAPIHandler(): # Object to handle actions # e.g. create market order insi
                 # ref: Optional[str]
                 # ref2: Optional[str]
                 # schedTime: Optional[float] # In the form YYYYMMDD.hhmmss # Unsure of formatting
-                "status": 2, # Optional[Literal[2]] # Only required in inactive orders (2 = Inactive)
+                "status": 0, # Optional[Literal[2]] # Only required in inactive orders (2 = Inactive)
                 "stopPriceInDec": stopPrice, # Optional[int]
                 "stopType": "L", # Optional[Literal["L", "U", "D"]] # L (Stop loss), U (Up trigger), D (Down trigger), or blank (N/A) # Can ignore U and D
                 "subCondType": 1 # Optional[Literal[0, 1, 3, 4, 6, 11, 14, 16]] # 0 (None), 1 (Stop), 3, 4 (OCO stop), 6 (Trail stop), 11 (Stop loss by price), 14 (OCO by price), 16 (Trailing stop by price)
@@ -229,10 +232,11 @@ class SPAPIHandler(): # Object to handle actions # e.g. create market order insi
             })
             # addOrder = CommonHelper.post_url(addUrl, request) # Access SP
             # assert addOrder["result_msg"] == "No Error"
-            if addOrder["result_msg"] == "No Error":
+            message = addOrder["result_msg"]
+            if message == "No Error":
                 print("Stop limit order is added to SP")
             else:
-                print("Stop limit order cannot be added to SP")
+                print(f"Stop limit order cannot be added to SP with this error: {message}")
         except:
             raise SystemExit("Failed to access SP system")
         # pass # Replace with code to access SP backtesting
@@ -241,9 +245,9 @@ class SPAPIHandler(): # Object to handle actions # e.g. create market order insi
         activeUrl = ENDPOINT + ACTIVEORDER
         print("Activation of order is being processed in SP")
         buySell = ""
-        if action == 1 or action == 2:
+        if action == 1 or action == 2: # BUY
             buySell = "B"
-        elif action == 3 or action == 4:
+        elif action == 3 or action == 4: # SELL
             buySell = "S"
         try:
             activeOrder = CommonHelper.post_url(activeUrl,
@@ -256,12 +260,13 @@ class SPAPIHandler(): # Object to handle actions # e.g. create market order insi
                 "extOrderId": 0, # Literal[0, 1, 2, 3, 4] = 0 # 0 - 4 # Unsure of purpose
             })
             # activeOrder = CommonHelper.post_url(activeUrl, request) # Access SP
-            if activeOrder["result_msg"] == "No Error":
+            message = activeOrder["result_msg"]
+            if message == "No Error":
                 print("Order is activated in SP")
-            elif activeOrder["result_msg"] == "Order Is Already Active":
+            elif message == "Order Is Already Active":
                 print("Order is already active in SP")
             else:
-                print("Order cannot be activated in SP")
+                print(f"Order cannot be activated in SP with this error: {message}")
         except:
             raise SystemExit("Failed to access SP system")
 
@@ -269,9 +274,9 @@ class SPAPIHandler(): # Object to handle actions # e.g. create market order insi
         inactiveUrl = ENDPOINT + INACTIVEORDER
         print("Deactivation of order is being processed in SP")
         buySell = ""
-        if action == 1 or action == 2:
+        if action == 1 or action == 2: # BUY
             buySell = "B"
-        elif action == 3 or action == 4:
+        elif action == 3 or action == 4: # SELL
             buySell = "S"
         try:
             inactiveOrder = CommonHelper.post_url(inactiveUrl,
@@ -281,15 +286,16 @@ class SPAPIHandler(): # Object to handle actions # e.g. create market order insi
                 "buySell": buySell, # Literal["B", "S"] # B, S
                 "prodCode": instrument,
                 "sessionToken": "", # str
-                "extOrderId": 0, # Literal[0, 1, 2, 3, 4] = 0 # 0 - 4 # Unsure of purpose
+                "extOrderId": 0, # Optional[Literal[0, 1, 2, 3, 4]] = 0 # 0 - 4 # Unsure of purpose
             })
             # inactiveOrder = CommonHelper.post_url(inactiveUrl, request) # Access SP
-            if inactiveOrder["result_msg"] == "No Error":
+            message = inactiveOrder["result_msg"]
+            if message == "No Error":
                 print("Order is deactivated in SP")
-            elif inactiveOrder["result_msg"] == "Order Is Already Inactive":
-                print("Order is already inactive")
+            elif message == "Order Is Already Inactive":
+                print("Order is already inactive in SP")
             else:
-                print("Order cannot be deactivated in SP")
+                print(f"Order cannot be deactivated in SP with this error: {message}")
         except:
             raise SystemExit("Failed to access SP system")
 
@@ -317,10 +323,11 @@ class SPAPIHandler(): # Object to handle actions # e.g. create market order insi
             })
             # changeOrder = CommonHelper.post_url(changeUrl, request) # Access SP
             # assert changeOrder["result_msg"] == "No Error"
-            if changeOrder["result_msg"] == "No Error":
+            message = changeOrder["result_msg"]
+            if message == "No Error":
                 print("SP has changed order properties")
             else:
-                print("SP cannot change order properties")
+                print(f"SP cannot change order properties with this error: {message}")
         except:
             raise SystemExit("Failed to access SP system")
 
@@ -328,9 +335,9 @@ class SPAPIHandler(): # Object to handle actions # e.g. create market order insi
         deleteUrl = ENDPOINT + DELETEORDER
         print("Deletion of order is being processed to SP")
         buySell = ""
-        if action == 1 or action == 2:
+        if action == 1 or action == 2: # BUY
             buySell = "B"
-        elif action == 3 or action == 4:
+        elif action == 3 or action == 4: # SELL
             buySell = "S"
         try:
             deleteOrder = CommonHelper.post_url(deleteUrl,
@@ -344,10 +351,11 @@ class SPAPIHandler(): # Object to handle actions # e.g. create market order insi
             })
             # deleteOrder = CommonHelper.post_url(deleteUrl, request) # Access SP
             # assert deleteOrder["result_msg"] == "No Error"
-            if deleteOrder["result_msg"] == "No Error":
+            message = deleteOrder["result_msg"]
+            if message == "No Error":
                 print("Order is deleted from SP")
             else:
-                print("Order cannot be deleted from SP")
+                print(f"Order cannot be deleted from SP with this error: {message}")
         except:
             raise SystemExit("Failed to access SP system")
 
