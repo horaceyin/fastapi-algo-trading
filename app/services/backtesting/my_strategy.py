@@ -12,7 +12,6 @@ class MyStrategy(SPBacktesting):
         # broke = self.getBroker
         # print(broke)
         # print(broke.get_portfolio_value)
-        print("8888888888888888888")
 
     # def onBars(self): # ENTER USER'S OWN CODING HERE
     #     print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
