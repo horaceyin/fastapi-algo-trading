@@ -1,33 +1,34 @@
-from core.endpoints import ACTIVEORDER
 from schemas.order_api_schemas import AddOrder, ChangeOrder, AccessOrder # Possibly unnecessary
 from core.config import SP_HOST_AND_PORT
 from core.endpoints import ADDORDER, CHANGEORDER, DELETEORDER, ACTIVEORDER, INACTIVEORDER
 from common.common_helper import CommonHelper
-import requests
 
 # Access info from .env
 ENDPOINT = SP_HOST_AND_PORT
 
 class SPAPIHandler(): # Object to handle actions # e.g. create market order inside SPtrader, broker give parameter to handler object
-    # def __init__(self, instrument, quantity, onClose):
     def __init__(self):
         # Login information
+        # self.__accNo = "" # CONSISTENT ACROSS THE FUNCTIONS
+        # self.__sessionToken = ""# CONSISTENT ACROSS THE FUNCTIONS
         pass # Not required, all variables to be used will be placed in below fucntions
 
     # Variables from backtesting.Broker
     def createOrder(self, action, instrument, quantity, onClose):
         addUrl = ENDPOINT + ADDORDER # Need to activate order to allow system to accept it
         print("Market order is being processed to SP")
-        if action == 1:
+        buySell = ""
+        openClose = ""
+        if action == 1: # BUY
             buySell = "B"
             openClose = "O"
-        elif action == 2:
+        elif action == 2: # BUY_TO_COVER
             buySell = "B"
             openClose = "C"
-        elif action == 3:
+        elif action == 3: # SELL
             buySell = "S"
             openClose = "C"
-        elif action == 4:
+        elif action == 4: # SELL_SHORT
             buySell = "S"
             openClose = "O"
         if onClose is True and (action == 2 or action == 3):
@@ -62,13 +63,14 @@ class SPAPIHandler(): # Object to handle actions # e.g. create market order insi
             })
             # addOrder = CommonHelper.post_url(addUrl, request1) # Access SP
             # assert addOrder["result_msg"] == "No Error"
-            if addOrder["result_msg"] == "No Error":
+            message = addOrder["result_msg"]
+            if message == "No Error":
                 print("Market order is added to SP")
             else:
                 print(addOrder)
                 print(addOrder["result_msg"])
         except:
-            raise SystemExit("Market order cannot be added to SP")
+            raise SystemExit("Failed to access SP system")
         # pass # Replace with code to access SP backtesting 
 
 

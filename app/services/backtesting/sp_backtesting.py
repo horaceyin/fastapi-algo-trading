@@ -148,9 +148,9 @@ class SPBacktesting(BacktestingStrategy):
     # def get_sp_broker(self):
     #     return self.sp_broker
 
-    #@get_sp_broker.setter
-    def get_sp_broker(self, sp_broker):
-        self.sp_broker = sp_broker
+    # @get_sp_broker.setter
+    # def get_sp_broker(self, sp_broker):
+    #     self.sp_broker = sp_broker
 
     # @abc.abstractmethod
     # def onBars(self, bars, product_list, instrument): # SHOULD BE IMPLEMENTED BY FUTURE USERS
