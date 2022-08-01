@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, status, Request
 from schemas.technical_analysis_schemas import GetDoneTradeModel
 from services.report_service import Report
 from services.technical_analysis_service import PnLService
@@ -6,6 +6,7 @@ from services.contract_size_service import ContractSize
 from datetime import datetime
 from fastapi.templating import Jinja2Templates
 from core import TEMPLATES_PATH
+from fastapi.responses import HTMLResponse
 
 # testing msg when this router is called
 @staticmethod
@@ -37,8 +38,14 @@ async def done_trade_report_analysis(request: GetDoneTradeModel):
     date = datetime.now()
     date = date.strftime('%Y-%m-%d')
     pnlReport = Report(accName, date)
-    return pnlReport.get_report(request)
+    report = pnlReport.get_report(request)
+    return report
+    # return templates.TemplateResponse('report.html', {'report': report}) # ValueError: context must include a "request" key
 
-@taRouter.get('/get-report', status_code=status.HTTP_200_OK())
-async def get_done_trade_report_analysis(request: GetDoneTradeModel):
-    return templates.TemplateResponse('report.html', {'request': request})
+# @taRouter.get('/get-report', status_code=status.HTTP_200_OK) # status_code=status.HTTP_200_OK() -> TypeError: 'int' object is not callable
+# async def get_done_trade_report_analysis(request: GetDoneTradeModel):
+#     return templates.TemplateResponse('report.html', {'request': request})
+
+@taRouter.get('/get-report', response_class=HTMLResponse)
+async def get_done_trade_report_analysis(request: Request):
+    return templates.TemplateResponse('report.html', {'request': request}) # Second parameter -> Information to be passed through for template

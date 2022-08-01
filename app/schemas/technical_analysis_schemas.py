@@ -4,8 +4,8 @@ class GetDoneTradeModel(BaseModel):
     # fromTime: Search From Trade Time(YYYY-MM-DD HH:mm:ss)
     # toTime: Search To Trade Time(YYYY-MM-DD HH:mm:ss)
     systemId: str = 'SP_F'
-    ssoToken: str
-    ssoTime: str
+    ssoToken: str # Obtain from SPSystem -> Account information -> CS -> Right-click -> Properties -> Address
+    ssoTime: str # Obtain from SPSystem -> Account information -> CS -> Right-click -> Properties -> Address
     userId: str = 'NICHOLAS01' # or ANSONLI01
     targetAccNo: str = 'NICHOLAS01' # or ANSONLI01
     fromTime: Optional[str] = None
