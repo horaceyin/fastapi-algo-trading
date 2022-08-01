@@ -69,6 +69,7 @@ class BacktestingService:
         # Build such that type of backtest can be changed
 
         my_strat = MyStrategy(request)
+        my_strat.run()
         return {'report': "data"}
 
         # #if exception rasied,

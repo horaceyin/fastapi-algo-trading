@@ -1,4 +1,3 @@
-from turtle import st
 from fastapi import APIRouter, Depends, Path, Request, status, WebSocket, Cookie, Query
 from typing import Union
 from fastapi.responses import HTMLResponse
