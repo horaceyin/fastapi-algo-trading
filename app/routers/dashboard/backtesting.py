@@ -30,7 +30,6 @@ async def show_backtesting_page(request: Request):
     print(request.headers)
     return templates.TemplateResponse('backtesting.html', {'request': request})
 
-
 # the post method for doing backtesting
 # starting with host/backtesting/
 

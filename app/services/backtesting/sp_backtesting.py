@@ -144,13 +144,21 @@ class SPBacktesting(BacktestingStrategy):
     def get_sp_bar_feed(self, sp_bar_feed):
         self.sp_bar_feed = sp_bar_feed
 
-    @property
-    def get_sp_broker(self):
-        return self.sp_broker
+    # getBroker already exists
+    # @property
+    # def get_sp_broker(self):
+    #     return self.sp_broker
 
-    @get_sp_broker.setter
-    def get_sp_broker(self, sp_broker):
-        self.sp_broker = sp_broker
+    # @get_sp_broker.setter
+    # def get_sp_broker(self, sp_broker):
+    #     self.sp_broker = sp_broker
+    
+    def __get_product(self, prod_indicator_list):
+        if len(prod_indicator_list) == 0: return None
+
+        product_list = [product.name for product in prod_indicator_list]
+
+        return product_list
 
     # @abc.abstractmethod
     # def onBars(self, bars, product_list, instrument): # SHOULD BE IMPLEMENTED BY FUTURE USERS
