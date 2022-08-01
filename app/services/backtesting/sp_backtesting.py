@@ -152,13 +152,6 @@ class SPBacktesting(BacktestingStrategy):
     # @get_sp_broker.setter
     # def get_sp_broker(self, sp_broker):
     #     self.sp_broker = sp_broker
-    
-    def __get_product(self, prod_indicator_list):
-        if len(prod_indicator_list) == 0: return None
-
-        product_list = [product.name for product in prod_indicator_list]
-
-        return product_list
 
     # @abc.abstractmethod
     # def onBars(self, bars, product_list, instrument): # SHOULD BE IMPLEMENTED BY FUTURE USERS

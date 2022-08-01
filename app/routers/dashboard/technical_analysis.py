@@ -42,7 +42,7 @@ async def done_trade_report_analysis(request: GetDoneTradeModel):
     return report
     # return templates.TemplateResponse('report.html', {'report': report}) # ValueError: context must include a "request" key
 
-# ****************************** Want to render HTML page ***********************************************
+# ****************************** Want to render HTML page **********************************************
 # @taRouter.get('/get-report', response_class=HTMLResponse)
 # async def get_done_trade_report_analysis(request: Request):
 #     return templates.TemplateResponse('report.html', {'request': request}) # Second parameter -> Information to be passed through for template

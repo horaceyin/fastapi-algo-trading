@@ -12,7 +12,7 @@ class MyStrategy(SPBacktesting):
         # print(self.getBroker()) # Cannot use getter class here # () to access functions inside getBroker # Same as self.sp_broker
         
         print(self.getBroker().get_portfolio_value) # Initially 1000000.0
-        self.getBroker().get_portfolio_value = 2000000 # To set new portfolio_value
+        self.getBroker().get_portfolio_value = 2000000.0 # To set new portfolio_value
         print(self.getBroker().get_portfolio_value) # Now 2000000.0
 
     def onBars(self, bars: Bars): # ENTER USER'S OWN CODING HERE
