@@ -50,6 +50,12 @@ class SpBarFeed(csvfeed.BarFeed):
         super(SpBarFeed, self).__init__(frequency * time, maxLen = maxLen)
         self.create_bars()
 
+    def getDailyBarTime(self):
+        if self.__bar_summary.day:
+            # if daily bar use
+            return super().getDailyBarTime()
+        else: return None
+
     def barsHaveAdjClose(self):
         return self.__have_adj_close
 
@@ -99,8 +105,10 @@ class SpBarFeed(csvfeed.BarFeed):
             bar_ = parse_bar(row)
             if bar_ is not None and (self.getBarFilter() is None or self.getBarFilter().includeBar(bar_)):
                 loaded_bars.append(bar_)
-
         self.addBarsFromSequence(prod_code, loaded_bars)
+    
+    def addBarsFromSequence(self, instrument, bars):
+        super().addBarsFromSequence(instrument, bars)
 
     def data_formatting(self, raw_data):
         if isinstance(raw_data, str):
@@ -174,7 +182,7 @@ class SpRowParser(csvfeed.RowParser):
 
     def _parseDate(self, dateString):
         ret = datetime.strptime(dateString, self.__dateTimeFormat)
-
+        
         if self.__dailyBarTime is not None:
             ret = datetime.combine(ret, self.__dailyBarTime)
         # Localize the datetime if a timezone was given.

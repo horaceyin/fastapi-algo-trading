@@ -16,7 +16,6 @@ from pyalgotrade.stratanalyzer import trades
 #     def __init__(self, portfolio_value, live_trade=True) -> None:
 #         super().__init__(portfolio_value)
 
-# @six.add_metaclass(metaclass=abc.ABCMeta)
 class SPBacktesting(BacktestingStrategy):
     
     def __init__(self, request: BacktestingModel, live_trade=False):
@@ -36,6 +35,7 @@ class SPBacktesting(BacktestingStrategy):
 
         # for testing, product name: 'HSIZ2', 'HSIN2' 
         super(SPBacktesting, self).__init__(self.sp_bar_feed, self.sp_broker) # BacktestingStrategy(barFeed, cash_or_brk=1000000)
+        self.__init_analyzer()
 
 
     def get_product_list(self):
@@ -53,6 +53,16 @@ class SPBacktesting(BacktestingStrategy):
         product_list = [product.name for product in prod_indicator_list]
 
         return product_list
+
+    def __init_analyzer(self):
+        retAnalyzer = returns.Returns()
+        self.attachAnalyzer(retAnalyzer)
+        sharpeRatioAnalyzer = sharpe.SharpeRatio()
+        self.attachAnalyzer(sharpeRatioAnalyzer)
+        drawDownAnalyzer = drawdown.DrawDown()
+        self.attachAnalyzer(drawDownAnalyzer)
+        tradesAnalyzer = trades.Trades()
+        self.attachAnalyzer(tradesAnalyzer)
 
     @property
     def get_prod_indicator_list(self):
