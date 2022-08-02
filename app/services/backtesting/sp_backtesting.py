@@ -1,15 +1,21 @@
 import abc
 from pyalgotrade.strategy import BacktestingStrategy
+from schemas.backtesting.bar_summary_schemas import BarSummary
+from services.backtesting.spbarfeed.sp_bar_feed import SpRowParser
 from schemas.backtesting.backtesting_schemas import BacktestingModel
 from services.backtesting.spbarfeed.sp_bar_feed import SpBarFeed
 from services.sp_broker import SPBroker
 from services.backtesting.sp_indicators import SPIndicators
 
+from pyalgotrade.stratanalyzer import returns
+from pyalgotrade.stratanalyzer import sharpe
+from pyalgotrade.stratanalyzer import drawdown
+from pyalgotrade.stratanalyzer import trades
+
 # class SPBroker(backtesting.Broker):
 #     def __init__(self, portfolio_value, live_trade=True) -> None:
 #         super().__init__(portfolio_value)
 
-# @six.add_metaclass(metaclass=abc.ABCMeta)
 class SPBacktesting(BacktestingStrategy):
     
     def __init__(self, request: BacktestingModel, live_trade=False):
@@ -28,10 +34,8 @@ class SPBacktesting(BacktestingStrategy):
         self.sp_indicators.register_indicators(self.__prod_indicator_list)
 
         # for testing, product name: 'HSIZ2', 'HSIN2' 
-        # print(self.sp_indicators.get_indicators(), "@@@@@@@@@@@@@@@@@@@@@@")
-        # print(self.sp_bar_feed.getDataSeries('HSIN2'),"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-        
         super(SPBacktesting, self).__init__(self.sp_bar_feed, self.sp_broker) # BacktestingStrategy(barFeed, cash_or_brk=1000000)
+        self.__init_analyzer()
 
 
     def get_product_list(self):
@@ -49,6 +53,16 @@ class SPBacktesting(BacktestingStrategy):
         product_list = [product.name for product in prod_indicator_list]
 
         return product_list
+
+    def __init_analyzer(self):
+        retAnalyzer = returns.Returns()
+        self.attachAnalyzer(retAnalyzer)
+        sharpeRatioAnalyzer = sharpe.SharpeRatio()
+        self.attachAnalyzer(sharpeRatioAnalyzer)
+        drawDownAnalyzer = drawdown.DrawDown()
+        self.attachAnalyzer(drawDownAnalyzer)
+        tradesAnalyzer = trades.Trades()
+        self.attachAnalyzer(tradesAnalyzer)
 
     @property
     def get_prod_indicator_list(self):
@@ -137,15 +151,21 @@ class SPBacktesting(BacktestingStrategy):
     # @get_sp_broker.setter
     # def get_sp_broker(self, sp_broker):
     #     self.sp_broker = sp_broker
-    
-    def __get_product(self, prod_indicator_list):
-        if len(prod_indicator_list) == 0: return None
-
-        product_list = [product.name for product in prod_indicator_list]
-
-        return product_list
 
     # @abc.abstractmethod
     # def onBars(self, bars, product_list, instrument): # SHOULD BE IMPLEMENTED BY FUTURE USERS
     #     # or implement a default strategy.
     #     return NotImplementedError
+    def analyzer(self):
+        retAnalyzer = returns.Returns()
+        self.attachAnalyzer(retAnalyzer)
+        sharpeRatioAnalyzer = sharpe.SharpeRatio()
+        self.attachAnalyzer(sharpeRatioAnalyzer)
+        drawDownAnalyzer = drawdown.DrawDown()
+        self.attachAnalyzer(drawDownAnalyzer)
+        tradesAnalyzer = trades.Trades()
+        self.attachAnalyzer(tradesAnalyzer)
+
+    def onBars(self, bars): 
+        print('!!!!!!!!!!!!!!!!!!')
+        print(bars)

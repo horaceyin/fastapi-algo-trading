@@ -22,6 +22,7 @@ class SPBroker(backtesting.Broker): # Inherit all properties and functions from 
             self.__sp_api_handler = SPAPIHandler()
         else:
             self.__sp_api_handler = None
+        #super(SPBroker, self).__init__(self.__portfolio_value, self.__bound_val, self.__sp_bar_feed, self.__live_trade, commission=None) # Used to call __init__ method of parent class backtesting.Broker; add additional variables below
         super(SPBroker, self).__init__(self.__portfolio_value, self.__sp_bar_feed, commission=None) # Used to call __init__ method of parent class backtesting.Broker; add additional variables below
 
     @property
@@ -63,40 +64,44 @@ class SPBroker(backtesting.Broker): # Inherit all properties and functions from 
     @get_live_trade.setter
     def get_live_trade(self, live_trade):
         self.__live_trade = live_trade
-    
-    # # Client Portal API
-    # Variables from backtesting.Broker
-    def createMarketOrder(self, action, instrument, quantity, onClose):
+    def creatOrder(self, action, instrument, quantity, onClose):
         super().createMarketOrder(action, instrument, quantity, onClose)
         try:
-            self.__sp_api_handler.createMarketOrder(action, instrument, quantity, onClose) # ASK SPTRADER HOW TO CREATE ORDER
-            self.__sp_api_handler.activeOrder(action, instrument)
+            self.__sp_api_handler.createOrder(action ,instrument, quantity, onClose)
         except:
             pass
+    
+    # def createMarketOrder(self, action, instrument, quantity, onClose):
+    #     super().createMarketOrder(action, instrument, quantity, onClose)
+    #     try:
+    #         self.__sp_api_handler.createMarketOrder(action, instrument, quantity, onClose) # ASK SPTRADER HOW TO CREATE ORDER
+    #         self.__sp_api_handler.activeOrder(action, instrument)
+    #     except:
+    #         pass
 
-    def createLimitOrder(self, action, instrument, limitPrice, quantity):
-        super().createLimitOrder(action, instrument, limitPrice, quantity)
-        try:
-            self.__sp_api_handler.createLimitOrder(action, instrument, limitPrice, quantity) # ASK SPTRADER HOW TO CREATE ORDER
-            self.__sp_api_handler.activeOrder(action, instrument)
-        except:
-            pass
+    # def createLimitOrder(self, action, instrument, limitPrice, quantity):
+    #     super().createLimitOrder(action, instrument, limitPrice, quantity)
+    #     try:
+    #         self.__sp_api_handler.createLimitOrder(action, instrument, limitPrice, quantity) # ASK SPTRADER HOW TO CREATE ORDER
+    #         self.__sp_api_handler.activeOrder(action, instrument)
+    #     except:
+    #         pass
 
-    def createStopOrder(self, action, instrument, stopPrice, quantity):
-        super().createStopOrder(action, instrument, stopPrice, quantity)
-        try:
-            self.__sp_api_handler.createStopOrder(action, instrument, stopPrice, quantity) # ASK SPTRADER HOW TO CREATE ORDER
-            self.__sp_api_handler.activeOrder(action, instrument)
-        except:
-            pass
+    # def createStopOrder(self, action, instrument, stopPrice, quantity):
+    #     super().createStopOrder(action, instrument, stopPrice, quantity)
+    #     try:
+    #         self.__sp_api_handler.createStopOrder(action, instrument, stopPrice, quantity) # ASK SPTRADER HOW TO CREATE ORDER
+    #         self.__sp_api_handler.activeOrder(action, instrument)
+    #     except:
+    #         pass
 
-    def createStopLimitOrder(self, action, instrument, stopPrice, limitPrice, quantity):
-        super().createStopLimitOrder(action, instrument, stopPrice, limitPrice, quantity)
-        try:
-            self.__sp_api_handler.createStopLimitOrder(action, instrument, stopPrice, limitPrice, quantity) # ASK SPTRADER HOW TO CREATE ORDER
-            self.__sp_api_handler.activeOrder(action, instrument)
-        except:
-            pass
+    # def createStopLimitOrder(self, action, instrument, stopPrice, limitPrice, quantity):
+    #     super().createStopLimitOrder(action, instrument, stopPrice, limitPrice, quantity)
+    #     try:
+    #         self.__sp_api_handler.createStopLimitOrder(action, instrument, stopPrice, limitPrice, quantity) # ASK SPTRADER HOW TO CREATE ORDER
+    #         self.__sp_api_handler.activeOrder(action, instrument)
+    #     except:
+    #         pass
 
     # Need to find way to cancel order with different formatting
     # order examples:

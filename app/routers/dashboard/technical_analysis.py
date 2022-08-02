@@ -42,10 +42,7 @@ async def done_trade_report_analysis(request: GetDoneTradeModel):
     return report
     # return templates.TemplateResponse('report.html', {'report': report}) # ValueError: context must include a "request" key
 
-# @taRouter.get('/get-report', status_code=status.HTTP_200_OK) # status_code=status.HTTP_200_OK() -> TypeError: 'int' object is not callable
-# async def get_done_trade_report_analysis(request: GetDoneTradeModel):
-#     return templates.TemplateResponse('report.html', {'request': request})
-
-@taRouter.get('/get-report', response_class=HTMLResponse)
-async def get_done_trade_report_analysis(request: Request):
-    return templates.TemplateResponse('report.html', {'request': request}) # Second parameter -> Information to be passed through for template
+# ****************************** Want to render HTML page **********************************************
+# @taRouter.get('/get-report', response_class=HTMLResponse)
+# async def get_done_trade_report_analysis(request: Request):
+#     return templates.TemplateResponse('report.html', {'request': request}) # Second parameter -> Information to be passed through for template

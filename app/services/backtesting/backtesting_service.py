@@ -69,7 +69,8 @@ class BacktestingService:
         # Build such that type of backtest can be changed
 
         my_strat = MyStrategy(request)
-        return {'report': "data"}
+        my_strat.run()
+        return {'msg': "data"}
 
         # #if exception rasied,
         # raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=errMsg)
