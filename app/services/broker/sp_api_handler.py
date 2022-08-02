@@ -15,8 +15,8 @@ class SPAPIHandler(): # Object to handle actions # e.g. create market order insi
         pass # Not required, all variables to be used will be placed in below fucntions
 
     # Variables from backtesting.Broker
-    def createOrder(self, action, instrument, quantity, onClose):
-        addUrl = ENDPOINT + ADDORDER # Need to activate order to allow system to accept it
+    def createMarketOrder(self, action, instrument, quantity, onClose):
+        addUrl = ENDPOINT + ADDORDER # order have been activited once it added
         print("Market order is being processed to SP")
         if action == 1:
             buySell = "B"
