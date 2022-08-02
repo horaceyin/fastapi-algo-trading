@@ -27,7 +27,7 @@ class PnLService:
     # get done trade record from SP API
     @classmethod
     def __get_done_trade(cls, request: GetDoneTradeModel):
-        print(cls.__url, request)
+        #print(cls.__url, request)
         return CommonHelper.post_url(cls.__url, request)
 
     # prepare data for calculating PNL

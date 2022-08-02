@@ -61,7 +61,7 @@ class Report(PnLService):
             positivePnl += data[i][0]['positivePnl']
             tradeNumber += data[i][0]['num']
             returns += data[i][0]['returns']
-            print(returns)
+            #print(returns)
             positiveRet += data[i][0]['positiveRet']
             negativeRet += data[i][0]['negativeRet']
             
