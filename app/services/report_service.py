@@ -1,7 +1,8 @@
 from __future__ import division
 from services.technical_analysis_service import PnLService
-from schemas.report_schemas import ReportModel
+from schemas.technical_analysis_schemas import GetDoneTradeModel
 import statistics
+import pandas as pd
 
 class Report(PnLService):
 
@@ -45,7 +46,7 @@ class Report(PnLService):
         r = round(x, 3) * 100
         return r
     
-    def get_report(self, request: ReportModel):
+    def get_report(self, request: GetDoneTradeModel):
         data = self.get_pnl(request) # Gets trading data for given target account within given timeframe; all data below is in chronological order
         pnl = []
         negativePnl = []
@@ -123,6 +124,18 @@ class Report(PnLService):
                 "minReturn": min(negativeRet, default=0)*100
             }
         }
+
+        # Sample code to make HTML
+        # total = report["total"]
+        # prof = report["profitable"]
+        # unprof = report["unprofitable"]
+        # t = pd.Series(total, name = "Total").to_frame()
+        # p = pd.Series(prof, name = "Profitable").to_frame()
+        # u = pd.Series(unprof, name = "Unprofitable").to_frame()
+
+        # with open("report.html", 'w') as _file:
+        #     _file.write(t.to_html() + "\n\n" + p.to_html() + "\n\n" + u.to_html())
+
         return report
         
         #total trade = total count of pnl

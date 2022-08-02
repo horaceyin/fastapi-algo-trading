@@ -7,11 +7,12 @@ from services.broker.sp_broker import SPBroker
 class MyStrategy(SPBacktesting):
     def __init__(self, request: BacktestingModel):
         super().__init__(request) # Can access self.__sp_bar_feed and self.__sp_broker 
-        print(self.sp_bar_feed) # Cannot be self.sp_bar_feed() or TypeError will occur
-        print(self.sp_broker) # Cannot use getter class here
-        # broke = self.getBroker
-        # print(broke)
-        # print(broke.get_portfolio_value)
+        # print(self.sp_bar_feed) # Cannot be self.sp_bar_feed() or TypeError will occur
+        # print(self.getBroker()) # Cannot use getter class here # () to access functions inside getBroker # Same as self.sp_broker
+        
+        print(self.getBroker().get_portfolio_value) # Initially 1000000.0
+        self.getBroker().get_portfolio_value = 2000000.0 # To set new portfolio_value
+        print(self.getBroker().get_portfolio_value) # Now 2000000.0
 
     # def onBars(self, bars: dict): # ENTER USER'S OWN CODING HERE
     #     print("!!!!!!!!!!!!!!!!!!!!")
