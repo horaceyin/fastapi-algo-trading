@@ -4,7 +4,7 @@ from schemas.backtesting.bar_summary_schemas import BarSummary
 from services.backtesting.spbarfeed.sp_bar_feed import SpRowParser
 from schemas.backtesting.backtesting_schemas import BacktestingModel
 from services.backtesting.spbarfeed.sp_bar_feed import SpBarFeed
-from services.sp_broker import SPBroker
+from services.broker.sp_broker import SPBroker
 from services.backtesting.sp_indicators import SPIndicators
 
 from pyalgotrade.stratanalyzer import returns

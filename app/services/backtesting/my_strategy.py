@@ -2,7 +2,7 @@ from services.backtesting.sp_backtesting import SPBacktesting
 from schemas.backtesting.backtesting_schemas import BacktestingModel
 
 from services.backtesting.spbarfeed.sp_bar_feed import SpBarFeed
-from services.sp_broker import SPBroker
+from services.broker.sp_broker import SPBroker
 from pyalgotrade.bar import Bars
 
 class MyStrategy(SPBacktesting):
