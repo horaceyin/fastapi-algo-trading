@@ -89,39 +89,39 @@ class Report(PnLService):
             return result
         report = {
             'total': {
-                "Total trades": tradeNumber, # Including all trades 
-                "Avg. Profit": (self.__get_totalpnl(pnl) / tradeNumber),
-                "Profits. std. dev.": self.__get_sd(pnl),
-                "Min. Profit": min(pnl, default=0),
-                "Max. Profit": max(pnl, default=0),
-                "Avg. Return": avg_return_for_pnl(returns,returns),
-                "Return std. dev.": self.__get_sd(returns), 
-                "Max. Return": max(returns, default=0)*100,
-                "Min. Return": min(returns, default=0)*100,
-                "Overall P/L Ratio": checkanswer(),
-                "Average Profitability per Trade": (self.__get_totalpnl(positivePnl) - self.__get_totalpnl(negativePnl))/tradeNumber
+                "totalTrades": tradeNumber, # Including all trades 
+                "avgProfit": (self.__get_totalpnl(pnl) / tradeNumber),
+                "profitsStdDev.": self.__get_sd(pnl),
+                "minProfit": min(pnl, default=0),
+                "maxProfit": max(pnl, default=0),
+                "avgReturn": avg_return_for_pnl(returns,returns),
+                "returnStdDev.": self.__get_sd(returns), 
+                "maxReturn": max(returns, default=0)*100,
+                "minReturn": min(returns, default=0)*100,
+                "overallP/LRatio": checkanswer(),
+                "averageProfitabilityPerTrade": (self.__get_totalpnl(positivePnl) - self.__get_totalpnl(negativePnl))/tradeNumber
             },
             'profitable': {
-                "Profitable trades": self.__totaltrade(positivePnl),
-                "Avg. profit": profit(),
-                "Profits. std. dev.": self.__get_sd(positivePnl),
-                "Min. Profit": min(positivePnl, default=0),
-                "Max. Profit": max(positivePnl, default=0),
-                "Avg. Return": avg_return_for_pnl(positiveRet, positivePnl), 
-                "Return std. dev.": self.__get_sd(positiveRet), 
-                "Max. Return": max(positiveRet, default=0)*100,
-                "Min. Return": min(positiveRet, default=0)*100
+                "profitableTrades": self.__totaltrade(positivePnl),
+                "avgProfit": profit(),
+                "profitsStdDev.": self.__get_sd(positivePnl),
+                "minProfit": min(positivePnl, default=0),
+                "maxProfit": max(positivePnl, default=0),
+                "avgReturn": avg_return_for_pnl(positiveRet, positivePnl), 
+                "returnStdDev.": self.__get_sd(positiveRet), 
+                "maxReturn": max(positiveRet, default=0)*100,
+                "minReturn": min(positiveRet, default=0)*100
             },
             'unprofitable': {
-                "Unprofitable trades": self.__totaltrade(negativePnl),
-                "Avg. Loss": loss(),
-                "Losses. std. dev.": self.__get_sd(negativePnl),
-                "Min. Loss": min(negativePnl, default=0),
-                "Max. Loss": max(negativePnl, default=0),
-                "Avg. Return": avg_return_for_pnl(negativeRet, negativePnl),
-                "Return std. dev.": self.__get_sd(negativeRet),
-                "Max. Return": max(negativeRet, default=0)*100,
-                "Min. Return": min(negativeRet, default=0)*100
+                "unprofitableTrades": self.__totaltrade(negativePnl),
+                "avgLoss": loss(),
+                "lossesStdDev.": self.__get_sd(negativePnl),
+                "minLoss": min(negativePnl, default=0),
+                "maxLoss": max(negativePnl, default=0),
+                "avgReturn": avg_return_for_pnl(negativeRet, negativePnl),
+                "returnStdDev.": self.__get_sd(negativeRet),
+                "maxReturn": max(negativeRet, default=0)*100,
+                "minReturn": min(negativeRet, default=0)*100
             }
         }
 

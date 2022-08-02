@@ -1,6 +1,6 @@
 from pyalgotrade import broker as pbroker
 from pyalgotrade.broker import backtesting
-from services.sp_api_handler import SPAPIHandler
+from services.broker.sp_api_handler import SPAPIHandler
 from schemas.order_api_schemas import AddOrder, AccessOrder
 
 # To be accessed during either backtesting or actual trading
@@ -64,10 +64,10 @@ class SPBroker(backtesting.Broker): # Inherit all properties and functions from 
     @get_live_trade.setter
     def get_live_trade(self, live_trade):
         self.__live_trade = live_trade
-    def creatOrder(self, action, instrument, quantity, onClose):
+    def creatMarketOrder(self, action, instrument, quantity, onClose):
         super().createMarketOrder(action, instrument, quantity, onClose)
         try:
-            self.__sp_api_handler.createOrder(action ,instrument, quantity, onClose)
+            self.__sp_api_handler.createMarketOrder(action ,instrument, quantity, onClose)
         except:
             pass
     

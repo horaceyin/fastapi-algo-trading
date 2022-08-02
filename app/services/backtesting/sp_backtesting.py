@@ -1,16 +1,18 @@
 import abc
+from matplotlib.pyplot import bar
 from pyalgotrade.strategy import BacktestingStrategy
 from schemas.backtesting.bar_summary_schemas import BarSummary
 from services.backtesting.spbarfeed.sp_bar_feed import SpRowParser
 from schemas.backtesting.backtesting_schemas import BacktestingModel
 from services.backtesting.spbarfeed.sp_bar_feed import SpBarFeed
-from services.sp_broker import SPBroker
+from services.broker.sp_broker import SPBroker
 from services.backtesting.sp_indicators import SPIndicators
 
 from pyalgotrade.stratanalyzer import returns
 from pyalgotrade.stratanalyzer import sharpe
 from pyalgotrade.stratanalyzer import drawdown
 from pyalgotrade.stratanalyzer import trades
+from pyalgotrade.bar import Bars
 
 # class SPBroker(backtesting.Broker):
 #     def __init__(self, portfolio_value, live_trade=True) -> None:
@@ -24,6 +26,7 @@ class SPBacktesting(BacktestingStrategy):
         self.__boundary_value = request.boundaryValue
         self.__days = request.days
         self.__bar_summary = request.barSummary
+        self.__live_trade = live_trade
 
         self.product_list = self.__create_product(self.__prod_indicator_list) # create list: ['HSIZ2', 'HSIN2']
 
@@ -166,6 +169,6 @@ class SPBacktesting(BacktestingStrategy):
         tradesAnalyzer = trades.Trades()
         self.attachAnalyzer(tradesAnalyzer)
 
-    def onBars(self, bars): 
-        print('!!!!!!!!!!!!!!!!!!')
-        print(bars)
+    def onBars(self, bars:Bars):
+        #        self.sp_broker = SPBroker(self.__portfolio_value, self.__boundary_value, self.sp_bar_feed, live_trade)
+        self.sp_broker.creatMarketOrder(self.__portfolio_value, self.__boundary_value, bars.getBar(tuple(bars.getInstruments())), self.__live_trade)
