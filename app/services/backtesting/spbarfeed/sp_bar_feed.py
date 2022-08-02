@@ -5,7 +5,8 @@ from pyalgotrade.utils import dt
 from pyalgotrade.utils import csvutils
 from services.backtesting.spbarfeed.sp_data import SpData
 from schemas.backtesting.bar_summary_schemas import BarSummary
-from datetime import datetime
+from datetime import datetime, timedelta
+from collections import deque
 import six
 
 # Frequency.TRADE: The bar represents a single trade.
@@ -46,15 +47,19 @@ class SpBarFeed(csvfeed.BarFeed):
             "volume": "V",
             "adj_close": None
         }
-        frequency, time = self.create_frequency(self.__bar_summary)
+        frequency, time = self.__create_frequency(self.__bar_summary)
+        self.__interval = frequency * time
         super(SpBarFeed, self).__init__(frequency * time, maxLen = maxLen)
-        self.create_bars()
+        self.__create_bars()
 
     def getDailyBarTime(self):
         if self.__bar_summary.day:
             # if daily bar use
             return super().getDailyBarTime()
         else: return None
+
+    def get_interval(self):
+        return self.__interval
 
     def barsHaveAdjClose(self):
         return self.__have_adj_close
@@ -94,7 +99,7 @@ class SpBarFeed(csvfeed.BarFeed):
 
         raw_data = self.__sp_data.get_sp_data()
 
-        data = self.data_formatting(raw_data)
+        data = self.__data_formatting(raw_data)
         
         # json_data = pd.read_json(data, orient = 'index')
         # csv_data = json_data.to_csv(index = False, encoding='utf-8', columns=self.header)
@@ -110,19 +115,49 @@ class SpBarFeed(csvfeed.BarFeed):
     def addBarsFromSequence(self, instrument, bars):
         super().addBarsFromSequence(instrument, bars)
 
-    def data_formatting(self, raw_data):
+    def __duplicate_bar(self, ret_data:list, prev_bar: dict, current_bar: dict):
+        diff = current_bar['T'] - prev_bar['T']
+        diff_sec = int(diff.total_seconds())
+        nums_bar_created = int((diff_sec / self.get_interval()) - 1)
+
+        for count in range(nums_bar_created):
+            offset = self.get_interval() * (count + 1)
+            copy_bar = prev_bar.copy()
+            copy_bar['T'] = copy_bar['T'] + timedelta(seconds=offset)
+            ret_data.append(copy_bar)
+
+    def __data_formatting(self, raw_data):
         if isinstance(raw_data, str):
             raise RuntimeError('Data should be in json format.')
         else:
-            for row_dict in raw_data:
-                del row_dict['TO']
-                del row_dict['CO']
-                time_stamp = row_dict['T']
-                date_time = datetime.fromtimestamp(int(time_stamp))
-                row_dict['T'] = date_time.strftime(self.__date_time_format)
-            return raw_data
+            ret_data = []
+            data_deque = deque(raw_data)
+            prev = None
+            save = None
 
-    def create_bars(self):
+            while data_deque:
+                bar_data = data_deque.popleft()
+                del bar_data['TO']
+                del bar_data['CO']
+                time_stamp = bar_data['T']
+                bar_data['T'] = datetime.fromtimestamp(int(time_stamp))
+                
+                if prev is None: save = bar_data
+
+                if prev:
+                    self.__duplicate_bar(ret_data, prev, bar_data)
+
+                prev = bar_data
+                ret_data.append(bar_data)
+            
+            for row in ret_data:
+                row['T'] = row['T'].strftime(self.__date_time_format)
+                print(row)
+
+            # print(save,"!@2@@@@@@")
+            return ret_data
+
+    def __create_bars(self):
         for product in self.__prod_list:
             prod_code = product #.name # AttributeError: 'str' object has no attribute 'name'
             days_before = self.__days
@@ -141,7 +176,7 @@ class SpBarFeed(csvfeed.BarFeed):
             raise Exception("Previous bars had adjusted close and these ones don't have.")
 
     # all product have the same frequency
-    def create_frequency(self, bar_summary: BarSummary):
+    def __create_frequency(self, bar_summary: BarSummary):
         bar_summary_dict = bar_summary.dict()
         input_time = bar_summary_dict['input_time']
         for key, val in list(bar_summary_dict.items()):
