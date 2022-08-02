@@ -43,9 +43,10 @@ async def done_trade_report_analysis(request: GetDoneTradeModel):
     # return templates.TemplateResponse('report.html', {'report': report}) # ValueError: context must include a "request" key
 
 # ****************************** Want to render HTML page **********************************************
-<<<<<<< HEAD
-@taRouter.get('/get-report')
-async def get_done_trade_report_analysis(request: GetDoneTradeModel, httpRequest : Request):
+# @taRouter.get('/get-report')
+# async def get_done_trade_report_analysis(request: GetDoneTradeModel, httpRequest : Request):
+@taRouter.get('/report', response_class=HTMLResponse)
+async def get_report_page(httpRequest: Request):
     # e.g. 
     # "total": {
     #     "Total trades": 19,
@@ -83,11 +84,5 @@ async def get_done_trade_report_analysis(request: GetDoneTradeModel, httpRequest
     #     "Min. Return": -11.616989449226812
     # }
     
-    report = done_trade_report_analysis(request)
-    return templates.TemplateResponse("report.html", {"request" : httpRequest, "reportData" : report})
-    # return templates.TemplateResponse('report.html', {'request': request}) # Second parameter -> Information to be passed through for template
-=======
-@taRouter.get('/report', response_class=HTMLResponse)
-async def get_report_page(httpRequest: Request):
-    return templates.TemplateResponse('report.html', {'request': httpRequest}) # Second parameter -> Information to be passed through for template
->>>>>>> master
+    # report = done_trade_report_analysis(request)
+    return templates.TemplateResponse('report.html', {'request': httpRequest}) # Second parameter -> Information to be passed through for template # Will retrieve GetDoneTradeModel by function in HTML

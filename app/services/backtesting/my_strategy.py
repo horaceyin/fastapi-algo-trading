@@ -3,10 +3,6 @@ from schemas.backtesting.backtesting_schemas import BacktestingModel
 
 from services.backtesting.spbarfeed.sp_bar_feed import SpBarFeed
 from services.broker.sp_broker import SPBroker
-<<<<<<< HEAD
-from pyalgotrade.bar import Bars
-=======
->>>>>>> master
 
 class MyStrategy(SPBacktesting):
     def __init__(self, request: BacktestingModel):
