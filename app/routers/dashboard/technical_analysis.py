@@ -32,7 +32,7 @@ async def get_pnl_for_report_analysis(request: GetDoneTradeModel):
 
 # the post method for generating done trades report
 # starting with host/report/
-@taRouter.post('/report', status_code=status.HTTP_200_OK)
+@taRouter.post('/get-report', status_code=status.HTTP_200_OK)
 async def done_trade_report_analysis(request: GetDoneTradeModel):
     accName = request.targetAccNo
     date = datetime.now()
@@ -43,6 +43,7 @@ async def done_trade_report_analysis(request: GetDoneTradeModel):
     # return templates.TemplateResponse('report.html', {'report': report}) # ValueError: context must include a "request" key
 
 # ****************************** Want to render HTML page **********************************************
+<<<<<<< HEAD
 @taRouter.get('/get-report')
 async def get_done_trade_report_analysis(request: GetDoneTradeModel, httpRequest : Request):
     # e.g. 
@@ -85,3 +86,8 @@ async def get_done_trade_report_analysis(request: GetDoneTradeModel, httpRequest
     report = done_trade_report_analysis(request)
     return templates.TemplateResponse("report.html", {"request" : httpRequest, "reportData" : report})
     # return templates.TemplateResponse('report.html', {'request': request}) # Second parameter -> Information to be passed through for template
+=======
+@taRouter.get('/report', response_class=HTMLResponse)
+async def get_report_page(httpRequest: Request):
+    return templates.TemplateResponse('report.html', {'request': httpRequest}) # Second parameter -> Information to be passed through for template
+>>>>>>> master
