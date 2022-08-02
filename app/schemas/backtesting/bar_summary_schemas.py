@@ -31,7 +31,7 @@ class BarSummary(BaseModel):
     hour: Optional[bool] = False
     minute: Optional[bool] = False
     second: Optional[bool] = True
-    input_time: StrictInt = 5
+    input_time: StrictInt = 60
 
     @root_validator
     def check_exclusive(cls, values):
