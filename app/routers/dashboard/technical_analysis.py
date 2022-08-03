@@ -86,3 +86,7 @@ async def get_report_page(httpRequest: Request):
     
     # report = done_trade_report_analysis(request)
     return templates.TemplateResponse('report.html', {'request': httpRequest}) # Second parameter -> Information to be passed through for template # Will retrieve GetDoneTradeModel by function in HTML
+
+# @taRouter.get('/report', response_class=HTMLResponse)
+# async def get_report_page(httpRequest: Request):
+#     return templates.TemplateResponse('report.html', {'request': httpRequest})

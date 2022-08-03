@@ -5,14 +5,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Done Trade Report</title>
-	<link rel="stylesheet" href="backtesting.css">
+	<!-- <link rel="stylesheet" href="backtesting.css"> -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 	<script>
 
 	</script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script> 
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js" integrity="sha256-lSjKY0/srUM9BE3dPm+c4fBo1dky2v27Gdjm2uoZaL0=" crossorigin="anonymous"></script>
-    <!-- You also try to load "backtesting.css" into .html file, there is a styling of button element -->
+    <!-- You also try to load "backtesting.css" into .html file, there is a styling of button element; css currently cannot be used -->
 	<script>
 		// $(document).ready(function(){
 		// 	$("button").click(function(){
@@ -22,11 +22,11 @@
 		$(function(){
 			$("button").click(function(){
 				event.preventDefault();
-				$.post("http://127.0.0.1/ta/report",
+				$.post("http://127.0.0.1/ta/get-report",
 				{
 					"systemId": "SP_F",
-					"ssoToken": "",
-					"ssoTime": "",
+					"ssoToken": "BD289A3EC2ED820A856AFC0E631DAFEF",
+					"ssoTime": "1659520906",
 					"userId": "NICHOLAS01",
 					"targetAccNo": "NICHOLAS01",
 					"fromTime": "string",
@@ -35,12 +35,58 @@
 					"sort": "ASC,ASC"
 				},
 				function(report_data){
+					$("#container").text(report_data)
 					alert("Report: \n")
 				});
+				// Only work if not using .ajax; otherwise result is "POST /ta/%5Bobject%20Object%5D HTTP/1.1" 404 Not Found
+
+				// $.ajax({
+				// 	type: 'POST',
+				// 	url:  {default: "http://127.0.0.1/ta/get-report"},
+				// 	data: {
+				// 		"systemId": "SP_F",
+				// 		"ssoToken": "9839C78E10DB0E7C393FEB7F5BC786AF",
+				// 		"ssoTime": "1659516462",
+				// 		"userId": "NICHOLAS01",
+				// 		"targetAccNo": "NICHOLAS01",
+				// 		"fromTime": "string",
+				// 		"toTime": "string",
+				// 		"sortBy": "prod_code,time_stamp",
+				// 		"sort": "ASC,ASC"
+				// 	}, // stringify to convert into JavaScript object
+				// 	statusCode: {
+				// 		404: function(responseObject, textStatus, jqXHR) {
+				// 			// No content found (404)
+				// 			// This code will be executed if the server returns a 404 response
+				// 		},
+				// 		503: function(responseObject, textStatus, errorThrown) {
+				// 			// Service Unavailable (503)
+				// 			// This code will be executed if the server returns a 503 response
+				// 		}           
+				// 	},
+				// 	success: function(report_data){
+				// 		$("#container").text(report_data)
+				// 		alert("Report: \n" + report_data)
+				// 	},
+				// 	contentType: "application/x-www-form-urlencoded",
+				// 	processData: false
+				// 	// Find way to convert %20 to +
+				// })
+				// .done(function(data){
+				// 	alert(data);
+				// })
+				// .fail(function(jqXHR, textStatus){
+				// 	alert('Something went wrong: ' + textStatus);
+				// })
+				// .always(function(jqXHR, textStatus) {
+				// alert('Ajax request was finished')
+				// });
+				$("#test").text("report_data");
 				$("#container").toggle();
 				// $("xxx").hide() This is a jquery code
 				// Access function for report data
-				// May not work if post is unsuccessful
+				// "GET /ta/backtesting.css HTTP/1.1" 404 Not Found // Even with CSS removed, nothing from report_data function is displayed 
+				// "GET /ta/report HTTP/1.1" 200 OK using either FastAPI or web server
 			});
 		});
 	</script>
@@ -50,7 +96,7 @@
     <!-- {{request}} produced in text form -->
 	<div class="widget">
 		<button class="button-9" role="button">Show report</button><br><br>
-		<p>Report data below</p>
+		<p id="test">Report data below</p>
         <!-- call jquery code to append report-->
 		<div id="container">Insert report here 2</div>
 	</div>
