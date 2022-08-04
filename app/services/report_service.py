@@ -98,7 +98,7 @@ class Report(PnLService):
                 "returnStdDev": self.__get_sd(returns), 
                 "maxReturn": max(returns, default=0)*100,
                 "minReturn": min(returns, default=0)*100,
-                "overallP/LRatio": checkanswer(),
+                "overallPnLRatio": checkanswer(),
                 "averageProfitabilityPerTrade": (self.__get_totalpnl(positivePnl) - self.__get_totalpnl(negativePnl))/tradeNumber
             },
             'profitable': {
@@ -121,7 +121,7 @@ class Report(PnLService):
                 "avgReturn": avg_return_for_pnl(negativeRet, negativePnl),
                 "returnStdDev": self.__get_sd(negativeRet),
                 "maxReturn": max(negativeRet, default=0)*100,
-                "minReturn": min(negativeRet, default=0)*100
+                "minReturn": min(negativeRet, default=0)*100 # minReturn is maximum among negative values
             }
         }
 

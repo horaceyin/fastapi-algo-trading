@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status, Request
+from fastapi import APIRouter, Depends, status, Request, WebSocket, Cookie, Query
 from fastapi.responses import JSONResponse
 from schemas.technical_analysis_schemas import GetDoneTradeModel
 from services.report_service import Report
@@ -10,6 +10,7 @@ from core import TEMPLATES_PATH
 from fastapi.responses import HTMLResponse
 from fastapi.encoders import jsonable_encoder
 from json import dumps
+from typing import Union
 
 # testing msg when this router is called
 @staticmethod
@@ -91,6 +92,12 @@ async def get_report_page(httpRequest: Request):
     # report = done_trade_report_analysis(request)
     return templates.TemplateResponse('report.html', {'request': httpRequest}) # Second parameter -> Information to be passed through for template # Will retrieve GetDoneTradeModel by function in HTML
 
-# @taRouter.get('/report', response_class=HTMLResponse)
-# async def get_report_page(httpRequest: Request):
-#     return templates.TemplateResponse('report.html', {'request': httpRequest})
+async def get_cookie_or_token(
+    websocket: WebSocket,
+    session: Union[str, None] = Cookie(default=None),
+    token: Union[str, None] = Query(default=None),
+):
+    if session is None and token is None:
+        await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
+    return session or token
+

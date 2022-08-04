@@ -7,12 +7,11 @@
     <title>Done Trade Report</title>
 	<!-- <link rel="stylesheet" href="backtesting.css"> -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-	<script>
-
-	</script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script> 
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js" integrity="sha256-lSjKY0/srUM9BE3dPm+c4fBo1dky2v27Gdjm2uoZaL0=" crossorigin="anonymous"></script>
     <!-- You also try to load "backtesting.css" into .html file, there is a styling of button element; css currently cannot be used -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
 	<script>
 		// $(document).ready(function(){
 		// 	$("button").click(function(){
@@ -20,11 +19,11 @@
 		// 	});
 		// });
 		$(function(){
-			$("button").click(function(event){
+			$("#getdata").click(function(event){
 				alongWithBody = {
 					systemId: "SP_F",
-					ssoToken: "51481B507E906F603C6C3E2E447E6031",
-					ssoTime: "1659582008",
+					ssoToken: "139F803751BEDA149E8EF2BCA2E7A016", // CHANGE EACH TIME THIS IS USED
+					ssoTime: "1659606671", // CHANGE EACH TIME THIS IS USED
 					userId: "NICHOLAS01",
 					targetAccNo: "NICHOLAS01",
 					fromTime: "string",
@@ -42,26 +41,124 @@
 					data: mydata,
 					success: function(ret){
 						console.log(ret)
-						// data_dict = JSON.parse(ret) The line convert a json string to javascript dictionary object
-						$('#container').text(ret)
+						data_dict = JSON.parse(ret) //The line convert a json string to javascript dictionary object
+						// $('#container').text(ret)
+						$('#container').html(
+							"Total: " + 
+							"<ul>" + 
+								"<li>Total Trades: " + data_dict.total.totalTrades + "</li>" + 
+								"<li>Average Profit: " + data_dict.total.avgProfit + "</li>" + 
+								"<li>Profit Std. Dev: " + data_dict.total.profitsStdDev + "</li>" + 
+								"<li>Max. Profit: " + data_dict.total.maxProfit + "</li>" + 
+								"<li>Min. Profit: " + data_dict.total.minProfit + "</li>" + 
+								"<li>Average Return: " + data_dict.total.avgReturn + "</li>" + 
+								"<li>Return Std. Dev: " + data_dict.total.returnStdDev + "</li>" + 
+								"<li>Max. Return: " + data_dict.total.maxReturn + "</li>" + 
+								"<li>Min. Return: " + data_dict.total.minReturn + "</li>" + 
+								"<li>P/L Ratio: " + data_dict.total.overallPnLRatio + "</li>" +  // Needed to change this to be used
+								"<li>Average Profitability per Trade: " + data_dict.total.averageProfitabilityPerTrade + "</li>" + 
+							"</ul>" + 
+							"Profitable: " + 
+							"<ul>" + 
+								"<li>Profitable Trades: " + data_dict.profitable.profitableTrades + "</li>" + 
+								"<li>Average Profit: " + data_dict.profitable.avgProfit + "</li>" + 
+								"<li>Profit Std. Dev: " + data_dict.profitable.profitsStdDev + "</li>" + 
+								"<li>Max. Profit: " + data_dict.profitable.maxProfit + "</li>" + 
+								"<li>Min. Profit: " + data_dict.profitable.minProfit + "</li>" + 
+								"<li>Average Positive Return: " + data_dict.profitable.avgReturn + "</li>" + 
+								"<li>Positive Return Std. Dev: " + data_dict.profitable.returnStdDev + "</li>" + 
+								"<li>Max. Positive Return: " + data_dict.profitable.maxReturn + "</li>" + 
+								"<li>Min. Positive Return: " + data_dict.profitable.minReturn + "</li>" + 
+							"</ul>" + 
+							"Unprofitable: " + 
+							"<ul>" + 
+								"<li>Unprofitable Trades: " + data_dict.unprofitable.unprofitableTrades + "</li>" + 
+								"<li>Average Loss: " + data_dict.unprofitable.avgLoss + "</li>" + 
+								"<li>Profit Std. Dev: " + data_dict.unprofitable.lossessStdDev + "</li>" + 
+								"<li>Max. Loss: " + data_dict.unprofitable.minLoss + "</li>" + 
+								"<li>Min. Loss: " + data_dict.unprofitable.maxLoss + "</li>" + 
+								"<li>Average Negative Return: " + data_dict.unprofitable.avgReturn + "</li>" + 
+								"<li>Negative Return Std. Dev: " + data_dict.unprofitable.returnStdDev + "</li>" + 
+								"<li>Max. Negative Return: " + data_dict.unprofitable.minReturn + "</li>" + 
+								"<li>Min. Negative Return: " + data_dict.unprofitable.maxReturn + "</li>" + 
+							"</ul>"
+							)
+						// $('#container').text(data_dict.total.totalTrades)
 					},
 					error: function(jqXhr, textStatus, errorThrown){
 						console.log(errorThrown)
 					}
 				})
-				event.preventDefault();		
+				event.preventDefault();	
+				$('#container').toggle();
 			});
 		});
 	</script>
+	<style>
+		ul {
+			display: block;
+			border: 2px solid grey;
+		}
+	</style>
 </head>
 <body>
-    <h1>Report: {{report_data}}</h1>
-    <!-- {{request}} produced in text form -->
+    <h1>Trading report:</h1>
 	<div class="widget">
-		<button class="button-9" role="button">Show report</button><br><br>
-		<p id="test">Report data below</p>
+		<p id="test">SSO token and time required to access report (500 Internal Server Error otherwise)</p>
+		<h4>WebSocket Chat</h4>
+		<form action="" onsubmit="sendMessage(event)">
+			<label>Item ID: <input type="text" id="itemId" autocomplete="off" value="foo"/></label>
+			<label>Token: <input type="text" id="token" autocomplete="off" value="some-key-token"/></label>
+			<button onclick="connect(event)">Connect</button>
+			<hr>
+			<label>Message: <input type="text" id="messageText" autocomplete="off"/></label>
+			<button>Send</button>
+		</form>
+		<br>
+		<ul id='messages'>
+		</ul>
+		<button id="getdata" class="btn btn-dark btn-lg" role="button">Show report</button><br><br>
         <!-- call jquery code to append report-->
-		<div id="container">I am a container</div>
+		<div id="container">
+			Total: 
+			<ul>
+				<li>Total Trades: </li>
+				<li>Average Profit: </li>
+				<li>Profit Std. Dev: </li>
+				<li>Max. Profit: </li>
+				<li>Min. Profit: </li>
+				<li>Average Return: </li>
+				<li>Return Std. Dev: </li>
+				<li>Max. Return: </li>
+				<li>Min. Return: </li>
+				<li>P/L Ratio: </li>
+				<li>Average Profitability per Trade: </li>
+			</ul>
+			Profitable: 
+			<ul>
+				<li>Profitable Trades: </li>
+				<li>Average Profit: </li>
+				<li>Profit Std. Dev: </li>
+				<li>Max. Profit: </li>
+				<li>Min. Profit: </li>
+				<li>Average Positive Return: </li>
+				<li>Positive Return Std. Dev: </li>
+				<li>Max. Positive Return: </li>
+				<li>Min. Positive Return: </li>
+			</ul>
+			Unprofitable: 
+			<ul> 
+				<li>Unprofitable Trades: </li>
+				<li>Average Loss: </li>
+				<li>Profit Std. Dev: </li>
+				<li>Max. Loss: </li>
+				<li>Min. Loss: </li>
+				<li>Average Negative Return: </li>
+				<li>Negative Return Std. Dev: </li>
+				<li>Max. Negative Return: </li>
+				<li>Min. Negative Return: </li>
+			</ul>
+		</div>
 	</div>
 </body>
 </html>
