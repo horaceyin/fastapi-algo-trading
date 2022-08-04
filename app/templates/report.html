@@ -20,73 +20,36 @@
 		// 	});
 		// });
 		$(function(){
-			$("button").click(function(){
-				event.preventDefault();
-				$.post("http://127.0.0.1/ta/get-report",
-				{
-					"systemId": "SP_F",
-					"ssoToken": "BD289A3EC2ED820A856AFC0E631DAFEF",
-					"ssoTime": "1659520906",
-					"userId": "NICHOLAS01",
-					"targetAccNo": "NICHOLAS01",
-					"fromTime": "string",
-					"toTime": "string",
-					"sortBy": "prod_code,time_stamp",
-					"sort": "ASC,ASC"
-				},
-				function(report_data){
-					$("#container").text(report_data)
-					alert("Report: \n")
-				});
-				// Only work if not using .ajax; otherwise result is "POST /ta/%5Bobject%20Object%5D HTTP/1.1" 404 Not Found
+			$("button").click(function(event){
+				alongWithBody = {
+					systemId: "SP_F",
+					ssoToken: "51481B507E906F603C6C3E2E447E6031",
+					ssoTime: "1659582008",
+					userId: "NICHOLAS01",
+					targetAccNo: "NICHOLAS01",
+					fromTime: "string",
+					toTime: "string",
+					sortBy: "prod_code,time_stamp",
+					sort: "ASC,ASC"
+				}
+				mydata = JSON.stringify(alongWithBody)
 
-				// $.ajax({
-				// 	type: 'POST',
-				// 	url:  {default: "http://127.0.0.1/ta/get-report"},
-				// 	data: {
-				// 		"systemId": "SP_F",
-				// 		"ssoToken": "9839C78E10DB0E7C393FEB7F5BC786AF",
-				// 		"ssoTime": "1659516462",
-				// 		"userId": "NICHOLAS01",
-				// 		"targetAccNo": "NICHOLAS01",
-				// 		"fromTime": "string",
-				// 		"toTime": "string",
-				// 		"sortBy": "prod_code,time_stamp",
-				// 		"sort": "ASC,ASC"
-				// 	}, // stringify to convert into JavaScript object
-				// 	statusCode: {
-				// 		404: function(responseObject, textStatus, jqXHR) {
-				// 			// No content found (404)
-				// 			// This code will be executed if the server returns a 404 response
-				// 		},
-				// 		503: function(responseObject, textStatus, errorThrown) {
-				// 			// Service Unavailable (503)
-				// 			// This code will be executed if the server returns a 503 response
-				// 		}           
-				// 	},
-				// 	success: function(report_data){
-				// 		$("#container").text(report_data)
-				// 		alert("Report: \n" + report_data)
-				// 	},
-				// 	contentType: "application/x-www-form-urlencoded",
-				// 	processData: false
-				// 	// Find way to convert %20 to +
-				// })
-				// .done(function(data){
-				// 	alert(data);
-				// })
-				// .fail(function(jqXHR, textStatus){
-				// 	alert('Something went wrong: ' + textStatus);
-				// })
-				// .always(function(jqXHR, textStatus) {
-				// alert('Ajax request was finished')
-				// });
-				$("#test").text("report_data");
-				$("#container").toggle();
-				// $("xxx").hide() This is a jquery code
-				// Access function for report data
-				// "GET /ta/backtesting.css HTTP/1.1" 404 Not Found // Even with CSS removed, nothing from report_data function is displayed 
-				// "GET /ta/report HTTP/1.1" 200 OK using either FastAPI or web server
+				$.ajax({
+					type:"POST",
+					url:"http://127.0.0.1:8000/ta/get-report",
+					dataType:"json",
+					contentType:"application/json",
+					data: mydata,
+					success: function(ret){
+						console.log(ret)
+						// data_dict = JSON.parse(ret) The line convert a json string to javascript dictionary object
+						$('#container').text(ret)
+					},
+					error: function(jqXhr, textStatus, errorThrown){
+						console.log(errorThrown)
+					}
+				})
+				event.preventDefault();		
 			});
 		});
 	</script>
@@ -98,7 +61,7 @@
 		<button class="button-9" role="button">Show report</button><br><br>
 		<p id="test">Report data below</p>
         <!-- call jquery code to append report-->
-		<div id="container">Insert report here 2</div>
+		<div id="container">I am a container</div>
 	</div>
 </body>
 </html>
