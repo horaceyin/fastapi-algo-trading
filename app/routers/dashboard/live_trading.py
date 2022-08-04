@@ -20,7 +20,4 @@ templates = Jinja2Templates(directory=str(TEMPLATES_PATH))
 
 @live_trading_router.get('/', response_class=HTMLResponse)
 async  def show_live_trading_page(request: Request):
-    return templates.TemplateResponse('backtesting.html', {'request': request})
-# async def read_items(items: str, xx: Union[str, None] = Cookie(default=None)):
-#     yy = xx.encode(items)
-#     return {"ads_id": yy}
+    return templates.TemplateResponse('live_trading.html', {'request': request})
