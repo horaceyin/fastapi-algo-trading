@@ -1,10 +1,15 @@
 from common.common_helper import CommonHelper
 
+"""
+    This is the class for getting the sp price
+    data mode set to 4, it means the data should be in json.
+"""
+
 # if data_mode = 2 (default), def data_formatting in spbarfeed/sp_bar_feed.py need to be changed
 BASE_URL = 'https://chart3.spsystem.info/pserver/chartdata_query.php?data_mode=4&'
 
-ERROR_MSG1 = '[]' # when data_mode = 2
-ERROR_MSG2 = '19:-1:EMPTY RESULT!' # when data_mode = 4
+ERROR_MSG1 = '[]' # when data_mode = 4
+ERROR_MSG2 = '19:-1:EMPTY RESULT!' # when data_mode = 2
 
 class SpData():
     def __init__(self):

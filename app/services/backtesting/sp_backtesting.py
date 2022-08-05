@@ -6,17 +6,13 @@ from services.backtesting.spbarfeed.sp_bar_feed import SpRowParser
 from schemas.backtesting.backtesting_schemas import BacktestingModel
 from services.backtesting.spbarfeed.sp_bar_feed import SpBarFeed
 from services.broker.sp_broker import SPBroker
-from services.backtesting.sp_indicators import SPIndicators
+# from services.backtesting.sp_indicators import SPIndicators
 
 from pyalgotrade.stratanalyzer import returns
 from pyalgotrade.stratanalyzer import sharpe
 from pyalgotrade.stratanalyzer import drawdown
 from pyalgotrade.stratanalyzer import trades
 from pyalgotrade.bar import Bars
-
-# class SPBroker(backtesting.Broker):
-#     def __init__(self, portfolio_value, live_trade=True) -> None:
-#         super().__init__(portfolio_value)
 
 class SPBacktesting(BacktestingStrategy):
     
@@ -28,15 +24,18 @@ class SPBacktesting(BacktestingStrategy):
         self.__bar_summary = request.barSummary
         self.__live_trade = live_trade
 
-        self.product_list = self.__create_product(self.__prod_indicator_list) # create list: ['HSIZ2', 'HSIN2']
+        self.product_list = self.__create_product(self.__prod_indicator_list) # create list, e.g ['HSIZ2', 'HSIN2', ...]
 
+        # create BarFeed and Broker, it's important
         self.sp_bar_feed = SpBarFeed(self.product_list, self.__days, self.__bar_summary) # SpBarFeed(barSummary, loadedBars=[], timezone = None, maxLen = None) # No __ in front to allow usage outside
         self.sp_broker = SPBroker(self.__portfolio_value, self.__boundary_value, self.sp_bar_feed, live_trade)
 
-        self.sp_indicators = SPIndicators(self.sp_bar_feed)
-        self.sp_indicators.register_indicators(self.__prod_indicator_list)
+        # indicators class will be removed
+        # since user should define own indicators before strategy run
+        # self.sp_indicators = SPIndicators(self.sp_bar_feed)
+        # self.sp_indicators.register_indicators(self.__prod_indicator_list)
 
-        # for testing, product name: 'HSIZ2', 'HSIN2' 
+        # for testing, product name: 'HSIZ2', 'HSIN2', may be 'HSIU2'
         super(SPBacktesting, self).__init__(self.sp_bar_feed, self.sp_broker) # BacktestingStrategy(barFeed, cash_or_brk=1000000)
         self.__init_analyzer()
 
@@ -44,12 +43,11 @@ class SPBacktesting(BacktestingStrategy):
     def get_product_list(self):
         return self.product_list
 
-    def get_indicators(self):
-        return self.sp_indicators
+    # get_indicators will be removed
+    # def get_indicators(self):
+    #     return self.sp_indicators
 
-    def get_sp_data(self):
-        pass
-
+    # create list, e.g ['HSIZ2', 'HSIN2', ...]
     def __create_product(self, prod_indicator_list):
         if len(prod_indicator_list) == 0: return None
 
@@ -57,6 +55,7 @@ class SPBacktesting(BacktestingStrategy):
 
         return product_list
 
+    # analyzers init
     def __init_analyzer(self):
         retAnalyzer = returns.Returns()
         self.attachAnalyzer(retAnalyzer)
@@ -159,6 +158,8 @@ class SPBacktesting(BacktestingStrategy):
     # def onBars(self, bars, product_list, instrument): # SHOULD BE IMPLEMENTED BY FUTURE USERS
     #     # or implement a default strategy.
     #     return NotImplementedError
+
+    # add default analyzer before running the strategy
     def analyzer(self):
         retAnalyzer = returns.Returns()
         self.attachAnalyzer(retAnalyzer)
@@ -169,6 +170,8 @@ class SPBacktesting(BacktestingStrategy):
         tradesAnalyzer = trades.Trades()
         self.attachAnalyzer(tradesAnalyzer)
 
+    # SHOULD BE IMPLEMENTED BY FUTURE USERS
     def onBars(self, bars:Bars):
-        #        self.sp_broker = SPBroker(self.__portfolio_value, self.__boundary_value, self.sp_bar_feed, live_trade)
+        # or implement a default strategy.
+        # self.sp_broker = SPBroker(self.__portfolio_value, self.__boundary_value, self.sp_bar_feed, live_trade)
         self.sp_broker.creatMarketOrder(self.__portfolio_value, self.__boundary_value, bars.getBar(tuple(bars.getInstruments())), self.__live_trade)
