@@ -12,12 +12,12 @@ from fastapi.encoders import jsonable_encoder
 from json import dumps
 from typing import Union
 
-# testing msg when this router is called
+# Testing msg when this router is called
 @staticmethod
 def print_msg():
     print("Calling at technical analysis router.")
 
-# set up router
+# Set up router
 taRouter = APIRouter(
     tags=['Technical analysis'],
     prefix='/ta',
@@ -26,8 +26,8 @@ taRouter = APIRouter(
 
 templates = Jinja2Templates(directory=str(TEMPLATES_PATH))
 
-# the post method for geting profit and loss of done trades
-# starting with host/get-pnl/
+# Post method for geting profit and loss of done trades
+# Starting with host/get-pnl/
 @taRouter.post('/get-pnl', status_code=status.HTTP_200_OK)
 async def get_pnl_for_report_analysis(request: GetDoneTradeModel):
     accName = request.targetAccNo
@@ -36,8 +36,8 @@ async def get_pnl_for_report_analysis(request: GetDoneTradeModel):
     json_pnl = dumps(pnl)
     return JSONResponse(content=json_pnl)
 
-# the post method for generating done trades report
-# starting with host/report/
+# Post method for generating done trades report
+# Starting with host/report/
 @taRouter.post('/get-report', status_code=status.HTTP_200_OK)
 async def done_trade_report_analysis(request: GetDoneTradeModel, httpRequest: Request):
     accName = request.targetAccNo
@@ -53,7 +53,7 @@ async def done_trade_report_analysis(request: GetDoneTradeModel, httpRequest: Re
 # @taRouter.get('/get-report')
 # async def get_done_trade_report_analysis(request: GetDoneTradeModel, httpRequest : Request):
 @taRouter.get('/report', response_class=HTMLResponse)
-async def get_report_page(httpRequest: Request):
+async def get_report_page(httpRequest: Request): # Not used, may need to be deleted
     # e.g. 
     # "total": {
     #     "Total trades": 19,
@@ -94,12 +94,12 @@ async def get_report_page(httpRequest: Request):
     # report = done_trade_report_analysis(request)
     return templates.TemplateResponse('report.html', {'request': httpRequest}) # Second parameter -> Information to be passed through for template # Will retrieve GetDoneTradeModel by function in HTML
 
-async def get_cookie_or_token(
-    websocket: WebSocket,
-    session: Union[str, None] = Cookie(default=None),
-    token: Union[str, None] = Query(default=None),
-):
-    if session is None and token is None:
-        await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
-    return session or token
+# async def get_cookie_or_token(
+#     websocket: WebSocket,
+#     session: Union[str, None] = Cookie(default=None),
+#     token: Union[str, None] = Query(default=None),
+# ):
+#     if session is None and token is None:
+#         await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
+#     return session or token
 

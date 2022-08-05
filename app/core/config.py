@@ -2,12 +2,14 @@ from pydantic import BaseSettings
 from typing import Optional
 from dotenv import dotenv_values
 
-# access dotenv file
+# Access dotenv file
 DOTENV = '.env'
 ENV_FILE = dotenv_values(DOTENV)
-SP_HOST_AND_PORT = ENV_FILE['SP_HOST_AND_PORT']
+SP_HOST_AND_PORT = ENV_FILE['SP_HOST_AND_PORT'] # http://192.168.123.221:9030
+SP_PRICE_SERVER_HOST = ENV_FILE['SP_PRICE_SERVER']
+SP_PRICE_SERVER_PORT = int(ENV_FILE['SP_PRICE_SERVER_PORT'])
 
-# defines a config sending back to main.py
+# Defines a config sending back to main.py
 class GlobalConfig(BaseSettings):
     ENV_STATE: Optional[str] = ENV_FILE['ENV_STATE']
     HOST: Optional[str] = None

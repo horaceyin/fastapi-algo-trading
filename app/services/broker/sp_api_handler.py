@@ -13,7 +13,7 @@ class SPAPIHandler(): # Object to handle actions # e.g. create market order insi
         # self.__sessionToken = ""# CONSISTENT ACROSS THE FUNCTIONS
         pass # Not required, all variables to be used will be placed in below fucntions
 
-    # Variables from backtesting.Broker
+    # Variables from backtesting.Broker # OTHERS ARE REMOVED DUE TO NOT BEING NECESSARY
     def createMarketOrder(self, action, instrument, quantity, onClose):
         addUrl = ENDPOINT + ADDORDER # order have been activited once it added
         print("Market order is being processed to SP")
@@ -43,7 +43,7 @@ class SPAPIHandler(): # Object to handle actions # e.g. create market order insi
                 "priceInDec": "20700.0", # float
                 "prodCode": instrument,
                 "qty": quantity,
-                "sessionToken": "691166a6a10e6f42c5982dc9eae255b7", # str # NEED TO FILL
+                "sessionToken": "691166a6a10e6f42c5982dc9eae255b7", # str # NEED TO FILL MANUALLY
                 "validType": 0, # Literal[0, 1, 2, 3, 4] = 0 # 0 - 4 # Unsure of purpose
                 # "clOrderId": Optional[str] 
                 # downLevelInDec: Optional[float]

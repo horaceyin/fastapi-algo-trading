@@ -15,24 +15,25 @@ app = FastAPI()
 for router in ROUTERS_LIST:
     app.include_router(router)
 
+# Baseline
 @app.get('/')
 async def root():
     return {'msg':'render main page'}
 
-# create fastapi_logging.log inside logs folder
+# Create fastapi_logging.log inside logs folder
 def create_log():
     logFile = config.ENV_FILE['LOG_PATH']
     if not path.exists(logFile):
         log = open(logFile, 'w')
         log.close()
 
-# return configuration for production environment
+# Return configuration for production environment
 def get_config():
     if config.ENV_FILE['ENV_STATE'] == 'dev':
         return config.DevConfig()
     return config.ProdConfig()
 
-# starting point
+# Starting point
 if __name__ == '__main__':
     create_log()
     myConfig = get_config()

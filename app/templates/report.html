@@ -7,32 +7,51 @@
     <title>Done Trade Report</title>
 	<!-- <link rel="stylesheet" href="backtesting.css"> -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script> 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js" integrity="sha256-lSjKY0/srUM9BE3dPm+c4fBo1dky2v27Gdjm2uoZaL0=" crossorigin="anonymous"></script>
     <!-- You also try to load "backtesting.css" into .html file, there is a styling of button element; css currently cannot be used -->
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
 	<script>
-		// $(document).ready(function(){
-		// 	$("button").click(function(){
-		// 		$("#container").toggle();
-		// 	});
-		// });
+		// function connect(event) {
+		// 	var system = document.getElementById("system")
+		// 	var token = document.getElementById("token")
+		// 	var time = document.getElementById("time")
+		// 	var uId = document.getElementById("uId")
+		// 	var targAcc = document.getElementById("targAcc")
+		// 	var fromT = document.getElementById("fromT")
+		// 	var toT = document.getElementById("toT")
+		// 	var srtB = document.getElementById("srtB")
+		// 	var srt = document.getElementById("srt")
+		// 	event.preventDefault()
+		// } // Specified event activated onClick 
 		$(function(){
 			$("#getdata").click(function(event){
 				alongWithBody = {
-					systemId: "SP_F",
-					ssoToken: "139F803751BEDA149E8EF2BCA2E7A016", // CHANGE EACH TIME THIS IS USED
-					ssoTime: "1659606671", // CHANGE EACH TIME THIS IS USED
-					userId: "NICHOLAS01",
-					targetAccNo: "NICHOLAS01",
-					fromTime: "string",
-					toTime: "string",
-					sortBy: "prod_code,time_stamp",
-					sort: "ASC,ASC"
+					systemId: document.getElementById("system").value, // "SP_F",
+					ssoToken: document.getElementById("token").value, //"DB02119BD3452DE788B6B1C4B89E8D8A",
+					ssoTime: parseInt(document.getElementById("time").value), // 1659665287,
+					userId: document.getElementById("uId").value, // "NICHOLAS01",
+					targetAccNo: document.getElementById("targAcc").value, // "NICHOLAS01",
+					fromTime: document.getElementById("fromT").value, // "string",
+					toTime: document.getElementById("toT").value, // "string",
+					sortBy: document.getElementById("srtB").value, // "prod_code,time_stamp",
+					sort: document.getElementById("srt").value // "ASC,ASC"
 				}
-				mydata = JSON.stringify(alongWithBody)
 
+				// alongWithBody = {
+				// 	systemId: "SP_F",
+				// 	ssoToken: "DB02119BD3452DE788B6B1C4B89E8D8A",
+				// 	ssoTime: 1659665287,
+				// 	userId: "NICHOLAS01",
+				// 	targetAccNo: "NICHOLAS01",
+				// 	fromTime: "string",
+				// 	toTime: "string",
+				// 	sortBy: "prod_code,time_stamp",
+				// 	sort: "ASC,ASC"
+				// }
+				mydata = JSON.stringify(alongWithBody)
+				// $("#test").html(document.getElementById("time").value + " " + parseInt(document.getElementById("time").value))
 				$.ajax({
 					type:"POST",
 					url:"http://127.0.0.1:8000/ta/get-report",
@@ -87,6 +106,7 @@
 					},
 					error: function(jqXhr, textStatus, errorThrown){
 						console.log(errorThrown)
+						$('#container').html("ERROR TRYING TO RETRIEVE DATA: " + " " + errorThrown)
 					}
 				})
 				event.preventDefault();	
@@ -104,23 +124,25 @@
 <body>
     <h1>Trading report:</h1>
 	<div class="widget">
-		<p id="test">SSO token and time required to access report (500 Internal Server Error otherwise)</p>
-		<h4>WebSocket Chat</h4>
+		<p id="test">Input relevant information to access system</p>
+		<h4>User Details: </h4>
 		<form action="" onsubmit="sendMessage(event)">
-			<label>Item ID: <input type="text" id="itemId" autocomplete="off" value="foo"/></label>
-			<label>Token: <input type="text" id="token" autocomplete="off" value="some-key-token"/></label>
-			<button onclick="connect(event)">Connect</button>
-			<hr>
-			<label>Message: <input type="text" id="messageText" autocomplete="off"/></label>
-			<button>Send</button>
+			<label>System ID: <input type="text" id="system" autocomplete="off" value="SP_F"/></label><br>
+			<label>SSO Token: <input type="text" id="token" autocomplete="off" value="" maxlength="32" size="36"/></label><br> <!-- CHANGE EACH TIME THIS IS USED -->
+			<label>SSO Time: <input type="text" id="time" autocomplete="off" value="" maxlength="10" size="10"/></label><br> <!-- CHANGE EACH TIME THIS IS USED -->
+			<label>User ID: <input type="text" id="uId" autocomplete="off" value="NICHOLAS01"/></label><br>
+			<label>Target Account Number: <input type="text" id="targAcc" autocomplete="off" value="NICHOLAS01"/></label><br>
+			<label>From Time: <input type="text" id="fromT" autocomplete="off" value="string"/> (Optional)</label><br>
+			<label>To Time: <input type="text" id="toT" autocomplete="off" value="string"/> (Optional)</label><br>
+			<label>Sort By: <input type="text" id="srtB" autocomplete="off" value="prod_code,time_stamp"/> (Optional) (No spaces between variables)</label><br>
+			<label>Sort: <input type="text" id="srt" autocomplete="off" value="ASC,ASC"/> (Optional) (No spaces between variables)</label>
+			<!-- <button onclick="connect(event)">Connect</button> -->
 		</form>
-		<br>
-		<ul id='messages'>
-		</ul>
+		<hr>
 		<button id="getdata" class="btn btn-dark btn-lg" role="button">Show report</button><br><br>
         <!-- call jquery code to append report-->
 		<div id="container">
-			Total: 
+			<!-- Total: 
 			<ul>
 				<li>Total Trades: </li>
 				<li>Average Profit: </li>
@@ -157,7 +179,7 @@
 				<li>Negative Return Std. Dev: </li>
 				<li>Max. Negative Return: </li>
 				<li>Min. Negative Return: </li>
-			</ul>
+			</ul> -->
 		</div>
 	</div>
 </body>

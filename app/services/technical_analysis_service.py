@@ -134,7 +134,8 @@ class PnLService:
         df.date = pd.to_datetime(df.date)
         self.__df = df.groupby(['ProductCode', 'date', 'Position', 'Balance', 'InstCode', 'ContractSize'])[['TradePrice']].mean()
 
-    def __create_separated_df(self): # Groups together trades with same product code
+    # Groups together trades with same product code
+    def __create_separated_df(self): 
         l=[]
         index_count=1
         index_check=self.__df.index[0][0]
@@ -152,7 +153,7 @@ class PnLService:
 
         return dataframeList
 
-    # get profit and loss for each done-traded product
+    # Get profit and loss for each done-traded product
     def get_pnl(self, request: GetDoneTradeModel):
 
         # write performance analysis code below
@@ -160,6 +161,7 @@ class PnLService:
         res = self.__get_done_trade(request) # Admin access right required, cannot target own admin account
         try:
             allTradeData = res['data']['recordData'] 
+            # e.g. 
             # {'result_code': -52020004, 'result_msg': 'API USER NO ACCESS RIGHT', 'timestamp': 1657697876}
             # {'result_code': 40011, 'result_msg': 'ACCESS UNAUTHORIZED', 'timestamp': 1657701648}
             # None
@@ -170,9 +172,9 @@ class PnLService:
         #     key=lambda trade: (trade['prodCode'], trade['timeStamp'])
         # )
 
-        # create csv file for data feed
+        # Create csv file for data feed
         self.__create_data_for_feed(allTradeData)
-        # data feed
+        # Data feed
         self.__data_feed()
         #create separated dataframe
         dataframeList = self.__create_separated_df()

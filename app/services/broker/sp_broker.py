@@ -113,34 +113,34 @@ class SPBroker(backtesting.Broker): # Inherit all properties and functions from 
     def cancelOrderSystem(self, order):
         super().cancelOrder(order)
 
-    def cancelOrderAPI(self, accOrderNo, action, instrument):
-        # request.sessionToken = self.__session_token
-        try:
-            self.__sp_api_handler.cancelOrder(accOrderNo, action, instrument)
-        except:
-            pass
+    # def cancelOrderAPI(self, accOrderNo, action, instrument):
+    #     # request.sessionToken = self.__session_token
+    #     try:
+    #         self.__sp_api_handler.cancelOrder(accOrderNo, action, instrument)
+    #     except:
+    #         pass
 
-    # Functions below are built such that they can only be done with the SP trading system
-    def activeOrder(self, accOrderNo, action, instrument):
-        # request.sessionToken = self.__session_token
-        try:
-            self.__sp_api_handler.activeOrder(accOrderNo, action, instrument)
-        except:
-            pass
+    # # Functions below are built such that they can only be done with the SP trading system
+    # def activeOrder(self, accOrderNo, action, instrument):
+    #     # request.sessionToken = self.__session_token
+    #     try:
+    #         self.__sp_api_handler.activeOrder(accOrderNo, action, instrument)
+    #     except:
+    #         pass
 
-    def inactiveOrder(self, accOrderNo, action, instrument):
-        # request.sessionToken = self.__session_token
-        try:
-            self.__sp_api_handler.inactiveOrder(accOrderNo, action, instrument)
-        except:
-            pass
+    # def inactiveOrder(self, accOrderNo, action, instrument):
+    #     # request.sessionToken = self.__session_token
+    #     try:
+    #         self.__sp_api_handler.inactiveOrder(accOrderNo, action, instrument)
+    #     except:
+    #         pass
     
-    def changeOrder(self, accOrderNo, buySell, instrument, price, quantity, stopPrice):
-        # request.sessionToken = self.__session_token
-        try:
-            self.__sp_api_handler.changeOrder(accOrderNo, buySell, instrument, price, quantity, stopPrice)
-        except:
-            pass
+    # def changeOrder(self, accOrderNo, buySell, instrument, price, quantity, stopPrice):
+    #     # request.sessionToken = self.__session_token
+    #     try:
+    #         self.__sp_api_handler.changeOrder(accOrderNo, buySell, instrument, price, quantity, stopPrice)
+    #     except:
+    #         pass
 
     # # # Trader Admin API
     # def makeFuture(self, request: MakeFuture):

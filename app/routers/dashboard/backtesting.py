@@ -6,21 +6,19 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 from core import TEMPLATES_PATH, STATIC_PATH
 
-
-# testing msg when this router is called
+# Testing msg when this router is called
 @staticmethod
 def print_msg():
     print("Calling at backtesting router.")
 
-# set up router
+# Set up router
 backtestingRouter = APIRouter(
     tags=['Backtesting'],
     prefix='/backtesting',
     dependencies=[Depends(print_msg)]
 )
 
-
-templates = Jinja2Templates(directory=str(TEMPLATES_PATH))
+templates = Jinja2Templates(directory=str(TEMPLATES_PATH)) # Link to html from templates folder
 
 # backtestingRouter.mount('/static', StaticFiles(directory=str(STATIC_PATH)), name='static')
 # print(backtestingRouter.routes[0].url_path_for('/ static'), "!!!!!!!!!!!!!!!!!!!!!!!!!!")
@@ -30,9 +28,8 @@ async def show_backtesting_page(request: Request):
     print(request.headers)
     return templates.TemplateResponse('backtesting.html', {'request': request})
 
-# the post method for doing backtesting
-# starting with host/backtesting/
-
+# Post method for doing backtesting
+# Starting with host/backtesting/
 @backtestingRouter.post('/run', status_code=status.HTTP_200_OK)
 async def do_backtesting(request: BacktestingModel):
     return BacktestingService.run_backtesting(request)

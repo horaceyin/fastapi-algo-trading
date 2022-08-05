@@ -27,7 +27,7 @@ class Indicator(BaseModel, abc.ABC):
         if max_len is None or max_len == 0:
             return None
             
-        assert (max_len > 1 or max_len <= DEFAULT_MAX_LEN), f'Max length should be in range of 1 ~ {DEFAULT_MAX_LEN}'
+        assert (max_len > 1 or max_len <= DEFAULT_MAX_LEN), f'Max length should be in range of 1 ~ {DEFAULT_MAX_LEN}' # DEFAULT_MAX_LEN = 1024 
         return max_len
 
 class SMA(Indicator):
