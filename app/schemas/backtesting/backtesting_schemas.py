@@ -10,9 +10,6 @@ class BacktestingModel(BaseModel):
     liveTrade: Optional[bool] = False
     days: Optional[StrictInt] = 2 # Consistent between products in list
     barSummary: BarSummary # Bar summarizes the trading activity during barSummary seconds # Consistent between products in list
-    # userid: Optional[str] = "NICHOLAS01"
-    # password: Optional[str] = "sp"
-    # targetAcc: Optional[str] = "NICHOLAS01"
 
     @validator('portfolioValue')
     def portfolio_check(cls, portfolio_val):

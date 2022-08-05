@@ -6,17 +6,13 @@ from services.backtesting.spbarfeed.sp_bar_feed import SpRowParser
 from schemas.backtesting.backtesting_schemas import BacktestingModel
 from services.backtesting.spbarfeed.sp_bar_feed import SpBarFeed
 from services.broker.sp_broker import SPBroker
-from services.backtesting.sp_indicators import SPIndicators
+# from services.backtesting.sp_indicators import SPIndicators
 
 from pyalgotrade.stratanalyzer import returns
 from pyalgotrade.stratanalyzer import sharpe
 from pyalgotrade.stratanalyzer import drawdown
 from pyalgotrade.stratanalyzer import trades
 from pyalgotrade.bar import Bars
-
-# class SPBroker(backtesting.Broker):
-#     def __init__(self, portfolio_value, live_trade=True) -> None:
-#         super().__init__(portfolio_value)
 
 class SPBacktesting(BacktestingStrategy):
     
@@ -36,8 +32,8 @@ class SPBacktesting(BacktestingStrategy):
 
         # indicators class will be removed
         # since user should define own indicators before strategy run
-        self.sp_indicators = SPIndicators(self.sp_bar_feed)
-        self.sp_indicators.register_indicators(self.__prod_indicator_list)
+        # self.sp_indicators = SPIndicators(self.sp_bar_feed)
+        # self.sp_indicators.register_indicators(self.__prod_indicator_list)
 
         # for testing, product name: 'HSIZ2', 'HSIN2', may be 'HSIU2'
         super(SPBacktesting, self).__init__(self.sp_bar_feed, self.sp_broker) # BacktestingStrategy(barFeed, cash_or_brk=1000000)
@@ -48,8 +44,8 @@ class SPBacktesting(BacktestingStrategy):
         return self.product_list
 
     # get_indicators will be removed
-    def get_indicators(self):
-        return self.sp_indicators
+    # def get_indicators(self):
+    #     return self.sp_indicators
 
     # create list, e.g ['HSIZ2', 'HSIN2', ...]
     def __create_product(self, prod_indicator_list):

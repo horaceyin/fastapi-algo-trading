@@ -14,18 +14,18 @@ class BacktestingService:
             "prodCode": [
                 {
                     "name": "string",
-                    "indicators": [
-                        {
-                        "maxLen": 0,
-                        "indicatorName": "sma",
-                        "period": 10
-                        },
-                        {
-                        "maxLen": 0,
-                        "indicatorName": "ema",
-                        "period": 10
-                        }
-                    ]
+                    # "indicators": [
+                    #     {
+                    #     "maxLen": 0,
+                    #     "indicatorName": "sma",
+                    #     "period": 10
+                    #     },
+                    #     {
+                    #     "maxLen": 0,
+                    #     "indicatorName": "ema",
+                    #     "period": 10
+                    #     }
+                    # ] # indicators will be removed
                 }
             ],
             "portfolioValue": 1000000,
