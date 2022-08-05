@@ -6,6 +6,8 @@ from dotenv import dotenv_values
 DOTENV = '.env'
 ENV_FILE = dotenv_values(DOTENV)
 SP_HOST_AND_PORT = ENV_FILE['SP_HOST_AND_PORT']
+SP_PRICE_SERVER_HOST = ENV_FILE['SP_PRICE_SERVER']
+SP_PRICE_SERVER_PORT = int(ENV_FILE['SP_PRICE_SERVER_PORT'])
 
 # defines a config sending back to main.py
 class GlobalConfig(BaseSettings):

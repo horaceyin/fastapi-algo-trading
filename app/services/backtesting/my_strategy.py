@@ -15,6 +15,7 @@ class MyStrategy(SPBacktesting):
         print(self.getBroker().get_portfolio_value) # Now 2000000.0
 
     def onBars(self, bars: dict): # ENTER USER'S OWN CODING HERE
+        # pyalgotrade  http://gbeced.github.io/pyalgotrade/docs/v0.20/html/index.html#
         super().onBars(bars)
 
     def onStart(self):
