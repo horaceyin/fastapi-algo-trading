@@ -32,7 +32,9 @@ templates = Jinja2Templates(directory=str(TEMPLATES_PATH))
 async def get_pnl_for_report_analysis(request: GetDoneTradeModel):
     accName = request.targetAccNo
     pnlCal = PnLService(accName)
-    return pnlCal.get_pnl(request)
+    pnl = jsonable_encoder(pnlCal.get_pnl(request))
+    json_pnl = dumps(pnl)
+    return JSONResponse(content=json_pnl)
 
 # the post method for generating done trades report
 # starting with host/report/
