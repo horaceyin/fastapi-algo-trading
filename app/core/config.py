@@ -5,7 +5,11 @@ from dotenv import dotenv_values
 # Access dotenv file
 DOTENV = '.env'
 ENV_FILE = dotenv_values(DOTENV)
+<<<<<<< HEAD
 SP_HOST_AND_PORT = ENV_FILE['SP_HOST_AND_PORT'] # http://192.168.123.221:9030
+=======
+SP_HOST_AND_PORT = ENV_FILE['SP_HOST_AND_PORT']
+>>>>>>> master
 SP_PRICE_SERVER_HOST = ENV_FILE['SP_PRICE_SERVER']
 SP_PRICE_SERVER_PORT = int(ENV_FILE['SP_PRICE_SERVER_PORT'])
 
