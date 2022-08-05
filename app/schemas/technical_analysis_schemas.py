@@ -1,5 +1,6 @@
 from typing import Optional
 from pydantic import BaseModel
+
 class GetDoneTradeModel(BaseModel):
     # fromTime: Search From Trade Time(YYYY-MM-DD HH:mm:ss)
     # toTime: Search To Trade Time(YYYY-MM-DD HH:mm:ss)

@@ -1,6 +1,4 @@
 from schemas.backtesting.backtesting_schemas import BacktestingModel
-from services.backtesting.sma.sma_backtest_service import sma_backtest
-from services.backtesting.sma.sma_login_details import portSize
 from services.backtesting.my_strategy import MyStrategy
 
 class BacktestingService:

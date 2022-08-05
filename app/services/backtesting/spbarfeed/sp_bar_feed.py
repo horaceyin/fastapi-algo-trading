@@ -40,6 +40,7 @@ class SpBarFeed(csvfeed.BarFeed):
         
         # bar's column names, adj_close set to None if it's unnecessary
         # error appear if adj_close is deleted
+        # for SpRowParser use
         self.__column_names = {
             "datetime": "T",
             "open": "O",
@@ -111,7 +112,7 @@ class SpBarFeed(csvfeed.BarFeed):
 
         # put a bar into parser
         for row in data:
-            bar_ = parse_bar(row)
+            bar_ = parse_bar(row) #Basic bar object
             if bar_ is not None and (self.getBarFilter() is None or self.getBarFilter().includeBar(bar_)):
                 loaded_bars.append(bar_)
         
