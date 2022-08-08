@@ -27,7 +27,7 @@ templates = Jinja2Templates(directory=str(TEMPLATES_PATH))
 async def show_live_trading_page(request: Request):
     return templates.TemplateResponse('live_trading.html', {'request': request})
 
-@live_trading_router.post('/subscribe-ticker-price')
+@live_trading_router.post('/subscribe-ticker-price', status_code=status.HTTP_200_OK)
 async def get_ticker_price(request: GetTickerPriceModel):
     userId = request.userId
     spServerKey = request.spServerKey
@@ -38,12 +38,12 @@ async def get_ticker_price(request: GetTickerPriceModel):
     my_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     my_socket.connect((SP_PRICE_SERVER_HOST, SP_PRICE_SERVER_PORT))
     
-    print(my_socket,"#################")
+    print(my_socket,"#################") # <socket.socket fd=2044, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('192.168.123.62', 58177), raddr=('101.78.146.242', 8093)> #################
     my_socket.sendall(my_msg.encode())
     server_bytes_msg = my_socket.recv(1024)
-    print(server_bytes_msg,"$$$$$$")
+    print(server_bytes_msg,"$$$$$$") # b'' $$$$$$
     msg = server_bytes_msg.decode('utf-8')
     my_socket.close()
 
-    print(msg,"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+    print(msg,"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!") #  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     return {"msg": "okay"}

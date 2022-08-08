@@ -35,7 +35,13 @@
       event.preventDefault();
     });
     </script> -->
+    <h1>SP Live Trading: </h1>
+    <div class="container" id="mybox">
+        Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quas exercitationem veritatis minima! Doloribus nostrum dolor, commodi quo, ad qui nobis tenetur, fuga assumenda tempore rerum sed in dicta eaque iste perspiciatis odit quibusdam? Eveniet aliquam praesentium, earum omnis voluptatum nihil, veniam eius perspiciatis vel voluptas, ducimus ullam vero ratione! Perferendis, dignissimos illo odio nisi esse deserunt nihil voluptate tempora fugit. Ducimus, iure? Beatae itaque maxime amet earum quisquam sint repellendus, saepe assumenda et non eaque nobis hic voluptate sapiente. Repellat placeat rerum cupiditate, dolore ullam hic dolorem molestias fugit dolor vel sed incidunt aspernatur possimus, enim similique facilis, delectus illum?
+    </div>
     <div class="container">
+        <p id="test">Input relevant information to access system</p>
+        <h4>User Details: </h4>
         <div class="input-group mb-3">
             <span class="input-group-text" id="inputGroup-sizing-default">User id</span>
             <input type="text" id="userId" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
@@ -44,12 +50,11 @@
             <span class="input-group-text" id="inputGroup-sizing-default">Password</span>
             <input type="password" id="password" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
         </div>
+        <hr>
         <button type="submit" class="btn btn-outline-dark">Get live price</button>
+        <div class="p0">APPLES!!!!!!!!!!</div>
     </div>
-    <br>
-    <div class="container" id="mybox">
-        Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quas exercitationem veritatis minima! Doloribus nostrum dolor, commodi quo, ad qui nobis tenetur, fuga assumenda tempore rerum sed in dicta eaque iste perspiciatis odit quibusdam? Eveniet aliquam praesentium, earum omnis voluptatum nihil, veniam eius perspiciatis vel voluptas, ducimus ullam vero ratione! Perferendis, dignissimos illo odio nisi esse deserunt nihil voluptate tempora fugit. Ducimus, iure? Beatae itaque maxime amet earum quisquam sint repellendus, saepe assumenda et non eaque nobis hic voluptate sapiente. Repellat placeat rerum cupiditate, dolore ullam hic dolorem molestias fugit dolor vel sed incidunt aspernatur possimus, enim similique facilis, delectus illum?
-    </div>
+    <div class="results"></div>
 
     <!-- <div class="container">
         <form id="loginForm">
@@ -93,9 +98,12 @@
                     data: loginData,
                     success: function(response, textStatus, jqXHR){
                         console.log(response)
+                        $('#p0').html("LOGIN SUCCESSFUL")
                     },
                     error: function(jqXHR, textStatus, errorThrown){
                         console.log(errorThrown)
+                        $('#p0').html("ERROR TRYING TO LOGIN: " + " " + errorThrown)
+
                     }
                 }).then(
                     function(response){
@@ -124,9 +132,12 @@
                             data: JSON.stringify(myRequest),
                             success: function(response){
                                 console.log(response)
+                                data = JSON.parse(response)
+                                $('#results').html(data)
                             },
                             error: function(jqXHR, textStatus, errorThrown){
                                 console.log(errorThrown)
+                                $('#results').html("ERROR TRYING TO PROCESS: " + " " + errorThrown)
                             }
                         })
                     }

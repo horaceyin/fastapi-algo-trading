@@ -5,9 +5,150 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Backtesting</title>
-    <link rel="stylesheet" href="backtesting.css">
+    <!-- <link rel="stylesheet" href="backtesting.css"> -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js" integrity="sha256-lSjKY0/srUM9BE3dPm+c4fBo1dky2v27Gdjm2uoZaL0=" crossorigin="anonymous"></script>
+
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
 </head>
 <body>
-    <h1>Testing</h1>
+    <h1>SP Backtesting: </h1>
+    <div class="container">
+        <p>Input relevant information to access system</p>
+		<h4>Backtesting Details: </h4>
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="inputGroup-sizing-default">Product Code</span>
+            <input type="text" id="prodCd" class="form-control">
+        </div>
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="inputGroup-sizing-default">Portfolio Value</span>
+            <input type="number" id="portVal" class="form-control" min="0" autocomplete="off" value="1000000">
+        </div>
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="inputGroup-sizing-default">Boundary Value (Optional)</span>
+            <input type="number" id="boundVal" class="form-control" min="0" autocomplete="off" value="0">
+        </div>
+        <div>
+            <!-- <p>Live Trading? </p> -->
+            <span class="input-group-text" id="inputGroup-sizing-default">Live Trading?</span>
+            <!-- <input type="text" id="livTrad" class="form-control" autocomplete="off" value="False"> -->
+            <!-- <input type="radio" id="livTrad" name="live_trade" autocomplete="off" value="True">
+            <label for="True">True</label> <br>
+            <input type="radio" id="livTrad" name="live_trade" autocomplete="off" value="False" checked="checked">
+            <label for="False">False</label>  -->
+            <input type="checkbox" id="livTrad" autocomplete="off" value="Live">
+        </div>
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="inputGroup-sizing-default">Days (Optional)</span>
+            <input type="number" id="day" class="form-control" min="1" autocomplete="off" value="2">
+        </div>
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="inputGroup-sizing-default">Bar Summary</span>
+            <input type="text" id="barSum" class="form-control" autocomplete="off" value="">
+            <!-- {
+                "day": false,
+                "hour": false,
+                "minute": false,
+                "second": true,
+                "input_time": 60
+            } -->
+        </div>
+        <hr>
+        <button type="submit" class="btn btn-outline-dark">Start backtesting</button>
+        <p class="p0">APPLES!!!!!!!!!!</p>
+    </div>
+    <div class="results"></div>
+    <script>
+        $("button").click(
+            function(event){
+                var prodCode = $("#prodCd").val()
+                var portfolioValue = $("#portVal").val()
+                var boundaryValue = $("#boundVal").val()
+                // var liveTrade = $("#livTrad").val()
+                var liveTrade = document.getElementById("livTrad").checked
+                var days = $("#day").val()
+                var barSummary = $("#barSum").val()
+                console.log(prodCode, portfolioValue, boundaryValue, liveTrade, days, barSummary)
+
+                $("#prodCd").val("")
+                $("#portVal").val("")
+                $("#boundVal").val("")
+                $("#livTrad").val("")
+                $("#day").val("")
+                $("#barSum").val("")
+
+                loginData = JSON.stringify({
+                    "prodCode": [
+                        {
+                        "name": prodCode
+                        }
+                    ],
+                    "portfolioValue": portfolioValue,
+                    "boundaryValue": boundaryValue,
+                    "liveTrade": liveTrade,
+                    "days": days,
+                    "barSummary": barSummary
+                })
+
+                console.log(loginData)
+                event.preventDefault()
+
+                loginUrl = "http://127.0.0.1:8000/login"
+                $.ajax({
+                    type: "POST",
+                    url: loginUrl,
+                    dataType: "json",
+                    contentType: "application/json",
+                    data: loginData,
+                    success: function(response, textStatus, jqXHR){
+                        console.log(response)
+                        $('#p0').html("LOGIN SUCCESSFUL")
+                    },
+                    error: function(jqXHR, textStatus, errorThrown){
+                        console.log(errorThrown)
+                        $('#p0').html("ERROR TRYING TO LOGIN: " + " " + errorThrown)
+                    }
+                }).then(
+                    function(response){
+                        if(response.result_code){
+                            console.log(response.result_msg) // do error handling here, it will show "No Such User or Wrong Password"
+                            return false
+                        }
+                        userData = response.data
+                        var userId = userData.userId
+                        var spServerKey = userData.spServerKey
+                        var sessionTime = userData.sessionTime
+
+                        myRequest = {
+                            userId: userId,
+                            spServerKey: spServerKey,
+                            sessionTime: sessionTime
+                        }
+
+                        backtestingUrl = "http://127.0.0.1:8000/backtesting/run"
+
+                        $.ajax({
+                            type: "POST",
+                            url: backtestingUrl,
+                            dataType: "json",
+                            contentType: "application/json",
+                            data: JSON.stringify(myRequest),
+                            success: function(response){
+                                console.log(response)
+                                data = JSON.parse(response)
+                                $('#results').html(data)
+                            },
+                            error: function(jqXHR, textStatus, errorThrown){
+                                console.log(errorThrown)
+                                $('#results').html("ERROR TRYING TO PROCESS: " + " " + errorThrown)
+                            }
+                        })
+                    }
+                )
+            }
+        )
+    </script>
 </body>
 </html>

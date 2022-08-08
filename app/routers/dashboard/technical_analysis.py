@@ -39,7 +39,8 @@ async def get_pnl_for_report_analysis(request: GetDoneTradeModel):
 # Post method for generating done trades report
 # Starting with host/report/
 @taRouter.post('/get-report', status_code=status.HTTP_200_OK)
-async def done_trade_report_analysis(request: GetDoneTradeModel, httpRequest: Request):
+# async def done_trade_report_analysis(request: GetDoneTradeModel, httpRequest: Request):
+async def done_trade_report_analysis(request: GetDoneTradeModel):
     accName = request.targetAccNo
     date = datetime.now()
     date = date.strftime('%Y-%m-%d')
