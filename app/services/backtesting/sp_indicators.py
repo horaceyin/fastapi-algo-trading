@@ -25,6 +25,7 @@ class SPIndicators:
     def get_indicators(self):
         return self.__indicators
     
+    # a factory for init a indicator object
     def __indicator_factory(self, product_name, indicator):
         ret_indicator = None
 
@@ -49,6 +50,7 @@ class SPIndicators:
 
         return ret_indicator
 
+    # return a list of indicators list
     def __create_indicators(self, product_name, indicators_list):
         ret_indicators = []
 
@@ -58,6 +60,7 @@ class SPIndicators:
 
         return ret_indicators
 
+    # create indicators for each product
     def register_indicators(self, product_list): #product_list = [{name: str, indicators:[...]}]
         if product_list is not None:
             for product in product_list:

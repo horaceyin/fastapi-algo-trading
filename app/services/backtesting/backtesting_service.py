@@ -1,6 +1,4 @@
 from schemas.backtesting.backtesting_schemas import BacktestingModel
-from services.backtesting.sma.sma_backtest_service import sma_backtest
-from services.backtesting.sma.sma_login_details import portSize
 from services.backtesting.my_strategy import MyStrategy
 
 class BacktestingService:
@@ -14,18 +12,18 @@ class BacktestingService:
             "prodCode": [
                 {
                     "name": "string",
-                    "indicators": [
-                        {
-                        "maxLen": 0,
-                        "indicatorName": "sma",
-                        "period": 10
-                        },
-                        {
-                        "maxLen": 0,
-                        "indicatorName": "ema",
-                        "period": 10
-                        }
-                    ]
+                    # "indicators": [
+                    #     {
+                    #     "maxLen": 0,
+                    #     "indicatorName": "sma",
+                    #     "period": 10
+                    #     },
+                    #     {
+                    #     "maxLen": 0,
+                    #     "indicatorName": "ema",
+                    #     "period": 10
+                    #     }
+                    # ] # indicators will be removed
                 }
             ],
             "portfolioValue": 1000000,

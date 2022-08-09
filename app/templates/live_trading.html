@@ -5,8 +5,134 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Live Trading</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js" integrity="sha256-lSjKY0/srUM9BE3dPm+c4fBo1dky2v27Gdjm2uoZaL0=" crossorigin="anonymous"></script>
+
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
+
 </head>
 <body>
-    
+    <!-- <p>Type 'correct' to validate.</p>
+    <form action="javascript:alert( 'success!' );">
+      <div>
+        <input type="text">
+        <input type="submit">
+      </div>
+    </form>
+    <span></span>
+     
+    <script>
+    $( "form" ).submit(function( event ) {
+      if ( $( "input" ).first().val() === "correct" ) {
+        $( "span" ).text( "Validated..." ).show();
+        return;
+      }
+     
+      $( "span" ).text( "Not valid!" ).show().fadeOut( 1000 );
+      event.preventDefault();
+    });
+    </script> -->
+    <div class="container">
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="inputGroup-sizing-default">User id</span>
+            <input type="text" id="userId" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+        </div>
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="inputGroup-sizing-default">Password</span>
+            <input type="password" id="password" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+        </div>
+        <button type="submit" class="btn btn-outline-dark">Get live price</button>
+    </div>
+    <br>
+    <div class="container" id="mybox">
+        Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quas exercitationem veritatis minima! Doloribus nostrum dolor, commodi quo, ad qui nobis tenetur, fuga assumenda tempore rerum sed in dicta eaque iste perspiciatis odit quibusdam? Eveniet aliquam praesentium, earum omnis voluptatum nihil, veniam eius perspiciatis vel voluptas, ducimus ullam vero ratione! Perferendis, dignissimos illo odio nisi esse deserunt nihil voluptate tempora fugit. Ducimus, iure? Beatae itaque maxime amet earum quisquam sint repellendus, saepe assumenda et non eaque nobis hic voluptate sapiente. Repellat placeat rerum cupiditate, dolore ullam hic dolorem molestias fugit dolor vel sed incidunt aspernatur possimus, enim similique facilis, delectus illum?
+    </div>
+
+    <!-- <div class="container">
+        <form id="loginForm">
+            <div class="form-group">
+              <label for="userId">User id</label>
+              <input type="text" class="form-control" id="userId" placeholder="user id">
+              <br>
+              <label for="exampleInputPassword1">Password</label>
+              <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+            </div>
+            <button type="submit" class="btn btn-outline-dark">Get live price</button>
+          </form>
+    </div> -->
+
+    <script>
+        $("button").click(
+            function(event){
+                var userId = $("#userId").val()
+                var password = $("#password").val()
+                console.log(userId, password)
+
+                $("#userId").val("")
+                $("#password").val("")
+
+                loginData = JSON.stringify({
+                    "apiAppId": "SP_F",
+                    "mode": 0,
+                    "password": password,
+                    "userId": userId
+                })
+
+                console.log(loginData)
+                event.preventDefault()
+
+                loginUrl = "http://127.0.0.1:8000/login"
+                $.ajax({
+                    type: "POST",
+                    url: loginUrl,
+                    dataType: "json",
+                    contentType: "application/json",
+                    data: loginData,
+                    success: function(response, textStatus, jqXHR){
+                        console.log(response)
+                    },
+                    error: function(jqXHR, textStatus, errorThrown){
+                        console.log(errorThrown)
+                    }
+                }).then(
+                    function(response){
+                        if(response.result_code){
+                            console.log(response.result_msg) // do error handling here, it will show "No Such User or Wrong Password"
+                            return false
+                        }
+                        userData = response.data
+                        var userId = userData.userId
+                        var spServerKey = userData.spServerKey
+                        var sessionTime = userData.sessionTime
+
+                        myRequest = {
+                            userId: userId,
+                            spServerKey: spServerKey,
+                            sessionTime: sessionTime
+                        }
+
+                        getTickerPriceUrl = "http://127.0.0.1:8000/live-trading/subscribe-ticker-price"
+
+                        $.ajax({
+                            type: "POST",
+                            url: getTickerPriceUrl,
+                            dataType: "json",
+                            contentType: "application/json",
+                            data: JSON.stringify(myRequest),
+                            success: function(response){
+                                console.log(response)
+                            },
+                            error: function(jqXHR, textStatus, errorThrown){
+                                console.log(errorThrown)
+                            }
+                        })
+                    }
+                )
+            }
+        )
+    </script>
 </body>
 </html>
