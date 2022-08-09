@@ -77,7 +77,7 @@ class SPBacktesting(BacktestingStrategy):
         return self.__portfolio_value
 
     @get_portfolio_value.setter
-    def get_portfolio_value(self, port_val):
+    def get_portfolio_value(self, port_val: float):
         if port_val > 0:
             if hasattr(self, 'sp_broker'):
                 self.__portfolio_value = port_val
@@ -165,7 +165,7 @@ class SPBacktesting(BacktestingStrategy):
 
     # SHOULD BE IMPLEMENTED BY FUTURE USERS
     def onBars(self, bars:Bars):
-        # or implement a default strategy.
-        # self.sp_broker = SPBroker(self.__portfolio_value, self.__boundary_value, self.sp_bar_feed, live_trade)
-        self.sp_broker.creatMarketOrder(self.__portfolio_value, self.__boundary_value, bars.getBar(tuple(bars.getInstruments())), self.__live_trade)
+        # Implement a default strategy.
+        # self.sp_broker.creatMarketOrder(self.__portfolio_value, self.__boundary_value, bars.getBar(tuple(bars.getInstruments())), self.__live_trade) # Incorrect format
+        self.sp_broker.creatMarketOrder() # creatMarketOrder: (action: int, instrument: str, quantity: int, onClose: bool)
         # return NotImplementedError

@@ -27,7 +27,7 @@ templates = Jinja2Templates(directory=str(TEMPLATES_PATH))
 async def show_live_trading_page(request: Request):
     return templates.TemplateResponse('live_trading.html', {'request': request})
 
-@live_trading_router.post('/subscribe-ticker-price', status_code=status.HTTP_200_OK)
+@live_trading_router.post('/subscribe-ticker-price', status_code=status.HTTP_200_OK) # To get ticker price of futures
 async def get_ticker_price(request: GetTickerPriceModel):
     userId = request.userId
     spServerKey = request.spServerKey
@@ -45,5 +45,5 @@ async def get_ticker_price(request: GetTickerPriceModel):
     msg = server_bytes_msg.decode('utf-8')
     my_socket.close()
 
-    print(msg,"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!") #  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    print(msg,"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!") #  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
     return {"msg": "okay"}

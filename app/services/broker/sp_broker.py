@@ -64,10 +64,11 @@ class SPBroker(backtesting.Broker): # Inherit all properties and functions from 
     @get_live_trade.setter
     def get_live_trade(self, live_trade):
         self.__live_trade = live_trade
-    def creatMarketOrder(self, action, instrument, quantity, onClose):
+
+    def creatMarketOrder(self, action: int, instrument: str, quantity: int, onClose: bool):
         super().createMarketOrder(action, instrument, quantity, onClose)
         try:
-            self.__sp_api_handler.createMarketOrder(action ,instrument, quantity, onClose)
+            self.__sp_api_handler.createMarketOrder(action, instrument, quantity, onClose)
         except:
             pass
     

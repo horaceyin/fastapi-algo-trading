@@ -31,22 +31,35 @@
             <input type="number" id="boundVal" class="form-control" min="0" autocomplete="off" value="0">
         </div>
         <div>
-            <!-- <p>Live Trading? </p> -->
             <span class="input-group-text" id="inputGroup-sizing-default">Live Trading?</span>
+            <!-- <p>Live Trading? </p> -->
             <!-- <input type="text" id="livTrad" class="form-control" autocomplete="off" value="False"> -->
             <!-- <input type="radio" id="livTrad" name="live_trade" autocomplete="off" value="True">
             <label for="True">True</label> <br>
             <input type="radio" id="livTrad" name="live_trade" autocomplete="off" value="False" checked="checked">
             <label for="False">False</label>  -->
-            <input type="checkbox" id="livTrad" autocomplete="off" value="Live">
+            <input type="checkbox" id="livTrad" name="livTrad" autocomplete="off" value="Live">
+            <label for="livTrad">True</label>
         </div>
         <div class="input-group mb-3">
             <span class="input-group-text" id="inputGroup-sizing-default">Days (Optional)</span>
             <input type="number" id="day" class="form-control" min="1" autocomplete="off" value="2">
         </div>
-        <div class="input-group mb-3">
+        <div>
             <span class="input-group-text" id="inputGroup-sizing-default">Bar Summary</span>
-            <input type="text" id="barSum" class="form-control" autocomplete="off" value="">
+            <!-- <input type="text" id="barSum" class="form-control" autocomplete="off" value=""> -->
+            <input type="radio" id="barSumDay" name="barSum" autocomplete="off" value="Day">
+            <label for="day">Day</label> <br>
+            <input type="radio" id="barSumHour" name="barSum" autocomplete="off" value="Hour">
+            <label for="hour">Hour</label> <br>
+            <input type="radio" id="barSumMinute" name="barSum" autocomplete="off" value="Minute">
+            <label for="minute">Minute</label> <br>
+            <input type="radio" id="barSumSecond" name="barSum" autocomplete="off" value="Second" checked="checked">
+            <label for="second">Second</label> <br>
+        <!-- </div>
+        <div class="input-group mb-3"> -->
+            <span id="inputGroup-sizing-default">Input Time</span>
+            <input type="number" id="time" min="0" autocomplete="off" value="5">
             <!-- {
                 "day": false,
                 "hour": false,
@@ -63,33 +76,18 @@
     <script>
         $("button").click(
             function(event){
-                var prodCode = $("#prodCd").val()
-                var portfolioValue = $("#portVal").val()
-                var boundaryValue = $("#boundVal").val()
-                // var liveTrade = $("#livTrad").val()
-                var liveTrade = document.getElementById("livTrad").checked
-                var days = $("#day").val()
-                var barSummary = $("#barSum").val()
-                console.log(prodCode, portfolioValue, boundaryValue, liveTrade, days, barSummary)
+                var userId = $("#userId").val()
+                var password = $("#password").val()
+                console.log(userId, password)
 
-                $("#prodCd").val("")
-                $("#portVal").val("")
-                $("#boundVal").val("")
-                $("#livTrad").val("")
-                $("#day").val("")
-                $("#barSum").val("")
+                $("#userId").val("")
+                $("#password").val("")
 
                 loginData = JSON.stringify({
-                    "prodCode": [
-                        {
-                        "name": prodCode
-                        }
-                    ],
-                    "portfolioValue": portfolioValue,
-                    "boundaryValue": boundaryValue,
-                    "liveTrade": liveTrade,
-                    "days": days,
-                    "barSummary": barSummary
+                    "apiAppId": "SP_F",
+                    "mode": 0,
+                    "password": password,
+                    "userId": userId
                 })
 
                 console.log(loginData)
@@ -117,9 +115,35 @@
                             return false
                         }
                         userData = response.data
-                        var userId = userData.userId
-                        var spServerKey = userData.spServerKey
-                        var sessionTime = userData.sessionTime
+                        var prodCode = $("#prodCd").val()
+                        var portfolioValue = $("#portVal").val()
+                        var boundaryValue = $("#boundVal").val()
+                        // var liveTrade = $("#livTrad").val()
+                        var liveTrade = document.getElementById("livTrad").checked // Checks checked property of element
+                        var days = $("#day").val()
+                        var barSumDay = document.getElementById("barSumDay").checked
+                        var barSumHour = document.getElementById("barSumHour").checked
+                        var barSumMinute = document.getElementById("barSumMinute").checked
+                        var barSumSecond = document.getElementById("barSumSecond").checked
+                        var time = $("#time").val()
+
+                        loginData = JSON.stringify({
+                            "prodCode": [{
+                                "name": "string",
+                                "indicators": [{"maxLen": 0,"indicatorName": "sma","period": 10},{"maxLen": 0,"indicatorName": "ema","period": 10}]
+                            }], // Unsure of how to implement several prodCodes // indicators will be removed
+                            "portfolioValue": portfolioValue,
+                            "boundaryValue": boundaryValue,
+                            "liveTrade": liveTrade,
+                            "days": days,
+                            "barSummary": {
+                                "day": barSumDay,
+                                "hour": barSumHour,
+                                "minute": barSumMinute,
+                                "second": barSumSecond,
+                                "input_time": time
+                            }
+                        })
 
                         myRequest = {
                             userId: userId,

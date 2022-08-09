@@ -8,6 +8,7 @@ from schemas.backtesting.bar_summary_schemas import BarSummary
 from datetime import datetime, timedelta
 from collections import deque
 import six
+from pyalgotrade.bitstamp import wsclient
 
 # Frequency.TRADE: The bar represents a single trade.
 # Frequency.SECOND: The bar summarizes the trading activity during 1 second.
@@ -27,7 +28,7 @@ frequency_dict = {
 }
 
 class SpBarFeed(csvfeed.BarFeed):
-    def __init__(self, prod_list, days, bar_summary, timezone=None, maxLen=None):
+    def __init__(self, prod_list, days, bar_summary, timezone=None, maxLen=None): # maxLen = Maximum number of values that the :class:`pyalgotrade.dataseries.bards.BarDataSeries` will hold
         self.__prod_list = prod_list
         self.__days = days
         self.__bar_summary = bar_summary
