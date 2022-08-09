@@ -40,8 +40,8 @@ async def get_ticker_price(request: GetTickerPriceModel):
     my_socket.sendall(my_msg.encode())
     server_bytes_msg = my_socket.recv(1024)
     print(server_bytes_msg,"$$$$$$")
-    msg = server_bytes_msg.decode('utf-8')
+    # msg = server_bytes_msg.decode('utf-8')
     my_socket.close()
 
-    print(msg,"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+    # print(msg,"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
     return {"msg": "okay"}
