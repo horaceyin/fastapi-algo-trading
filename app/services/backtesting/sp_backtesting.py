@@ -1,4 +1,6 @@
 import abc
+from ast import Return
+from services.backtesting import sp_position
 from matplotlib.pyplot import bar
 from pyalgotrade.strategy import BacktestingStrategy
 from schemas.backtesting.bar_summary_schemas import BarSummary
@@ -7,12 +9,15 @@ from schemas.backtesting.backtesting_schemas import BacktestingModel
 from services.backtesting.spbarfeed.sp_bar_feed import SpBarFeed
 from services.broker.sp_broker import SPBroker
 from services.backtesting.sp_indicators import SPIndicators
-
+from pyalgotrade import strategy
 from pyalgotrade.stratanalyzer import returns
 from pyalgotrade.stratanalyzer import sharpe
 from pyalgotrade.stratanalyzer import drawdown
 from pyalgotrade.stratanalyzer import trades
 from pyalgotrade.bar import Bars
+from pyalgotrade import plotter
+from pyalgotrade.stratanalyzer import sharpe
+from pyalgotrade.bitstamp import broker
 
 # class SPBroker(backtesting.Broker):
 #     def __init__(self, portfolio_value, live_trade=True) -> None:
@@ -169,6 +174,16 @@ class SPBacktesting(BacktestingStrategy):
         tradesAnalyzer = trades.Trades()
         self.attachAnalyzer(tradesAnalyzer)
 
-    def onBars(self, bars:Bars):
-        #        self.sp_broker = SPBroker(self.__portfolio_value, self.__boundary_value, self.sp_bar_feed, live_trade)
-        self.sp_broker.creatMarketOrder(self.__portfolio_value, self.__boundary_value, bars.getBar(tuple(bars.getInstruments())), self.__live_trade)
+    def onBars(self, bars:Bars): #Default strategy
+        smaPeriod = 15
+        feed = self.sp_bar_feed
+        for prod in self.product_list:
+            strat = sp_position.Position(feed, prod, smaPeriod)
+            # sharpeRatioAnalyzer = sharpe.SharpeRatio()
+            # strat.attachAnalyzer(sharpeRatioAnalyzer)
+            # print("Sharpe ratio: %.2f" % sharpeRatioAnalyzer.getSharpeRatio(0.05))
+        # Strategy = sp_position.Position(feed, bars.getInstruments, smaPeriod)
+        # returnAnalyzer = returns.Returns()
+        # Strategy.attachAnalyzer(returnAnalyzer)
+        # Strategy.run()
+        # Strategy.info("Final portfolio value: $%.2f" % Strategy.getResult())
