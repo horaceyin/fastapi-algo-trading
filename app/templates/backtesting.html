@@ -16,11 +16,24 @@
 <body>
     <h1>SP Backtesting: </h1>
     <div class="container">
-        <p>Input relevant information to access system</p>
+        <h4>User Details: </h4>
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="inputGroup-sizing-default">User id</span>
+            <input type="text" id="userId" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+        </div>
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="inputGroup-sizing-default">Password</span>
+            <input type="password" id="password" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+        </div>
+    </div>
+    <hr>
+    <div class="container">
 		<h4>Backtesting Details: </h4>
         <div class="input-group mb-3">
-            <span class="input-group-text" id="inputGroup-sizing-default">Product Code</span>
-            <input type="text" id="prodCd" class="form-control">
+            <span class="input-group-text" id="inputGroup-sizing-default">Product Code</span> 
+            <!-- Need to set such that multiple names and indicators can be input -->
+            <input type="text" id="prodCd" class="form-control" value='[{"name": "YMU2","indicators": [{"maxLen": 0,"indicatorName": "sma","period": 10},{"maxLen": 0,"indicatorName": "ema","period": 10}]}]'>
+            <!-- "POST /login HTTP/1.1" 307 Temporary Redirect -->
         </div>
         <div class="input-group mb-3">
             <span class="input-group-text" id="inputGroup-sizing-default">Portfolio Value</span>
@@ -68,111 +81,171 @@
                 "input_time": 60
             } -->
         </div>
-        <hr>
-        <button type="submit" class="btn btn-outline-dark">Start backtesting</button>
-        <p class="p0">APPLES!!!!!!!!!!</p>
     </div>
-    <div class="results"></div>
+    <hr>
+    <div class="container">
+        <button id="beginbacktest" type="submit" class="btn btn-outline-dark">Start backtesting</button>
+        <div id="results"></div>
+        <div id="p0"></div>
+    </div>
     <script>
-        $("button").click(
-            function(event){
-                var userId = $("#userId").val()
-                var password = $("#password").val()
-                console.log(userId, password)
+        $(function(){
+            $("#beginbacktest").click(
+                function(event){
+                    var userId = $("#userId").val()
+                    var password = $("#password").val()
+                    console.log(userId, password)
 
-                $("#userId").val("")
-                $("#password").val("")
+                    $("#userId").val("")
+                    $("#password").val("")
 
-                loginData = JSON.stringify({
-                    "apiAppId": "SP_F",
-                    "mode": 0,
-                    "password": password,
-                    "userId": userId
-                })
+                    loginData = JSON.stringify({
+                        "apiAppId": "SP_F",
+                        "mode": 0,
+                        "password": password,
+                        "userId": userId
+                    })
 
-                console.log(loginData)
-                event.preventDefault()
+                    console.log(loginData)
+                    event.preventDefault()
+                    $('#results').html(loginData)
 
-                loginUrl = "http://127.0.0.1:8000/login"
-                $.ajax({
-                    type: "POST",
-                    url: loginUrl,
-                    dataType: "json",
-                    contentType: "application/json",
-                    data: loginData,
-                    success: function(response, textStatus, jqXHR){
-                        console.log(response)
-                        $('#p0').html("LOGIN SUCCESSFUL")
-                    },
-                    error: function(jqXHR, textStatus, errorThrown){
-                        console.log(errorThrown)
-                        $('#p0').html("ERROR TRYING TO LOGIN: " + " " + errorThrown)
-                    }
-                }).then(
-                    function(response){
-                        if(response.result_code){
-                            console.log(response.result_msg) // do error handling here, it will show "No Such User or Wrong Password"
-                            return false
-                        }
-                        userData = response.data
-                        var prodCode = $("#prodCd").val()
-                        var portfolioValue = $("#portVal").val()
-                        var boundaryValue = $("#boundVal").val()
-                        // var liveTrade = $("#livTrad").val()
-                        var liveTrade = document.getElementById("livTrad").checked // Checks checked property of element
-                        var days = $("#day").val()
-                        var barSumDay = document.getElementById("barSumDay").checked
-                        var barSumHour = document.getElementById("barSumHour").checked
-                        var barSumMinute = document.getElementById("barSumMinute").checked
-                        var barSumSecond = document.getElementById("barSumSecond").checked
-                        var time = $("#time").val()
+                    loginUrl = "http://127.0.0.1:8000/login"
+                    $.ajax({
+                        type: "POST",
+                        url: loginUrl,
+                        dataType: "json",
+                        contentType: "application/json",
+                        data: loginData,
+                        success: function(response, textStatus, jqXHR){
+                            console.log(response)
+                            $('#p0').html("LOGIN SUCCESSFUL")
 
-                        loginData = JSON.stringify({
-                            "prodCode": [{
-                                "name": "string",
-                                "indicators": [{"maxLen": 0,"indicatorName": "sma","period": 10},{"maxLen": 0,"indicatorName": "ema","period": 10}]
-                            }], // Unsure of how to implement several prodCodes // indicators will be removed
-                            "portfolioValue": portfolioValue,
-                            "boundaryValue": boundaryValue,
-                            "liveTrade": liveTrade,
-                            "days": days,
-                            "barSummary": {
-                                "day": barSumDay,
-                                "hour": barSumHour,
-                                "minute": barSumMinute,
-                                "second": barSumSecond,
-                                "input_time": time
+                            if(response.result_code){
+                                console.log(response.result_msg) // do error handling here, it will show "No Such User or Wrong Password"
+                                return false
                             }
-                        })
+                            userData = response.data
+                            var prodCode = $("#prodCd").val()
+                            var portfolioValue = $("#portVal").val()
+                            var boundaryValue = $("#boundVal").val()
+                            // var liveTrade = $("#livTrad").val()
+                            var liveTrade = document.getElementById("livTrad").checked // Checks checked property of element
+                            var days = $("#day").val()
+                            var barSumDay = document.getElementById("barSumDay").checked
+                            var barSumHour = document.getElementById("barSumHour").checked
+                            var barSumMinute = document.getElementById("barSumMinute").checked
+                            var barSumSecond = document.getElementById("barSumSecond").checked
+                            var time = $("#time").val()
 
-                        myRequest = {
-                            userId: userId,
-                            spServerKey: spServerKey,
-                            sessionTime: sessionTime
-                        }
+                            loginData = JSON.stringify({
+                                "prodCode": prodCode, // Unsure of how to implement several prodCodes // indicators will be removed
+                                "portfolioValue": portfolioValue,
+                                "boundaryValue": boundaryValue,
+                                "liveTrade": liveTrade,
+                                "days": days,
+                                "barSummary": {
+                                    "day": barSumDay,
+                                    "hour": barSumHour,
+                                    "minute": barSumMinute,
+                                    "second": barSumSecond,
+                                    "input_time": time
+                                }
+                            })
 
-                        backtestingUrl = "http://127.0.0.1:8000/backtesting/run"
-
-                        $.ajax({
-                            type: "POST",
-                            url: backtestingUrl,
-                            dataType: "json",
-                            contentType: "application/json",
-                            data: JSON.stringify(myRequest),
-                            success: function(response){
-                                console.log(response)
-                                data = JSON.parse(response)
-                                $('#results').html(data)
-                            },
-                            error: function(jqXHR, textStatus, errorThrown){
-                                console.log(errorThrown)
-                                $('#results').html("ERROR TRYING TO PROCESS: " + " " + errorThrown)
+                            myRequest = {
+                                userId: userId,
+                                spServerKey: spServerKey,
+                                sessionTime: sessionTime
                             }
-                        })
-                    }
-                )
-            }
-        )
+
+                            backtestingUrl = "http://127.0.0.1:8000/backtesting/run"
+
+                            $.ajax({
+                                type: "POST",
+                                url: backtestingUrl,
+                                dataType: "json",
+                                contentType: "application/json",
+                                data: JSON.stringify(myRequest),
+                                success: function(response){
+                                    console.log(response)
+                                    data = JSON.parse(response)
+                                    $('#results').html(data)
+                                },
+                                error: function(jqXHR, textStatus, errorThrown){
+                                    console.log(errorThrown)
+                                    $('#results').html("ERROR TRYING TO PROCESS: " + " " + errorThrown)
+                                }
+                            })
+                        },
+                        error: function(jqXHR, textStatus, errorThrown){
+                            console.log(errorThrown)
+                            $('#p0').html("ERROR TRYING TO LOGIN: " + " " + errorThrown)
+                        }
+                    })
+                    // }).then(
+                    //     function(response){
+                    //         if(response.result_code){
+                    //             console.log(response.result_msg) // do error handling here, it will show "No Such User or Wrong Password"
+                    //             return false
+                    //         }
+                    //         userData = response.data
+                    //         var prodCode = $("#prodCd").val()
+                    //         var portfolioValue = $("#portVal").val()
+                    //         var boundaryValue = $("#boundVal").val()
+                    //         // var liveTrade = $("#livTrad").val()
+                    //         var liveTrade = document.getElementById("livTrad").checked // Checks checked property of element
+                    //         var days = $("#day").val()
+                    //         var barSumDay = document.getElementById("barSumDay").checked
+                    //         var barSumHour = document.getElementById("barSumHour").checked
+                    //         var barSumMinute = document.getElementById("barSumMinute").checked
+                    //         var barSumSecond = document.getElementById("barSumSecond").checked
+                    //         var time = $("#time").val()
+
+                    //         loginData = JSON.stringify({
+                    //             "prodCode": prodCode, // Unsure of how to implement several prodCodes // indicators will be removed
+                    //             "portfolioValue": portfolioValue,
+                    //             "boundaryValue": boundaryValue,
+                    //             "liveTrade": liveTrade,
+                    //             "days": days,
+                    //             "barSummary": {
+                    //                 "day": barSumDay,
+                    //                 "hour": barSumHour,
+                    //                 "minute": barSumMinute,
+                    //                 "second": barSumSecond,
+                    //                 "input_time": time
+                    //             }
+                    //         })
+
+                    //         myRequest = {
+                    //             userId: userId,
+                    //             spServerKey: spServerKey,
+                    //             sessionTime: sessionTime
+                    //         }
+
+                    //         backtestingUrl = "http://127.0.0.1:8000/backtesting/run"
+
+                    //         $.ajax({
+                    //             type: "POST",
+                    //             url: backtestingUrl,
+                    //             dataType: "json",
+                    //             contentType: "application/json",
+                    //             data: JSON.stringify(myRequest),
+                    //             success: function(response){
+                    //                 console.log(response)
+                    //                 data = JSON.parse(response)
+                    //                 $('#results').html(data)
+                    //             },
+                    //             error: function(jqXHR, textStatus, errorThrown){
+                    //                 console.log(errorThrown)
+                    //                 $('#results').html("ERROR TRYING TO PROCESS: " + " " + errorThrown)
+                    //             }
+                    //         })
+                    //     }
+                    // )
+                }
+            )
+        })
     </script>
 </body>
 </html>
