@@ -1,4 +1,7 @@
 import abc
+from ast import Return
+# from services.backtesting import sp_position
+from services.backtesting.sp_position import Position
 from matplotlib.pyplot import bar
 from pyalgotrade.strategy import BacktestingStrategy
 from schemas.backtesting.bar_summary_schemas import BarSummary
@@ -13,6 +16,9 @@ from pyalgotrade.stratanalyzer import sharpe
 from pyalgotrade.stratanalyzer import drawdown
 from pyalgotrade.stratanalyzer import trades
 from pyalgotrade.bar import Bars
+from pyalgotrade import plotter
+from pyalgotrade.stratanalyzer import sharpe
+from pyalgotrade.bitstamp import broker
 
 class SPBacktesting(BacktestingStrategy):
     
@@ -26,17 +32,19 @@ class SPBacktesting(BacktestingStrategy):
 
         self.product_list = self.__create_product(self.__prod_indicator_list) # create list, e.g ['HSIZ2', 'HSIN2', ...]
 
-        # Create BarFeed and Broker for future use
+        # create BarFeed and Broker, it's important
         self.sp_bar_feed = SpBarFeed(self.product_list, self.__days, self.__bar_summary) # SpBarFeed(barSummary, loadedBars=[], timezone = None, maxLen = None) # No __ in front to allow usage outside
         self.sp_broker = SPBroker(self.__portfolio_value, self.__boundary_value, self.sp_bar_feed, live_trade)
 
-        # Indicators class will be removed, since user should define own indicators before strategy run
+        # indicators class will be removed
+        # since user should define own indicators before strategy run
         # self.sp_indicators = SPIndicators(self.sp_bar_feed)
         # self.sp_indicators.register_indicators(self.__prod_indicator_list)
 
-        # For testing, product name: 'HSIZ2', 'HSIN2', 'HSIU2'
+        # for testing, product name: 'HSIZ2', 'HSIN2', may be 'HSIU2'
         super(SPBacktesting, self).__init__(self.sp_bar_feed, self.sp_broker) # BacktestingStrategy(barFeed, cash_or_brk=1000000)
         self.__init_analyzer()
+
 
     def get_product_list(self):
         return self.product_list
@@ -45,7 +53,7 @@ class SPBacktesting(BacktestingStrategy):
     # def get_indicators(self):
     #     return self.sp_indicators
 
-    # Create product list, e.g ['HSIZ2', 'HSIN2', ...]
+    # create list, e.g ['HSIZ2', 'HSIN2', ...]
     def __create_product(self, prod_indicator_list):
         if len(prod_indicator_list) == 0: return None
 
@@ -53,7 +61,7 @@ class SPBacktesting(BacktestingStrategy):
 
         return product_list
 
-    # Analyzers init
+    # analyzers init
     def __init_analyzer(self):
         retAnalyzer = returns.Returns()
         self.attachAnalyzer(retAnalyzer)
@@ -77,7 +85,7 @@ class SPBacktesting(BacktestingStrategy):
         return self.__portfolio_value
 
     @get_portfolio_value.setter
-    def get_portfolio_value(self, port_val: float):
+    def get_portfolio_value(self, port_val):
         if port_val > 0:
             if hasattr(self, 'sp_broker'):
                 self.__portfolio_value = port_val
@@ -152,7 +160,7 @@ class SPBacktesting(BacktestingStrategy):
     # def get_sp_broker(self, sp_broker):
     #     self.sp_broker = sp_broker
 
-    # Add default analyzer before running the strategy
+    # add default analyzer before running the strategy
     def analyzer(self):
         retAnalyzer = returns.Returns()
         self.attachAnalyzer(retAnalyzer)
@@ -167,5 +175,7 @@ class SPBacktesting(BacktestingStrategy):
     def onBars(self, bars:Bars):
         # Implement a default strategy.
         # self.sp_broker.creatMarketOrder(self.__portfolio_value, self.__boundary_value, bars.getBar(tuple(bars.getInstruments())), self.__live_trade) # Incorrect format
-        self.sp_broker.creatMarketOrder() # creatMarketOrder: (action: int, instrument: str, quantity: int, onClose: bool)
+
+        self.sp_broker.creatMarketOrder() # creatMarketOrder: (action: int, instrument: str, quantity: int, onClose: bool) 
         # return NotImplementedError
+        # bars.getBar(tuple(bars.getInstruments())) is list, not dictionary, cannot be used for pyalgotrade (not hashable)

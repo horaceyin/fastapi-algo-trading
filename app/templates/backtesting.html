@@ -32,7 +32,7 @@
         <div class="input-group mb-3">
             <span class="input-group-text" id="inputGroup-sizing-default">Product Code</span> 
             <!-- Need to set such that multiple names and indicators can be input -->
-            <input type="text" id="prodCd" class="form-control" value='[{"name": "YMU2","indicators": [{"maxLen": 0,"indicatorName": "sma","period": 10},{"maxLen": 0,"indicatorName": "ema","period": 10}]}]'>
+            <input type="text" id="prodCd" class="form-control" value='[{"name": "HSIU2"}]'>
             <!-- "POST /login HTTP/1.1" 307 Temporary Redirect -->
         </div>
         <div class="input-group mb-3">
@@ -87,6 +87,8 @@
         <button id="beginbacktest" type="submit" class="btn btn-outline-dark">Start backtesting</button>
         <div id="results"></div>
         <div id="p0"></div>
+        <div id="container3"></div>
+		<div id="container4"></div>
     </div>
     <script>
         $(function(){
@@ -119,25 +121,24 @@
                         data: loginData,
                         success: function(response, textStatus, jqXHR){
                             console.log(response)
-                            $('#p0').html("LOGIN SUCCESSFUL")
 
-                            if(response.result_code){
+                            if(response.result_code != 0){
                                 console.log(response.result_msg) // do error handling here, it will show "No Such User or Wrong Password"
                                 return false
                             }
                             userData = response.data
-                            var prodCode = $("#prodCd").val()
-                            var portfolioValue = $("#portVal").val()
-                            var boundaryValue = $("#boundVal").val()
-                            // var liveTrade = $("#livTrad").val()
-                            var liveTrade = document.getElementById("livTrad").checked // Checks checked property of element
-                            var days = $("#day").val()
-                            var barSumDay = document.getElementById("barSumDay").checked
-                            var barSumHour = document.getElementById("barSumHour").checked
-                            var barSumMinute = document.getElementById("barSumMinute").checked
-                            var barSumSecond = document.getElementById("barSumSecond").checked
-                            var time = $("#time").val()
-
+                            var prodCode = document.getElementById("prodCd").value; // $("#prodCd").val();
+                            var portfolioValue = $("#portVal").val();
+                            var boundaryValue = $("#boundVal").val();
+                            // var liveTrade = $("#livTrad").val();
+                            var liveTrade = document.getElementById("livTrad").checked; // Checks checked property of element
+                            var days = $("#day").val();
+                            var barSumDay = document.getElementById("barSumDay").checked;
+                            var barSumHour = document.getElementById("barSumHour").checked;
+                            var barSumMinute = document.getElementById("barSumMinute").checked;
+                            var barSumSecond = document.getElementById("barSumSecond").checked;
+                            var time = $("#time").val();
+                            $('#p0').html(prodCode)
                             loginData = JSON.stringify({
                                 "prodCode": prodCode, // Unsure of how to implement several prodCodes // indicators will be removed
                                 "portfolioValue": portfolioValue,
@@ -152,12 +153,14 @@
                                     "input_time": time
                                 }
                             })
+                            // $('#p0').html(loginData)
+                            // myRequest = {
+                            //     userId: userId,
+                            //     spServerKey: spServerKey,
+                            //     sessionTime: sessionTime
+                            // }
 
-                            myRequest = {
-                                userId: userId,
-                                spServerKey: spServerKey,
-                                sessionTime: sessionTime
-                            }
+                            
 
                             backtestingUrl = "http://127.0.0.1:8000/backtesting/run"
 
@@ -166,21 +169,21 @@
                                 url: backtestingUrl,
                                 dataType: "json",
                                 contentType: "application/json",
-                                data: JSON.stringify(myRequest),
+                                data: loginData, // JSON.stringify(myRequest),
                                 success: function(response){
                                     console.log(response)
                                     data = JSON.parse(response)
-                                    $('#results').html(data)
+                                    $('#container4').html(response)
                                 },
                                 error: function(jqXHR, textStatus, errorThrown){
                                     console.log(errorThrown)
-                                    $('#results').html("ERROR TRYING TO PROCESS: " + " " + errorThrown)
+                                    $('#container4').html("ERROR TRYING TO PROCESS: " + errorThrown)
                                 }
                             })
                         },
                         error: function(jqXHR, textStatus, errorThrown){
                             console.log(errorThrown)
-                            $('#p0').html("ERROR TRYING TO LOGIN: " + " " + errorThrown)
+                            $('#container4').html("ERROR TRYING TO LOGIN: " + " " + errorThrown)
                         }
                     })
                     // }).then(

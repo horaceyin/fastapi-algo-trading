@@ -21,7 +21,7 @@
 </head>
 <body>
     <h1>SP Trading Report:</h1>
-	<div class="container">
+	<!-- <div class="container">
         <h4>User Details: </h4>
         <div class="input-group mb-3">
             <span class="input-group-text" id="inputGroup-sizing-default">User id</span>
@@ -32,26 +32,26 @@
             <input type="password" id="password" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" value="sp">
         </div>
     </div>
-    <hr>
+    <hr> -->
 	<div class="container">
 		<h4>User Details: </h4>
-		<form action="" onsubmit="sendMessage(event)">
+		<form action="" onsubmit="sendMessage(response)">
 			<div class="input-group mb-3">
 				<span class="input-group-text" id="inputGroup-sizing-default">System ID: </span>
 				<input type="text" id="system" class="form-control" autocomplete="off" value="SP_F"/>
 			</div>
-			<!-- <div class="input-group mb-3">
+			<div class="input-group mb-3">
 				<span class="input-group-text" id="inputGroup-sizing-default">SSO Token: </span>
-				<input type="text" id="token" class="form-control" autocomplete="off" value="B69E9781081857F3A2958527824633A3" maxlength="32" size="36"/>
+				<input type="text" id="token" class="form-control" autocomplete="off" value="" maxlength="32" size="36"/>
 			</div>
 			<div class="input-group mb-3">
 				<span class="input-group-text" id="inputGroup-sizing-default">SSO Time: </span>
-				<input type="text" id="time" class="form-control" autocomplete="off" value="1659937348" maxlength="10" size="10"/>
+				<input type="text" id="time" class="form-control" autocomplete="off" value="" maxlength="10" size="10"/>
 			</div>
 			<div class="input-group mb-3">
 				<span class="input-group-text" id="inputGroup-sizing-default">User ID: </span>
 				<input type="text" id="uId" class="form-control" autocomplete="off" value="NICHOLAS01"/>
-			</div> -->
+			</div>
 			<div class="input-group mb-3">
 				<span class="input-group-text" id="inputGroup-sizing-default">Target Account Number: </span>
 				<input type="text" id="targAcc" class="form-control" autocomplete="off" value="NICHOLAS01"/>
@@ -81,7 +81,7 @@
 			<label>To Time: <input type="text" id="toT" autocomplete="off" value="string"/> (Optional)</label><br>
 			<label>Sort By: <input type="text" id="srtB" autocomplete="off" value="prod_code,time_stamp"/> (Optional) (No spaces between variables)</label><br>
 			<label>Sort: <input type="text" id="srt" autocomplete="off" value="ASC,ASC"/> (Optional) (No spaces between variables)</label>
-			<button onclick="connect(event)">Connect</button> -->
+			<button onclick="connect(response)">Connect</button> -->
 		</form>
 		<hr>
 		<button id="getdata" class="btn btn-dark btn-lg" role="button">Show report</button><br><br>
@@ -132,7 +132,7 @@
 		<div id="container4"></div>
 	</div>
 	<script>
-		// function connect(event) {
+		// function connect(response) {
 		// 	var system = document.getElementById("system")
 		// 	var token = document.getElementById("token")
 		// 	var time = document.getElementById("time")
@@ -142,149 +142,54 @@
 		// 	var toT = document.getElementById("toT")
 		// 	var srtB = document.getElementById("srtB")
 		// 	var srt = document.getElementById("srt")
-		// 	event.preventDefault()
-		// } // Specified event activated onClick 
+		// 	response.preventDefault()
+		// } // Specified response activated onClick 
 		$(function(){
-			$("#getdata").click(
-				function(event){
-                var userId = $("#userId").val()
-                var password = $("#password").val()
-                console.log(userId, password)
+			$("#getdata").click(function(response){
+				// CAN ONLY COLLECT SSOTOKEN AND SSOTIME DIRECTLY FROM SPTRADER SYSTEM
 
-                loginData = JSON.stringify({
-                    "apiAppId": "SP_F",
-                    "mode": 0,
-                    "password": password,
-                    "userId": userId
-                })
+                // var userId = $("#userId").val()
+                // var password = $("#password").val()
+                // console.log(userId, password)
 
-				$("#userId").val("")
-                $("#password").val("")
+                // loginData = JSON.stringify({
+                //     "apiAppId": "SP_F",
+                //     "mode": 0,
+                //     "password": password,
+                //     "userId": userId
+                // })
 
-                console.log(loginData)
-                event.preventDefault()
-				$('#container1').html(loginData)
+				// $("#userId").val("")
+                // $("#password").val("")
 
-                loginUrl = "http://127.0.0.1:8000/login"
-                $.ajax({
-                    type: "POST",
-                    url: loginUrl,
-                    dataType: "json",
-                    contentType: "application/json",
-                    data: loginData,
-                    success: function(response, textStatus, jqXHR){
-                        console.log(response)
-						// if (response.result_code == 0) {$('#container1').html("LOGIN SUCCESSFUL")}
-						// else {$('#container1').html("ERROR TRYING TO LOGIN: " + response.result_msg)}
-                        // $('#container1').html(response + " " + textStatus + " " + jqXHR)
-						if(response.result_code == 0) {
-							$('#container2').html("LOGIN SUCCESSFUL")
-						}
-						else {
-							console.log(response.result_code) // do error handling here, it will show "No Such User or Wrong Password"
-							$('#container2').html("ERROR TRYING TO LOGIN: " + response.result_code) // ERROR TRYING TO LOGIN: undefined
-							return false
-						}
-						userData = response.data
-						var userId = userData.userId
-						var spServerKey = userData.spServerKey
-						var sessionTime = userData.sessionTime
+                // console.log(loginData)
+                // response.preventDefault()
+				// $('#container1').html(loginData)
 
-						alongWithBody = {
-							systemId: document.getElementById("system").value, // "SP_F",
-							ssoToken: userData.spServerKey, // document.getElementById("token").value, //"DB02119BD3452DE788B6B1C4B89E8D8A", // spServerKey 
-							ssoTime: userData.sessionTime, // parseInt(document.getElementById("time").value), // 1659665287, // sessionTime 
-							userId: userData.userId, // document.getElementById("uId").value, // "NICHOLAS01",
-							targetAccNo: document.getElementById("targAcc").value, // "NICHOLAS01",
-							fromTime: document.getElementById("fromT").value, // "string",
-							toTime: document.getElementById("toT").value, // "string",
-							sortBy: document.getElementById("srtB").value, // "prod_code,time_stamp",
-							sort: document.getElementById("srt").value // "ASC,ASC"
-						}
-
-						mydata = JSON.stringify(alongWithBody)
-						console.log(mydata) // Data string works
-						// $('#container4').html(mydata)
-
-						$.ajax({
-							type:"POST",
-							url:"http://127.0.0.1:8000/ta/get-report", // ERROR TRYING TO RETRIEVE DATA: Internal Server Error
-							dataType:"json",
-							contentType:"application/json",
-							data: mydata,
-							success: function(response){
-								console.log(response)
-								data_dict = JSON.parse(response) //The line convert a json string to javascript dictionary object
-								$('#container3').html(
-									"Total: " + 
-									"<ul>" + 
-										"<li>Total Trades: " + data_dict.total.totalTrades + "</li>" + 
-										"<li>Average Profit: " + data_dict.total.avgProfit + "</li>" + 
-										"<li>Profit Std. Dev: " + data_dict.total.profitsStdDev + "</li>" + 
-										"<li>Max. Profit: " + data_dict.total.maxProfit + "</li>" + 
-										"<li>Min. Profit: " + data_dict.total.minProfit + "</li>" + 
-										"<li>Average Return: " + data_dict.total.avgReturn + "</li>" + 
-										"<li>Return Std. Dev: " + data_dict.total.returnStdDev + "</li>" + 
-										"<li>Max. Return: " + data_dict.total.maxReturn + "</li>" + 
-										"<li>Min. Return: " + data_dict.total.minReturn + "</li>" + 
-										"<li>P/L Ratio: " + data_dict.total.overallPnLRatio + "</li>" +
-										"<li>Average Profitability per Trade: " + data_dict.total.averageProfitabilityPerTrade + "</li>" + 
-									"</ul>" + 
-									"Profitable: " + 
-									"<ul>" + 
-										"<li>Profitable Trades: " + data_dict.profitable.profitableTrades + "</li>" + 
-										"<li>Average Profit: " + data_dict.profitable.avgProfit + "</li>" + 
-										"<li>Profit Std. Dev: " + data_dict.profitable.profitsStdDev + "</li>" + 
-										"<li>Max. Profit: " + data_dict.profitable.maxProfit + "</li>" + 
-										"<li>Min. Profit: " + data_dict.profitable.minProfit + "</li>" + 
-										"<li>Average Positive Return: " + data_dict.profitable.avgReturn + "</li>" + 
-										"<li>Positive Return Std. Dev: " + data_dict.profitable.returnStdDev + "</li>" + 
-										"<li>Max. Positive Return: " + data_dict.profitable.maxReturn + "</li>" + 
-										"<li>Min. Positive Return: " + data_dict.profitable.minReturn + "</li>" + 
-									"</ul>" + 
-									"Unprofitable: " + 
-									"<ul>" + 
-										"<li>Unprofitable Trades: " + data_dict.unprofitable.unprofitableTrades + "</li>" + 
-										"<li>Average Loss: " + data_dict.unprofitable.avgLoss + "</li>" + 
-										"<li>Profit Std. Dev: " + data_dict.unprofitable.lossessStdDev + "</li>" + 
-										"<li>Max. Loss: " + data_dict.unprofitable.minLoss + "</li>" + 
-										"<li>Min. Loss: " + data_dict.unprofitable.maxLoss + "</li>" + 
-										"<li>Average Negative Return: " + data_dict.unprofitable.avgReturn + "</li>" + 
-										"<li>Negative Return Std. Dev: " + data_dict.unprofitable.returnStdDev + "</li>" + 
-										"<li>Max. Negative Return: " + data_dict.unprofitable.minReturn + "</li>" + 
-										"<li>Min. Negative Return: " + data_dict.unprofitable.maxReturn + "</li>" + 
-									"</ul>"
-									)
-								// $('#container').text(data_dict.total.totalTrades)
-							},
-							error: function(jqXhr, textStatus, errorThrown){
-								console.log(errorThrown)
-								$('#container3').html("ERROR TRYING TO RETRIEVE DATA: " + " " + errorThrown)
-							}
-						})
-                    },
-                    error: function(jqXHR, textStatus, errorThrown){
-                        console.log(errorThrown)
-						$('#container2').html(jqXHR + " " + textStatus + " " + errorThrown)
-                        // $('#container1').html("ERROR TRYING TO LOGIN: " + errorThrown)
-                    }}
-					)})
-                // }).then(
-				// 	function(event){
-				// 		$('#container2').html(response)
+                // loginUrl = "http://127.0.0.1:8000/login"
+                // $.ajax({
+                //     type: "POST",
+                //     url: loginUrl,
+                //     dataType: "json",
+                //     contentType: "application/json",
+                //     data: loginData,
+                //     success: function(response, textStatus, jqXHR){
+                //         console.log(response)
+				// 		// if (response.result_code == 0) {$('#container1').html("LOGIN SUCCESSFUL")}
+				// 		// else {$('#container1').html("ERROR TRYING TO LOGIN: " + response.result_msg)}
+                //         // $('#container1').html(response + " " + textStatus + " " + jqXHR)
 				// 		if(response.result_code == 0) {
-				// 			$('#container1').html("LOGIN SUCCESSFUL")
+				// 			$('#container2').html("LOGIN SUCCESSFUL")
 				// 		}
 				// 		else {
-				// 			console.log(response.result_msg) // do error handling here, it will show "No Such User or Wrong Password"
-				// 			$('#container2').html(response)
-				// 			$('#container1').html("ERROR TRYING TO LOGIN: " + response.result_msg)
+				// 			console.log(response.result_code) // do error handling here, it will show "No Such User or Wrong Password"
+				// 			$('#container2').html("ERROR TRYING TO LOGIN: " + response.result_code) // ERROR TRYING TO LOGIN: undefined
 				// 			return false
 				// 		}
-                //         userData = response.data
+				// 		userData = response.data
 				// 		var userId = userData.userId
-                //         var spServerKey = userData.spServerKey
-                //         var sessionTime = userData.sessionTime
+				// 		var spServerKey = userData.spServerKey
+				// 		var sessionTime = userData.sessionTime
 
 				// 		alongWithBody = {
 				// 			systemId: document.getElementById("system").value, // "SP_F",
@@ -299,17 +204,19 @@
 				// 		}
 
 				// 		mydata = JSON.stringify(alongWithBody)
-				// 		// $("#test").html(document.getElementById("time").value + " " + parseInt(document.getElementById("time").value))
+				// 		console.log(mydata) // Data string works
+				// 		// $('#container4').html(mydata)
+
 				// 		$.ajax({
 				// 			type:"POST",
-				// 			url:"http://127.0.0.1:8000/ta/get-report",
+				// 			url:"http://127.0.0.1:8000/ta/get-report", // ERROR TRYING TO RETRIEVE DATA: Internal Server Error
 				// 			dataType:"json",
 				// 			contentType:"application/json",
 				// 			data: mydata,
 				// 			success: function(response){
 				// 				console.log(response)
 				// 				data_dict = JSON.parse(response) //The line convert a json string to javascript dictionary object
-				// 				$('#container2').html(
+				// 				$('#container3').html(
 				// 					"Total: " + 
 				// 					"<ul>" + 
 				// 						"<li>Total Trades: " + data_dict.total.totalTrades + "</li>" + 
@@ -353,14 +260,92 @@
 				// 			},
 				// 			error: function(jqXhr, textStatus, errorThrown){
 				// 				console.log(errorThrown)
-				// 				$('#container2').html("ERROR TRYING TO RETRIEVE DATA: " + " " + errorThrown)
+				// 				$('#container3').html("ERROR TRYING TO RETRIEVE DATA: " + " " + errorThrown)
 				// 			}
 				// 		})
-				// 	}
-				// )
-				event.preventDefault();	
+                //     },
+                //     error: function(jqXHR, textStatus, errorThrown){
+                //         console.log(errorThrown)
+				// 		$('#container2').html(jqXHR + " " + textStatus + " " + errorThrown)
+                //         // $('#container1').html("ERROR TRYING TO LOGIN: " + errorThrown)
+                //     }}
+				// 	)})
+
+				alongWithBody = {
+				systemId: document.getElementById("system").value, // "SP_F",
+				ssoToken: document.getElementById("token").value, //"DB02119BD3452DE788B6B1C4B89E8D8A",
+				ssoTime: parseInt(document.getElementById("time").value), // 1659665287,
+				userId: document.getElementById("uId").value, // "NICHOLAS01",
+				targetAccNo: document.getElementById("targAcc").value, // "NICHOLAS01",
+				fromTime: document.getElementById("fromT").value, // "string",
+				toTime: document.getElementById("toT").value, // "string",
+				sortBy: document.getElementById("srtB").value, // "prod_code,time_stamp",
+				sort: document.getElementById("srt").value // "ASC,ASC"
+				}
+
+				mydata = JSON.stringify(alongWithBody)
+				$.ajax({
+					type:"POST",
+					url:"http://127.0.0.1:8000/ta/get-report",
+					dataType:"json",
+					contentType:"application/json",
+					data: mydata,
+					success: function(response){
+						console.log(response)
+						data_dict = JSON.parse(response) //The line convert a json string to javascript dictionary object
+						// $('#container').text(response)
+						$('#container1').html(
+							"Total: " + 
+							"<ul>" + 
+								"<li>Total Trades: " + data_dict.total.totalTrades + "</li>" + 
+								"<li>Average Profit: " + data_dict.total.avgProfit + "</li>" + 
+								"<li>Profit Std. Dev: " + data_dict.total.profitsStdDev + "</li>" + 
+								"<li>Max. Profit: " + data_dict.total.maxProfit + "</li>" + 
+								"<li>Min. Profit: " + data_dict.total.minProfit + "</li>" + 
+								"<li>Average Return: " + data_dict.total.avgReturn + "</li>" + 
+								"<li>Return Std. Dev: " + data_dict.total.returnStdDev + "</li>" + 
+								"<li>Max. Return: " + data_dict.total.maxReturn + "</li>" + 
+								"<li>Min. Return: " + data_dict.total.minReturn + "</li>" + 
+								"<li>P/L Ratio: " + data_dict.total.overallPnLRatio + "</li>" +  // Needed to change this to be used
+								"<li>Average Profitability per Trade: " + data_dict.total.averageProfitabilityPerTrade + "</li>" + 
+							"</ul>" + 
+							"Profitable: " + 
+							"<ul>" + 
+								"<li>Profitable Trades: " + data_dict.profitable.profitableTrades + "</li>" + 
+								"<li>Average Profit: " + data_dict.profitable.avgProfit + "</li>" + 
+								"<li>Profit Std. Dev: " + data_dict.profitable.profitsStdDev + "</li>" + 
+								"<li>Max. Profit: " + data_dict.profitable.maxProfit + "</li>" + 
+								"<li>Min. Profit: " + data_dict.profitable.minProfit + "</li>" + 
+								"<li>Average Positive Return: " + data_dict.profitable.avgReturn + "</li>" + 
+								"<li>Positive Return Std. Dev: " + data_dict.profitable.returnStdDev + "</li>" + 
+								"<li>Max. Positive Return: " + data_dict.profitable.maxReturn + "</li>" + 
+								"<li>Min. Positive Return: " + data_dict.profitable.minReturn + "</li>" + 
+							"</ul>" + 
+							"Unprofitable: " + 
+							"<ul>" + 
+								"<li>Unprofitable Trades: " + data_dict.unprofitable.unprofitableTrades + "</li>" + 
+								"<li>Average Loss: " + data_dict.unprofitable.avgLoss + "</li>" + 
+								"<li>Profit Std. Dev: " + data_dict.unprofitable.lossessStdDev + "</li>" + 
+								"<li>Max. Loss: " + data_dict.unprofitable.minLoss + "</li>" + 
+								"<li>Min. Loss: " + data_dict.unprofitable.maxLoss + "</li>" + 
+								"<li>Average Negative Return: " + data_dict.unprofitable.avgReturn + "</li>" + 
+								"<li>Negative Return Std. Dev: " + data_dict.unprofitable.returnStdDev + "</li>" + 
+								"<li>Max. Negative Return: " + data_dict.unprofitable.minReturn + "</li>" + 
+								"<li>Min. Negative Return: " + data_dict.unprofitable.maxReturn + "</li>" + 
+							"</ul>"
+							)
+						// $('#container').text(data_dict.total.totalTrades)
+					},
+					error: function(jqXhr, textStatus, errorThrown){
+						console.log(errorThrown)
+						$('#container').html("ERROR TRYING TO RETRIEVE DATA: " + " " + errorThrown)
+					}
+				})
+				response.preventDefault();	
 				// $('#container').toggle();
+			
 			});
+		}) //
 	</script>
 </body>
 </html>
