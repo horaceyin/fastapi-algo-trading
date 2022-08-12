@@ -124,7 +124,7 @@
 
                             if(response.result_code != 0){
                                 console.log(response.result_msg) // do error handling here, it will show "No Such User or Wrong Password"
-                                return false
+                                return false // Stops program
                             }
                             userData = response.data
                             var prodCode = document.getElementById("prodCd").value; // $("#prodCd").val();

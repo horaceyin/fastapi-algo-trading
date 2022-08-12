@@ -5,7 +5,7 @@ import queue
 from pyalgotrade import bar
 from pyalgotrade import barfeed
 from pyalgotrade import observer
-from services.backtesting.live_trade import common, websocket
+from services.live_trade import common, websocket
 
 class TradeBar(bar.Bar):
     __slots__ = ('__dateTime', '__tradeId', '__price', '__amount')
