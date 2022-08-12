@@ -5,3 +5,4 @@ class GetTickerPriceModel(BaseModel):
     userId: str
     spServerKey: str
     sessionTime: str
+    prodCode: str

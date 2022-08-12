@@ -1,6 +1,6 @@
 import time
 import datetime
-from six.moves import queue
+import queue
 from pyalgotrade import bar
 from pyalgotrade import barfeed
 from pyalgotrade import observer
@@ -70,17 +70,6 @@ class TradeBar(bar.Bar):
 
 
 class SPLiveTradeFeed(barfeed.BaseBarFeed):
-
-    """A real-time BarFeed that builds bars from live trades.
-
-    :param maxLen: The maximum number of values that the :class:`pyalgotrade.dataseries.bards.BarDataSeries` will hold.
-        Once a bounded length is full, when new items are added, a corresponding number of items are discarded
-        from the opposite end. If None then dataseries.DEFAULT_MAX_LEN is used.
-    :type maxLen: int.
-
-    .. note::
-        Note that a Bar will be created for every trade, so open, high, low and close values will all be the same.
-    """
 
     QUEUE_TIMEOUT = 0.01
 
@@ -231,12 +220,4 @@ class SPLiveTradeFeed(barfeed.BaseBarFeed):
         return self.__stopped
 
     def getOrderBookUpdateEvent(self):
-        """
-        Returns the event that will be emitted when the orderbook gets updated.
-
-        Eventh handlers should receive one parameter:
-         1. A :class:`pyalgotrade.bitstamp.wsclient.OrderBookUpdate` instance.
-
-        :rtype: :class:`pyalgotrade.observer.Event`.
-        """
         return self.__orderBookUpdateEvent
