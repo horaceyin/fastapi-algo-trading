@@ -40,19 +40,16 @@ async def get_ticker_price(request: GetTickerPriceModel):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as my_socket:
     # my_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         my_socket.connect((SP_PRICE_SERVER_HOST, SP_PRICE_SERVER_PORT))
-        print("#################")
         cache = []
         j = 0
         my_socket.sendall(my_msg.encode())
         while j!=10:
             my_socket.sendall(my_msg_1.encode())
-            server_bytes_msg_1 = my_socket.recv(1024)
+            server_bytes_msg_1 = my_socket.recv(1024).decode()
+            print(server_bytes_msg_1)
+            print(server_bytes_msg_1[3])
             if len(server_bytes_msg_1) >100:
-                print(server_bytes_msg_1,'63636363636363')
                 cache.append(repr(server_bytes_msg_1))
-                cache = cache[0].split("\\r\\n")
-            print(cache,'@!@!@!@!@!')
-            # print('Received:', repr(server_bytes_msg_1))
             j=j+1
 
         else:
