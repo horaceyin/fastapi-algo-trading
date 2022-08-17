@@ -1,3 +1,4 @@
+from operator import truediv
 from fastapi import APIRouter, Depends, Path, Request, status, WebSocket, Cookie, Query
 from typing import Union
 from fastapi.responses import HTMLResponse
@@ -8,6 +9,8 @@ from core import TEMPLATES_PATH, config
 from schemas.live_trading_schemas import GetTickerPriceModel
 from core.config import SP_PRICE_SERVER_HOST, SP_PRICE_SERVER_PORT
 import socket
+import time
+import sys
 
 @staticmethod
 def print_msg():
@@ -25,28 +28,30 @@ templates = Jinja2Templates(directory=str(TEMPLATES_PATH))
 async def show_live_trading_page(request: Request):
     return templates.TemplateResponse('live_trading.html', {'request': request})
 
-@live_trading_router.post('/subscribe-ticker-price', status_code=status.HTTP_200_OK) # To get ticker price of futures # need session token and product code0
+@live_trading_router.post('/subscribe-ticker-price') # To get ticker price of futures # Need session token and product code
 async def get_ticker_price(request: GetTickerPriceModel):
     userId = request.userId
     spServerKey = request.spServerKey
     sessionTime = request.sessionTime
+    prodCode = request.prodCode
 
-    my_msg = f'4104,0,{userId},{spServerKey},3,8.7,1.0,1.0,SP_F,{sessionTime},0\r\n' # Do not need ticker price 
-    my_msg_1 = f'4107,0,HSIQ1,0,1,2,\r\n'
+    my_msg = f'4104,0,{userId},{spServerKey},3,8.7,1.0,1.0,SP_F,{sessionTime},0\r\n'
+    my_msg_1 = f'4107,0,{prodCode},0,1,0\r\n'
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as my_socket:
     # my_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         my_socket.connect((SP_PRICE_SERVER_HOST, SP_PRICE_SERVER_PORT))
-        
-        print("#################")
+        cache = []
+        j = 0
         my_socket.sendall(my_msg.encode())
-        try:
-            while True:
-                my_socket.sendall(my_msg_1.encode())
-                server_bytes_msg_1 = my_socket.recv(1024)
-                print('Received:', repr(server_bytes_msg_1))
-                print('***************')
-                # Received: b'4107,3,-1,HSIQ1,1,2\r\n'
-                # ***************
-        except KeyboardInterrupt:
+        while j!=10:
+            my_socket.sendall(my_msg_1.encode())
+            server_bytes_msg_1 = my_socket.recv(1024).decode()
+            print(server_bytes_msg_1)
+            print(server_bytes_msg_1[3])
+            if len(server_bytes_msg_1) >100:
+                cache.append(repr(server_bytes_msg_1))
+            j=j+1
+
+        else:
             my_socket.close()
             return {"msg": "okay"}
